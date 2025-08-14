@@ -1,0 +1,8 @@
+[29-Apr-2025 16:51:46 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/odeka/new.odeka.org/vendor/composer/platform_check.php on line 28
+[29-Apr-2025 16:52:16 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/odeka/new.odeka.org/vendor/composer/platform_check.php on line 28
+[29-Apr-2025 16:53:15 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/odeka/new.odeka.org/vendor/composer/platform_check.php on line 28
+[29-Apr-2025 16:54:16 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/odeka/new.odeka.org/vendor/composer/platform_check.php on line 28
+[29-Apr-2025 16:54:18 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/odeka/new.odeka.org/vendor/composer/platform_check.php on line 28
+[29-Apr-2025 16:54:21 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/odeka/new.odeka.org/vendor/composer/platform_check.php on line 28
+[29-Apr-2025 17:01:28 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[29-Apr-2025 17:01:28 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
