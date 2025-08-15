@@ -55,6 +55,13 @@
 </div>
 
   <div class="container">
+    <!-- Upload Status Notification -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="popout display-none position-fixed" style="top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;"></div>
+      </div>
+    </div>
+    
     <div class="row">
       <div class="col-lg-12">
         <div class="w-100 text-center py-4 img-profile-user">

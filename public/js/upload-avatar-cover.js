@@ -3,79 +3,140 @@
   "use strict";
 
   //<<<<<<<=================== * UPLOAD AVATAR  * ===============>>>>>>>//
+  // Handle avatar upload button click
+  $(document).on('click', '#avatar_file', function(e) {
+    e.preventDefault();
+    $('#uploadAvatar').trigger('click');
+  });
+
   $(document).on('change', '#uploadAvatar', function () {
+    var file = this.files[0];
+    
+    // Validate file before upload
+    if (!file) {
+      return false;
+    }
+
+    // Check file type
+    var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      swal({
+        title: error_oops || 'Error',
+        text: 'Please select a valid image file (JPG, PNG, GIF)',
+        type: "error",
+        confirmButtonText: ok || 'OK'
+      });
+      $(this).val('');
+      return false;
+    }
+
+    // Check file size (if defined)
+    if (typeof max_file_size !== 'undefined' && file.size > max_file_size) {
+      swal({
+        title: error_oops || 'Error',
+        text: 'File size is too large',
+        type: "error",
+        confirmButtonText: ok || 'OK'
+      });
+      $(this).val('');
+      return false;
+    }
 
     $('.progress-upload').show();
 
     (function () {
-
       var percent = $('.progress-upload');
       var percentVal = '0%';
 
       $("#formAvatar").ajaxForm({
         dataType: 'json',
-        error: function (responseText, statusText, xhr, $form) {
+        timeout: 60000, // 60 seconds timeout
+        
+        error: function (xhr, status, error) {
+          var errorMessage = error_occurred || 'An error occurred';
+          
+          if (xhr.status === 413) {
+            errorMessage = 'File is too large';
+          } else if (xhr.status === 422) {
+            try {
+              var response = JSON.parse(xhr.responseText);
+              if (response.errors) {
+                errorMessage = Object.values(response.errors).flat().join('<br>');
+              }
+            } catch (e) {
+              errorMessage = 'Validation error occurred';
+            }
+          }
 
-          $('.popout').removeClass('popout-success').addClass('popout-error').html(error_occurred + ' ' + xhr + '').fadeIn('500').delay('5000').fadeOut('500');
+          $('.popout').removeClass('popout-success').addClass('popout-error')
+            .css('background-color', '#dc3545')
+            .html(errorMessage).fadeIn('500').delay('5000').fadeOut('500');
           $('.progress-upload').hide();
           $('#uploadAvatar').val('');
-          percent.html(percentVal);
+          percent.html('0%');
         },
 
         beforeSend: function () {
-          percent.html(percentVal);
+          percent.html('0%');
         },
+        
         uploadProgress: function (event, position, total, percentComplete) {
           var percentVal = percentComplete + '%';
           percent.html(percentVal);
         },
-        success: function (e) {
-          if (e) {
+        
+        success: function (response) {
+          if (response && response.success === false) {
+            $('.progress-upload').hide();
 
-            if (e.success == false) {
-              $('.progress-upload').hide();
-
-              var error = '';
-              var $key = '';
-
-              for ($key in e.errors) {
-                error += '' + e.errors[$key] + '';
+            var error = '';
+            if (response.errors) {
+              for (var key in response.errors) {
+                if (Array.isArray(response.errors[key])) {
+                  error += response.errors[key].join('<br>') + '<br>';
+                } else {
+                  error += response.errors[key] + '<br>';
+                }
               }
-              swal({
-                title: error_oops,
-                text: "" + error + "",
-                type: "error",
-                confirmButtonText: ok
-              });
-
-              $('#uploadAvatar').val('');
-              percent.html(percentVal);
-
-            } else {
-
-              $('#uploadAvatar').val('');
-              $('.avatarUser').attr('src', e.avatar);
-              $('.progress-upload').hide();
-              percent.html(percentVal);
             }
 
-          }//<-- e
-          else {
-            $('.progress-upload').hide();
-            percent.html(percentVal);
             swal({
-              title: error_oops,
-              text: error_occurred,
+              title: error_oops || 'Error',
+              text: error || 'Upload failed',
               type: "error",
-              confirmButtonText: ok
+              confirmButtonText: ok || 'OK'
             });
 
             $('#uploadAvatar').val('');
+            percent.html('0%');
+
+          } else if (response && response.success === true) {
+            $('#uploadAvatar').val('');
+            $('.avatarUser').attr('src', response.avatar);
+            $('.progress-upload').hide();
+            percent.html('0%');
+
+            // Show success message if available
+            if (response.message) {
+              $('.popout').removeClass('popout-error').addClass('popout-success')
+                .css('background-color', '#28a745')
+                .html(response.message).fadeIn('500').delay('3000').fadeOut('500');
+            }
+          } else {
+            $('.progress-upload').hide();
+            percent.html('0%');
+            swal({
+              title: error_oops || 'Error',
+              text: error_occurred || 'An unexpected error occurred',
+              type: "error",
+              confirmButtonText: ok || 'OK'
+            });
+            $('#uploadAvatar').val('');
           }
-        }//<----- SUCCESS
+        }
       }).submit();
-    })(); //<--- FUNCTION %
-  });//<<<<<<<--- * ON * --->>>>>>>>>>>
+    })();
+  });
   //<<<<<<<=================== * END UPLOAD AVATAR  * ===============>>>>>>>//
 
   //<<<<<<<=================== * UPLOAD COVER  * ===============>>>>>>>//

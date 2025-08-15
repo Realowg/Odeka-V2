@@ -1759,10 +1759,18 @@ $('#saveChangesEditPage').on('click', function(e) {
 				 $('.datepicker').attr({'disabled' : 'true'});
 				 $element.find('i').removeClass('spinner-border spinner-border-sm align-middle mr-1');
 				 $('#errorUdpateEditPage').hide();
-				 $('.url-user').attr('href', response.url);
+				 
+				 if (response.url) {
+					 $('.url-user').attr('href', response.url);
+				 }
 
 				 if (response.locale) {
 				 	window.location.reload();
+				 } else if (response.redirect) {
+					 // Redirect to settings page after successful update
+					 setTimeout(function() {
+						 window.location.href = response.redirect;
+					 }, 1500);
 				 }
 			 } else {
 
@@ -2499,9 +2507,6 @@ document.addEventListener('keyup', (e) => {
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key == 'p') {
         return false;
-        e.cancelBubble = true;
-        e.preventDefault();
-        e.stopImmediatePropagation();
     }
 });
 

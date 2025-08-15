@@ -858,10 +858,32 @@ class Helper
 	// Get file from Disk
 	public static function getFile($path)
 	{
-		if (env('FILESYSTEM_DRIVER') == 'dospace' && env('DOS_CDN')) {
-			return 'https://' . env('DOS_BUCKET') . '.' . env('DOS_DEFAULT_REGION') . '.cdn.digitaloceanspaces.com/' . $path;
-		} else {
-			return Storage::url($path);
+		$driver = env('FILESYSTEM_DRIVER', 'default');
+		
+		switch ($driver) {
+			case 'dospace':
+				if (env('DOS_CDN')) {
+					return 'https://' . env('DOS_BUCKET') . '.' . env('DOS_DEFAULT_REGION') . '.cdn.digitaloceanspaces.com/' . $path;
+				}
+				return Storage::disk('dospace')->url($path);
+				
+			case 's3':
+				return Storage::disk('s3')->url($path);
+				
+			case 'wasabi':
+				return Storage::disk('wasabi')->url($path);
+				
+			case 'backblaze':
+				return Storage::disk('backblaze')->url($path);
+				
+			case 'vultr':
+				return Storage::disk('vultr')->url($path);
+				
+			case 'pushr':
+				return Storage::disk('pushr')->url($path);
+				
+			default:
+				return Storage::disk($driver)->url($path);
 		}
 	}
 

@@ -962,6 +962,7 @@ class UserController extends Controller
       'success' => true,
       'url' => url(trim($this->request->username)),
       'locale' => $this->request->language != '' && config('app.locale') != $this->request->language ? true : false,
+      'redirect' => url('settings/page'),
     ]);
   }
 
@@ -1186,47 +1187,77 @@ class UserController extends Controller
 
   public function uploadAvatar()
   {
-    $validator = Validator::make($this->request->all(), [
-      'avatar' => 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=200,min_height=200|max:' . $this->settings->file_size_allowed . '',
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json([
-        'success' => false,
-        'errors' => $validator->getMessageBag()->toArray(),
+    try {
+      $validator = Validator::make($this->request->all(), [
+        'avatar' => 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=200,min_height=200|max:' . $this->settings->file_size_allowed . '',
       ]);
-    }
 
-    // PATHS
-    $path = config('path.avatar');
-
-    //<--- HASFILE PHOTO
-    if ($this->request->hasFile('avatar')) {
-      $photo     = $this->request->file('avatar');
-      $extension = $this->request->file('avatar')->extension();
-      $avatar    = strtolower(auth()->user()->username . '-' . auth()->id() . time() . str_random(10) . '.' . $extension);
-
-      $imgAvatar = Image::make($photo)->orientate()->fit(200, 200, function ($constraint) {
-        $constraint->aspectRatio();
-        $constraint->upsize();
-      })->encode($extension);
-
-      // Copy folder
-      Storage::put($path . $avatar, $imgAvatar);
-
-      //<<<-- Delete old image -->>>/
-      if (auth()->user()->avatar != $this->settings->avatar) {
-        Storage::delete(config('path.avatar') . auth()->user()->avatar);
+      if ($validator->fails()) {
+        return response()->json([
+          'success' => false,
+          'errors' => $validator->getMessageBag()->toArray(),
+        ]);
       }
 
-      // Update Database
-      auth()->user()->update(['avatar' => $avatar]);
+      // PATHS
+      $path = config('path.avatar');
+
+      //<--- HASFILE PHOTO
+      if ($this->request->hasFile('avatar')) {
+        $photo = $this->request->file('avatar');
+        $extension = $photo->getClientOriginalExtension();
+        $avatar = strtolower(auth()->user()->username . '-' . auth()->id() . '-' . time() . '-' . \Str::random(10) . '.' . $extension);
+
+        // Process image
+        $imgAvatar = Image::make($photo)
+          ->orientate()
+          ->fit(200, 200, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+          })
+          ->encode($extension, 90); // Add quality setting
+
+        // Determine storage disk based on configuration
+        $disk = env('FILESYSTEM_DRIVER', 'default');
+        
+        // Store the file
+        $fullPath = $path . $avatar;
+        Storage::disk($disk)->put($fullPath, $imgAvatar->__toString());
+
+        // Delete old avatar if it's not the default
+        if (auth()->user()->avatar != $this->settings->avatar) {
+          $oldAvatarPath = config('path.avatar') . auth()->user()->avatar;
+          if (Storage::disk($disk)->exists($oldAvatarPath)) {
+            Storage::disk($disk)->delete($oldAvatarPath);
+          }
+        }
+
+        // Update Database
+        auth()->user()->update(['avatar' => $avatar]);
+
+        // Generate the URL based on storage type
+        $avatarUrl = Helper::getFile($fullPath);
+
+        return response()->json([
+          'success' => true,
+          'avatar' => $avatarUrl,
+          'message' => __('general.avatar_updated_successfully'),
+        ]);
+      }
 
       return response()->json([
-        'success' => true,
-        'avatar' => Helper::getFile($path . $avatar),
+        'success' => false,
+        'errors' => ['avatar' => [__('general.no_file_uploaded')]],
       ]);
-    } //<--- HASFILE PHOTO
+
+    } catch (\Exception $e) {
+      \Log::error('Avatar upload error: ' . $e->getMessage());
+      
+      return response()->json([
+        'success' => false,
+        'errors' => ['avatar' => [__('general.error_occurred')]],
+      ]);
+    }
   }
 
   public function uploadCover()
