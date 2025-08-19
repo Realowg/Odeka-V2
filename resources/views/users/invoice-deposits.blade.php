@@ -11,7 +11,7 @@
 
     <!-- AdminLTE Skins. Choose a skin from the css/skins
         folder instead of downloading all of them to reduce the load. -->
-    <link rel="shortcut icon" href="{{ url('public/img', $settings->favicon) }}" />
+    <link rel="shortcut icon" href="{{ url('img', $settings->favicon) }}" />
   </head>
 
   <body class="bg-light">
@@ -22,7 +22,7 @@
     <div class="row">
       <div class="col-12">
         <h2 class="border-bottom pb-3">
-          <img src="{{ url('public/img', $settings->logo_2)}}" width="110">
+          <img src="{{ url('img', $settings->logo_2)}}" width="110">
           <small class="float-end date-invoice mt-3">{{trans('admin.date')}}: {{Helper::formatDate($data->date)}}</small>
         </h2>
       </div>

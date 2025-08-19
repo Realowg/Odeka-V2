@@ -339,11 +339,7 @@ $('#filter, .filter').on('change', function() {
 });
 jQuery(".timeAgo").timeago();
 
-$(document).on('click','#avatar_file',function () {
-		var _this = $(this);
-	    $("#uploadAvatar").trigger('click');
-	     _this.blur();
-	});
+
 
 	//<---------------- UPLOAD UPDATE/POST ----------->>>>
 	$(document).on('click','#btnCreateUpdate',function(s) {

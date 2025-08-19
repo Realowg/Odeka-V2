@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="shortcut icon" href="{{ url('public/img', $settings->favicon) }}" />
+    <link rel="shortcut icon" href="{{ url('img', $settings->favicon) }}" />
 
     <title>{{ __('admin.admin') }}</title>
 
@@ -52,7 +52,7 @@
 
       <div class="offcanvas offcanvas-start sidebar bg-dark text-white" tabindex="-1" id="sidebar-nav" data-bs-keyboard="false" data-bs-backdrop="false">
       <div class="offcanvas-header">
-          <h5 class="offcanvas-title"><img src="{{ url('public/img', $settings->logo) }}" width="100" /></h5>
+          <h5 class="offcanvas-title"><img src="{{ url('img', $settings->logo) }}" width="100" /></h5>
           <button type="button" class="btn-close btn-close-custom text-white toggle-menu d-lg-none" data-bs-dismiss="offcanvas" aria-label="Close">
             <i class="bi bi-x-lg"></i>
           </button>
@@ -558,11 +558,11 @@
 </main>
 
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ asset('public/js/core.min.js') }}?v={{$settings->version}}"></script>
-    <script src="{{ asset('public/admin/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('public/js/ckeditor/ckeditor.js')}}"></script>
-    <script src="{{ asset('public/js/select2/select2.full.min.js') }}"></script>
-    <script src="{{ asset('public/admin/admin-functions.js') }}?v={{$settings->version}}"></script>
+    <script src="{{ asset('js/core.min.js') }}?v={{$settings->version}}"></script>
+    <script src="{{ asset('admin/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/ckeditor/ckeditor.js')}}"></script>
+    <script src="{{ asset('js/select2/select2.full.min.js') }}"></script>
+    <script src="{{ asset('admin/admin-functions.js') }}?v={{$settings->version}}"></script>
 
     @yield('javascript')
 

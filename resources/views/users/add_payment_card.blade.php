@@ -34,31 +34,31 @@
             @php
               switch (auth()->user()->pm_type) {
                 case 'amex':
-                  $paymentDefault = '<img src="'.asset('public/img/payments/brands/amex.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                  $paymentDefault = '<img src="'.asset('img/payments/brands/amex.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                   break;
 
                 case 'diners':
-                $paymentDefault = '<img src="'.asset('public/img/payments/brands/diners.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                $paymentDefault = '<img src="'.asset('img/payments/brands/diners.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                 break;
 
                 case 'discover':
-                $paymentDefault = '<img src="'.asset('public/img/payments/brands/discover.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                $paymentDefault = '<img src="'.asset('img/payments/brands/discover.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                 break;
 
                 case 'jcb':
-                $paymentDefault = '<img src="'.asset('public/img/payments/brands/jcb.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                $paymentDefault = '<img src="'.asset('img/payments/brands/jcb.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                 break;
 
                 case 'mastercard':
-                $paymentDefault = '<img src="'.asset('public/img/payments/brands/mastercard.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                $paymentDefault = '<img src="'.asset('img/payments/brands/mastercard.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                 break;
 
                 case 'unionpay':
-                $paymentDefault = '<img src="'.asset('public/img/payments/brands/unionpay.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                $paymentDefault = '<img src="'.asset('img/payments/brands/unionpay.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                 break;
 
                 case 'visa':
-                $paymentDefault = '<img src="'.asset('public/img/payments/brands/visa.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
+                $paymentDefault = '<img src="'.asset('img/payments/brands/visa.svg').'"> •••• •••• •••• '.auth()->user()->pm_last_four;
                 break;
 
                 default:
@@ -96,5 +96,5 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('public/js/add-payment-card.js') }}"></script>
+<script src="{{ asset('js/add-payment-card.js') }}"></script>
 @endsection

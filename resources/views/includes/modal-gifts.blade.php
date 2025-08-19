@@ -40,7 +40,7 @@
                         @foreach ($gifts as $gift)
                             <label class="btn btn-radio">
                               <input type="radio" required name="gift" value="{{ $gift->id }}" id="gift{{ $gift->id }}"> 
-                              <img src="{{ url('public/img/gifts', $gift->image) }}" width="80">
+                              <img src="{{ url('img/gifts', $gift->image) }}" width="80">
                               <small class="d-block w-100 mt-1">
                                 {{ Helper::formatPrice($gift->price, true) }}
                               </small>

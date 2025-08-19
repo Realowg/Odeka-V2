@@ -102,7 +102,7 @@
 @endsection
 
 @section('javascript')
-  <script src="{{ asset('public/js/fileuploader/fileuploader-welcome-msg.js') }}"></script>
+  <script src="{{ asset('js/fileuploader/fileuploader-welcome-msg.js') }}"></script>
 
   @if (session('encode'))
  <script type="text/javascript">

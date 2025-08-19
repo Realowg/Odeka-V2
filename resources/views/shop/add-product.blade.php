@@ -80,7 +80,7 @@
 @endsection
 
 @section('javascript')
-  <script src="{{ asset('public/js/fileuploader/fileuploader-shop-preview.js') }}"></script>
-  <script src="{{ asset('public/js/fileuploader/fileuploader-shop-file.js') }}"></script>
-  <script src="{{ asset('public/js/shop.js') }}"></script>
+  <script src="{{ asset('js/fileuploader/fileuploader-shop-preview.js') }}"></script>
+  <script src="{{ asset('js/fileuploader/fileuploader-shop-file.js') }}"></script>
+  <script src="{{ asset('js/shop.js') }}"></script>
 @endsection

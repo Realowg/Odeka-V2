@@ -7,7 +7,7 @@ use Cookie;
 use Validator;
 use App\Helper;
 use App\Models\User;
-use App\Rules\TempEmail;
+// use App\Rules\TempEmail;
 use App\Models\Countries;
 use App\Models\Referrals;
 use Illuminate\Support\Str;
@@ -77,14 +77,13 @@ class RegisterController extends Controller
     Validator::extend('letters', function ($attribute, $value, $parameters) {
       return preg_match('/[a-zA-Z0-9]/', $value);
     });
-
-    Validator::extend('temp_email', function ($attribute, $value, $parameters) {
-      return (new TempEmail())->passes($attribute, $value);
-    }, (new TempEmail())->message());
+    userSubscriptionsActiveribute, $value, $parameters) {
+    //   return (new TempEmail())->passes($attribute, $value);
+    // }, (new TempEmail())->message());
 
     return Validator::make($data, [
       'name' => 'required|string|max:100|regex:/^([^0-9]*)$/',
-      'email' => 'required|email|temp_email|max:255|unique:users',
+      'email' => 'required|email|max:255|unique:users',
       'password' => 'required|min:6',
       'agree_gdpr' => 'required',
       'g-recaptcha-response' => 'required_if:_captcha,==,on|captcha'
@@ -179,20 +178,20 @@ class RegisterController extends Controller
       $_email_noreply = $this->settings->email_no_reply;
 
       try {
-        Mail::send(
-          'emails.verify',
-          ['confirmation_code' => $confirmation_code, 'isProfile' => $isProfile],
-          function ($message) use (
-            $_username,
-            $_email_user,
-            $_title_site,
-            $_email_noreply
-          ) {
-            $message->from($_email_noreply, $_title_site);
-            $message->subject(trans('users.title_email_verify'));
-            $message->to($_email_user, $_username);
-          }
-        );
+        // Mail::send(
+        //   'emails.verify',
+        //   ['confirmation_code' => $confirmation_code, 'isProfile' => $isProfile],
+        //   function ($message) use (
+        //     $_username,
+        //     $_email_user,
+        //     $_title_site,
+        //     $_email_noreply
+        //   ) {
+        //     $message->from($_email_noreply, $_title_site);
+        //     $message->subject(trans('users.title_email_verify'));
+        //     $message->to($_email_user, $_username);
+        //   }
+        // );
       } catch (\Exception $e) {
         \Log::debug($e->getMessage());
 

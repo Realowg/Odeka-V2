@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title>Installer</title>
-    <link href="{{ asset('public/css/core.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/css/styles.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url('public/img/favicon.png') }}" />
+    <link href="{{ asset('css/core.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url('img/favicon.png') }}" />
   </head>
   <body class="bg-primary">
   		<main role="main">
@@ -129,6 +129,6 @@
         </div>
       </main>
   </body>
-  <script src="{{ asset('public/js/core.min.js') }}"></script>
-  <script src="{{ asset('public/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('js/core.min.js') }}"></script>
+  <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 </html>

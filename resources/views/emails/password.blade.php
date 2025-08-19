@@ -7,7 +7,7 @@
 				<td>
 				<div style="padding:20px 0;font-size:18px;font-weight:bold;color:#f02d00;border-bottom:1px solid #dcdcdc">
 			<a href="{{ url('/')}}" style="display:inline-block;color:#fff;text-decoration:none" target="_blank">
-			<img  src="{{url('public/img/logo-blue.png')}}" width="150">
+			<img  src="{{url('img/logo-blue.png')}}" width="150">
 		</a>
 		</div>
 	</td>
@@ -16,7 +16,7 @@
 <tr>
 	<td style="padding:30px 0 50px 0">
 		<div style="text-align:center">
-			<img src="{{url('public/avatar/default.jpg')}}" style="width:72px; border-radius: 50px;">
+			<img src="{{url('avatar/default.jpg')}}" style="width:72px; border-radius: 50px;">
 			<div style="margin:10px 0 5px 0;font-size:26px;font-weight:bold;line-height:24px;letter-spacing:-1px">
 			{{ trans('auth.password_reset_2') }}
 			</div>

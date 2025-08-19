@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
 @section('css')
-<link href="{{ asset('public/admin/jvectormap/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('admin/jvectormap/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -297,8 +297,8 @@
 @endsection
 
 @section('javascript')
-	<script src="{{ asset('public/admin/jvectormap/jquery-jvectormap-1.2.2.min.js')}}" type="text/javascript"></script>
-	<script src="{{ asset('public/admin/jvectormap/jquery-jvectormap-world-mill-en.js')}}" type="text/javascript"></script>
-  <script src="{{ asset('public/js/Chart.min.js') }}"></script>
+	<script src="{{ asset('admin/jvectormap/jquery-jvectormap-1.2.2.min.js')}}" type="text/javascript"></script>
+	<script src="{{ asset('admin/jvectormap/jquery-jvectormap-world-mill-en.js')}}" type="text/javascript"></script>
+  <script src="{{ asset('js/Chart.min.js') }}"></script>
 	@include('admin.charts')
   @endsection

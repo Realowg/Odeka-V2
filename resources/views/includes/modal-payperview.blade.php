@@ -32,9 +32,9 @@
 								if ($payment->type == 'card' ) {
 									$paymentName = '<i class="far fa-credit-card mr-1"></i> '.__('general.debit_credit_card') .' <small class="w-100 d-block">'.__('general.powered_by').' '.$payment->name.'</small>';
 								} else if ($payment->id == 1) {
-									$paymentName = '<img src="'.url('public/img/payments', auth()->user()->dark_mode == 'off' ? $payment->logo : 'paypal-white.png').'" width="70"/> <small class="w-100 d-block">'.__('general.redirected_to_paypal_website').'</small>';
+									$paymentName = '<img src="'.url('img/payments', auth()->user()->dark_mode == 'off' ? $payment->logo : 'paypal-white.png').'" width="70"/> <small class="w-100 d-block">'.__('general.redirected_to_paypal_website').'</small>';
 								} else {
-									$paymentName = '<img src="'.url('public/img/payments', $payment->logo).'" width="70"/>';
+									$paymentName = '<img src="'.url('img/payments', $payment->logo).'" width="70"/>';
 								}
 
 								$allPayments = $paymentGatewaysSubscription;

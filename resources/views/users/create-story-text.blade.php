@@ -58,7 +58,7 @@
 
             <div class="my-3 container-backgrounds d-block">
               @foreach ($storyBackgrounds as $background)
-                <img src="{{ url('public/img/stories-bg', $background->name) }}" data-bg-name="{{ $background->name }}" data-bg="{{ url('public/img/stories-bg', $background->name) }}" class="mr-1 mb-2 storyBackgrounds storyBg">
+                <img src="{{ url('img/stories-bg', $background->name) }}" data-bg-name="{{ $background->name }}" data-bg="{{ url('img/stories-bg', $background->name) }}" class="mr-1 mb-2 storyBackgrounds storyBg">
             @endforeach
             </div>
 
@@ -81,7 +81,7 @@
         <div class="col-lg-7 first">
           <div class="d-block w-100">
             <div class="bg-current w-100 bg-black mb-3 d-block py-4 px-lg-0 px-4">
-              <div class="bg-inside text-center mx-auto" style="background: #6a6a6a url('{{ url('public/img/stories-bg', $storyBackgrounds[0]['name']) }}') no-repeat center center; background-size: cover;">
+              <div class="bg-inside text-center mx-auto" style="background: #6a6a6a url('{{ url('img/stories-bg', $storyBackgrounds[0]['name']) }}') no-repeat center center; background-size: cover;">
                 <div class="flex-column d-flex justify-content-center text-center h-100 text-story px-4">
                   {{ __('general.start_typing') }}
                 </div>
@@ -95,5 +95,5 @@
 @endsection
 
 @section('javascript') 
-  <script src="{{ asset('public/js/story/create-story.js') }}"></script>
+  <script src="{{ asset('js/story/create-story.js') }}"></script>
 @endsection

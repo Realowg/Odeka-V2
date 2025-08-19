@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>{{__('admin.maintenance_mode')}}</title>
-  <link href="{{ asset('public/css/core.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('public/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('public/css/styles.css') }}" rel="stylesheet">
-  <link rel="shortcut icon" href="{{ url('public/img', config('settings.favicon')) }}" />
+  <link href="{{ asset('css/core.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+  <link rel="shortcut icon" href="{{ url('img', config('settings.favicon')) }}" />
 </head>
 
 <body>

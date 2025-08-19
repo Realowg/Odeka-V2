@@ -46,7 +46,7 @@
 
                  @foreach ($data as $gift)
                    <tr>
-                    <td><img src="{{ url('public/img/gifts', $gift->image) }}" width="50"></td>
+                    <td><img src="{{ url('img/gifts', $gift->image) }}" width="50"></td>
                      <td>{{ $gift->price }}</td>
                      <td>
                         <span class="badge bg-{{ $gift->status ? 'success' : 'secondary'}}">

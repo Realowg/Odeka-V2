@@ -13,34 +13,34 @@
     </span>
 
     <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category @if (request()->is('creators') || isset($isCategory) && request()->is('category/'.$slug.''))active-category @endif" href="{{ isset($isCategory) ? url('category', $slug) : url('creators')}}">
-      <img src="{{url('public/img/popular.png')}}" class="mr-2" width="30" /> {{trans('general.popular')}}
+      <img src="{{url('img/popular.png')}}" class="mr-2" width="30" /> {{trans('general.popular')}}
     </a>
 
     <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category @if (request()->is('creators/featured') || isset($isCategory) && request()->is('category/'.$slug.'/featured'))active-category @endif" href="{{ isset($isCategory) ? url('category/'.$slug.'','featured') : url('creators/featured')}}">
-      <img src="{{url('public/img/featured.png')}}" class="mr-2" width="30" /> {{trans('general.featured_creators')}}
+      <img src="{{url('img/featured.png')}}" class="mr-2" width="30" /> {{trans('general.featured_creators')}}
     </a>
 
     <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category @if (request()->is('creators/more-active') || isset($isCategory) && request()->is('category/'.$slug.'/more-active'))active-category @endif" href="{{ isset($isCategory) ? url('category/'.$slug.'','more-active') : url('creators/more-active')}}">
-      <img src="{{url('public/img/more-active.png')}}" class="mr-2" width="30" /> {{trans('general.more_active')}}
+      <img src="{{url('img/more-active.png')}}" class="mr-2" width="30" /> {{trans('general.more_active')}}
     </a>
 
     <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category @if (request()->is('creators/new') || isset($isCategory) && request()->is('category/'.$slug.'/new'))active-category @endif" href="{{ isset($isCategory) ? url('category/'.$slug.'','new') : url('creators/new')}}">
-      <img src="{{url('public/img/creators.png')}}" class="mr-2" width="30" />  {{trans('general.new_creators')}}
+      <img src="{{url('img/creators.png')}}" class="mr-2" width="30" />  {{trans('general.new_creators')}}
     </a>
 
     <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category @if (request()->is('creators/free') || isset($isCategory) && request()->is('category/'.$slug.'/free'))active-category @endif" href="{{ isset($isCategory) ? url('category/'.$slug.'','free') : url('creators/free')}}">
-      <img src="{{url('public/img/unlock.png')}}" class="mr-2" width="30" /> {{trans('general.free_subscription')}}
+      <img src="{{url('img/unlock.png')}}" class="mr-2" width="30" /> {{trans('general.free_subscription')}}
     </a>
 
     @if ($settings->search_creators_genders)
     <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category" href="javascript:;" data-toggle="modal" data-target="#filterGendersAge">
-      <img src="{{url('public/img/genders.png')}}" class="mr-2" width="30" /> {{trans('general.gender_age')}}
+      <img src="{{url('img/genders.png')}}" class="mr-2" width="30" /> {{trans('general.gender_age')}}
     </a>
   @endif
 
     @if ($settings->live_streaming_status == 'on')
       <a class="text-muted btn btn-sm bg-white border mb-2 e-none btn-category @if(request()->is('explore/creators/live'))active-category @endif" href="{{url('explore/creators/live')}}">
-        <img src="{{url('public/img/live.png')}}" class="mr-2" width="30" /> {{trans('general.live')}}
+        <img src="{{url('img/live.png')}}" class="mr-2" width="30" /> {{trans('general.live')}}
       </a>
     @endif
   </span>

@@ -267,7 +267,7 @@
 
                           @if (isset($transaction->gift->id) && request()->is('my/payments/received'))
                           <span class="d-block mt-2">
-                            <img src="{{ url('public/img/gifts', $transaction->gift->image) }}" width="25">
+                            <img src="{{ url('img/gifts', $transaction->gift->image) }}" width="25">
                           </span>
                           @endif
                       </td>
@@ -316,7 +316,7 @@
 @endsection
 
 @section('javascript')
-  <script src="{{ asset('public/js/Chart.min.js') }}"></script>
+  <script src="{{ asset('js/Chart.min.js') }}"></script>
 
   <script type="text/javascript">
 

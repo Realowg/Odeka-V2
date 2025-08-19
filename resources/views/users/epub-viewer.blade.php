@@ -5,11 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ $settings->title }}</title>
-  <link rel="shortcut icon" href="{{ url('public/img', config('settings.favicon')) }}" />
+  <link rel="shortcut icon" href="{{ url('img', config('settings.favicon')) }}" />
 
-  <script src="{{ url('public/js/jszip.min.js') }}"></script>
-  <script src="{{ url('public/js/epub.min.js') }}"></script>
-  <link rel="stylesheet" type="text/css" href="{{ url('public/css/epub-viewer.css') }}">
+  <script src="{{ url('js/jszip.min.js') }}"></script>
+  <script src="{{ url('js/epub.min.js') }}"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url('css/epub-viewer.css') }}">
 
   <style type="text/css">
 

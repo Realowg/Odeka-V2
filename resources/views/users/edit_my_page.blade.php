@@ -3,8 +3,8 @@
 @section('title') {{auth()->user()->verified_id == 'yes' ? trans('general.edit_my_page') : trans('users.edit_profile')}} -@endsection
 
 @section('css')
-  <link rel="stylesheet" href="{{ asset('public/plugins/datepicker/datepicker3.css') }}" rel="stylesheet" type="text/css">
-  <link href="{{ asset('public/plugins/select2/select2.min.css') }}?v={{$settings->version}}" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="{{ asset('plugins/datepicker/datepicker3.css') }}" rel="stylesheet" type="text/css">
+  <link href="{{ asset('plugins/select2/select2.min.css') }}?v={{$settings->version}}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -399,13 +399,13 @@
 @endsection
 
 @section('javascript')
-  <script src="{{ asset('public/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
+  <script src="{{ asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>
   @if (config('app.locale') != 'en')
-    <script src="{{ asset('public/plugins/datepicker/locales/bootstrap-datepicker.'.config('app.locale').'.js') }}"></script>
+    <script src="{{ asset('plugins/datepicker/locales/bootstrap-datepicker.'.config('app.locale').'.js') }}"></script>
   @endif
 
-  <script src="{{ asset('public/plugins/select2/select2.full.min.js') }}" type="text/javascript"></script>
-  <script src="{{ asset('public/plugins/select2/i18n/'.config('app.locale').'.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('plugins/select2/select2.full.min.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('plugins/select2/i18n/'.config('app.locale').'.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
 

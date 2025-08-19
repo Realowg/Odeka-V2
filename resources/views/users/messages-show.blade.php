@@ -277,16 +277,16 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('public/js/messages.js') }}?v={{$settings->version}}"></script>
-<script src="{{ asset('public/js/fileuploader/fileuploader-msg.js') }}?v={{$settings->version}}"></script>
-<script src="{{ asset('public/js/paginator-messages.js') }}"></script>
+<script src="{{ asset('js/messages.js') }}?v={{$settings->version}}"></script>
+<script src="{{ asset('js/fileuploader/fileuploader-msg.js') }}?v={{$settings->version}}"></script>
+<script src="{{ asset('js/paginator-messages.js') }}"></script>
 
 @if ($user->verified_id == 'yes' 
             && $settings->live_streaming_private == 'on' 
             && $user->allow_live_streaming_private == 'on' 
             && !auth()->user()->isRestricted($user->id)
             )
-<script src="{{ asset('public/js/live-private-request.js') }}"></script>
+<script src="{{ asset('js/live-private-request.js') }}"></script>
 @endif
 
 @endsection

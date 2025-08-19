@@ -53,7 +53,7 @@
             <div class="card-body">
               <p class="card-text">
                 @if (auth()->user()->pm_type != '')
-                  <img src="{{ asset('public/img/payments/brands/'.strtolower(auth()->user()->pm_type).'.svg')}}" class="mr-1">
+                  <img src="{{ asset('img/payments/brands/'.strtolower(auth()->user()->pm_type).'.svg')}}" class="mr-1">
                   <strong class="text-capitalize">{{ auth()->user()->pm_type }}</strong> <br> •••• •••• •••• {{ auth()->user()->pm_last_four }}
                   <small class="float-right d-block">{{ trans('general.expiry') }}: {{ $expiration }}</small>
 
@@ -79,7 +79,7 @@
             <div class="card-body">
               <p class="card-text">
                 @if (auth()->user()->paystack_card_brand != '')
-                  <img src="{{ asset('public/img/payments/brands/'.strtolower(auth()->user()->paystack_card_brand).'.svg')}}" class="mr-1">
+                  <img src="{{ asset('img/payments/brands/'.strtolower(auth()->user()->paystack_card_brand).'.svg')}}" class="mr-1">
                   <strong class="text-capitalize">{{ auth()->user()->paystack_card_brand }}</strong> <br> •••• •••• •••• {{ auth()->user()->paystack_last4 }}
                   <small class="float-right d-block">{{ trans('general.expiry') }}: {{ auth()->user()->paystack_exp }}</small>
 

@@ -71,7 +71,7 @@
           <div class="custom-control custom-radio mb-3">
                 <input name="payment_gateway" value="PayPal" id="radio1" class="custom-control-input" @if (auth()->user()->payment_gateway == 'PayPal') checked @endif type="radio">
                 <label class="custom-control-label" for="radio1">
-                  <span><img src="{{url('public/img/payments', auth()->user()->dark_mode == 'off' ? 'paypal.png' : 'paypal-white.png')}}" width="70"/></span>
+                  <span><img src="{{url('img/payments', auth()->user()->dark_mode == 'off' ? 'paypal.png' : 'paypal-white.png')}}" width="70"/></span>
                   <small class="w-100 d-block">* {{__('general.processor_fees_may_apply')}}</small>
                 </label>
               </div>
@@ -106,7 +106,7 @@
             <div class="custom-control custom-radio mb-3 mt-3">
                   <input name="payment_gateway" value="Payoneer" id="radio2" class="custom-control-input" @if (auth()->user()->payment_gateway == 'Payoneer') checked @endif type="radio">
                   <label class="custom-control-label" for="radio2">
-                    <span><img src="{{url('public/img/payments', auth()->user()->dark_mode == 'off' ? 'payoneer.png' : 'payoneer-white.png')}}" width="110"/></span>
+                    <span><img src="{{url('img/payments', auth()->user()->dark_mode == 'off' ? 'payoneer.png' : 'payoneer-white.png')}}" width="110"/></span>
                     <small class="w-100 d-block">* {{__('general.processor_fees_may_apply')}}</small>
                   </label>
                 </div>
@@ -141,7 +141,7 @@
               <div class="custom-control custom-radio mb-3 mt-3">
                     <input name="payment_gateway" value="Zelle" id="radio3" class="custom-control-input" @if (auth()->user()->payment_gateway == 'Zelle') checked @endif type="radio">
                     <label class="custom-control-label" for="radio3">
-                      <span><img src="{{url('public/img/payments', auth()->user()->dark_mode == 'off' ? 'zelle.png' : 'zelle-white.png')}}" width="50"/></span>
+                      <span><img src="{{url('img/payments', auth()->user()->dark_mode == 'off' ? 'zelle.png' : 'zelle-white.png')}}" width="50"/></span>
                       <small class="w-100 d-block">* {{__('general.processor_fees_may_apply')}}</small>
                     </label>
                   </div>
@@ -176,7 +176,7 @@
               <div class="custom-control custom-radio mb-3 mt-3">
                     <input name="payment_gateway" value="Western" id="radioWestern" class="custom-control-input" @if (auth()->user()->payment_gateway == 'Western Union') checked @endif type="radio">
                     <label class="custom-control-label" for="radioWestern">
-                      <span><img src="{{url('public/img/payments/western.png')}}" width="150"/></span>
+                      <span><img src="{{url('img/payments/western.png')}}" width="150"/></span>
                       <small class="w-100 d-block">* {{__('general.processor_fees_may_apply')}}</small>
                     </label>
                   </div>
@@ -211,7 +211,7 @@
               <div class="custom-control custom-radio mb-3 mt-3">
                     <input name="payment_gateway" value="Bitcoin" id="BitcoinInput" class="custom-control-input" @if (auth()->user()->payment_gateway == 'Bitcoin') checked @endif type="radio">
                     <label class="custom-control-label" for="BitcoinInput">
-                      <span><img src="{{url('public/img/payments', auth()->user()->dark_mode == 'off' ? 'bitcoin.png' : 'bitcoin-white.png')}}" width="100"/></span>
+                      <span><img src="{{url('img/payments', auth()->user()->dark_mode == 'off' ? 'bitcoin.png' : 'bitcoin-white.png')}}" width="100"/></span>
                       <small class="w-100 d-block">* {{__('general.processor_fees_may_apply')}}</small>
                     </label>
                   </div>
@@ -237,7 +237,7 @@
               <div class="custom-control custom-radio mb-3 mt-3">
                     <input name="payment_gateway" value="Mercadopago" id="radioMP" class="custom-control-input" @if (auth()->user()->payment_gateway == 'Mercado Pago') checked @endif type="radio">
                     <label class="custom-control-label" for="radioMP">
-                      <span><img src="{{ auth()->user()->dark_mode == 'off' ? url('public/img/payments/mercadopago.png') : url('public/img/payments/mercadopago-white.png') }}" width="150"/></span>
+                      <span><img src="{{ auth()->user()->dark_mode == 'off' ? url('img/payments/mercadopago.png') : url('img/payments/mercadopago-white.png') }}" width="150"/></span>
                       <small class="w-100 d-block">* {{__('general.only_payments_for_argentina')}}</small>
                     </label>
                   </div>

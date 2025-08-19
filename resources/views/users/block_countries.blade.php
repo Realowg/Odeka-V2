@@ -3,7 +3,7 @@
 @section('title') {{trans('general.block_countries')}} -@endsection
 
 @section('css')
-  <link href="{{ asset('public/plugins/select2/select2.min.css') }}?v={{$settings->version}}" rel="stylesheet" type="text/css" />
+  <link href="{{ asset('plugins/select2/select2.min.css') }}?v={{$settings->version}}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -57,8 +57,8 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('public/plugins/select2/select2.full.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('public/plugins/select2/i18n/'.config('app.locale').'.js') }}" type="text/javascript"></script>
+<script src="{{ asset('plugins/select2/select2.full.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('plugins/select2/i18n/'.config('app.locale').'.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
 $('#select2Countries').select2({

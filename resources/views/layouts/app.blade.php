@@ -11,7 +11,7 @@
   <meta name="theme-color" content="{{ auth()->check() && auth()->user()->dark_mode == 'on' ? '#303030' : $settings->color_default }}">
   <title>{{ auth()->check() && User::notificationsCount() ? '('.User::notificationsCount().') ' : '' }}@section('title')@show {{$settings->title.' - '.__('seo.slogan')}}</title>
   <!-- Favicon -->
-  <link href="{{ url('public/img', $settings->favicon) }}" rel="icon">
+  <link href="{{ url('img', $settings->favicon) }}" rel="icon">
 
   @if ($settings->google_tag_manager_head != '')
   {!! $settings->google_tag_manager_head !!}
