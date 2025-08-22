@@ -35,6 +35,11 @@ class ViewServiceProvider extends ServiceProvider
 	{
 		try {
             \DB::connection()->getPdo();
+			
+			// Check if admin_settings table exists before querying
+			if (!\Schema::hasTable('admin_settings')) {
+				return false;
+			}
         } catch (\Exception $e) {
 			return false;
         }

@@ -21,7 +21,7 @@
     </script>
 
     @if ($live)
-      <script src="{{ asset('public/js/agora/AgoraRTCSDK-v4.js') }}"></script>
+      <script src="{{ asset('js/agora/AgoraRTCSDK-v4.js') }}"></script>
     @endif
   @endsection
 
@@ -384,8 +384,8 @@
   @endif
 
   @if ($live && !$paymentRequiredToAccess)
-    <script src="{{ asset('public/js/live.js') }}?v={{$settings->version}}"></script>
-    <script src="{{ asset('public/js/agora/agora-broadcast-client-v4.js') }}?v={{$settings->version}}"></script>
+    <script src="{{ asset('js/live.js') }}?v={{$settings->version}}"></script>
+    <script src="{{ asset('js/agora/agora-broadcast-client-v4.js') }}?v={{$settings->version}}"></script>
 
     @if ($creator->id == auth()->id() || !$paymentRequiredToAccess)
       <script>

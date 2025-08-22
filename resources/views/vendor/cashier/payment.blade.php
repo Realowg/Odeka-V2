@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>{{ trans('general.confirm_payment') }} - {{ $settings->title }}</title>
-    <link rel="shortcut icon" href="{{ url('public/img', $settings->favicon) }}" />
+    <link rel="shortcut icon" href="{{ url('img', $settings->favicon) }}" />
 
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 

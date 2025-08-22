@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8">
     <title>Error 500</title>
-    <link href="{{ asset('public/css/core.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/css/styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/core.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
   </head>
   <body>
   		<div class="wrap-center">

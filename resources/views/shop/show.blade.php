@@ -27,7 +27,7 @@
     <meta name="twitter:title" content="{{ $product->name }}" />
     <meta name="twitter:description" content="{{strip_tags($product->description)}}"/>
 
-    <link href="{{ asset('public/js/splide/splide.min.css')}}?v={{$settings->version}}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('js/splide/splide.min.css')}}?v={{$settings->version}}" rel="stylesheet" type="text/css" />
     @endsection
 
 @section('content')
@@ -375,11 +375,11 @@
 
 @section('javascript')
   @auth
-    <script src="{{ asset('public/js/shop.js') }}"></script>
+    <script src="{{ asset('js/shop.js') }}"></script>
   @endauth
 
   @if ($previews > 1)
-    <script src="{{ asset('public/js/splide/splide.min.js') }}"></script>
-    <script src="{{ asset('public/js/splide/splide-init.js') }}"></script>
+    <script src="{{ asset('js/splide/splide.min.js') }}"></script>
+    <script src="{{ asset('js/splide/splide-init.js') }}"></script>
   @endif
 @endsection

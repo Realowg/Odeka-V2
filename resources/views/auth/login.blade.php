@@ -47,7 +47,7 @@
 
                   @if ($settings->google_login == 'on')
                   <a href="{{url('oauth/google')}}" class="btn btn-google auth-form-btn flex-grow w-100">
-                    <img src="{{ url('public/img/google.svg') }}" class="mr-2" width="18" height="18"> {{ __('auth.login_with') }} Google
+                    <img src="{{ url('img/google.svg') }}" class="mr-2" width="18" height="18"> {{ __('auth.login_with') }} Google
                   </a>
                 @endif
                 </div>

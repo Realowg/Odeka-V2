@@ -98,5 +98,5 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('public/js/ckeditor/ckeditor-init.js') }}?v={{$settings->version}}" type="text/javascript"></script>
+<script src="{{ asset('js/ckeditor/ckeditor-init.js') }}?v={{$settings->version}}" type="text/javascript"></script>
 @endsection

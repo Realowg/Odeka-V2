@@ -33,7 +33,7 @@
       @if ($comment->gift_id)
         @if (isset($comment->gift->id))
           <span class="d-block w-100">
-            <img src="{{ url('public/img/gifts', $comment->gift->image) }}" width="100">
+            <img src="{{ url('img/gifts', $comment->gift->image) }}" width="100">
           </span>
         @endif
 

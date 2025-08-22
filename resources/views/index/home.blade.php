@@ -16,7 +16,7 @@
           </p>
         </div>
         <div class="col-lg-7 first">
-          <img src="{{url('public/img', $settings->home_index)}}" class="img-center img-fluid">
+          <img src="{{url('img', $settings->home_index)}}" class="img-center img-fluid">
         </div>
       </div>
     </div>
@@ -35,7 +35,7 @@
           <div class="row">
             <div class="col-lg-4">
               <div class="text-center">
-                <img src="{{url('public/img', $settings->img_1)}}" class="img-center img-fluid" width="200">
+                <img src="{{url('img', $settings->img_1)}}" class="img-center img-fluid" width="200">
                 <h4 class="mt-1 txt-black">{{__('general.card_1')}}</h4>
                 <p class="text-muted mt-1">{{__('general.desc_card_1')}}</p>
               </div>
@@ -43,7 +43,7 @@
 
           <div class="col-lg-4">
             <div class="text-center">
-              <img src="{{url('public/img', $settings->img_2)}}" class="img-center img-fluid" width="200">
+              <img src="{{url('img', $settings->img_2)}}" class="img-center img-fluid" width="200">
               <h4 class="mt-1 txt-black">{{__('general.card_2')}}</h4>
               <p class="text-muted mt-1">{{__('general.desc_card_2')}}</p>
             </div>
@@ -51,7 +51,7 @@
 
         <div class="col-lg-4">
           <div class="text-center">
-            <img src="{{url('public/img', $settings->img_3)}}" class="img-center img-fluid" width="200">
+            <img src="{{url('img', $settings->img_3)}}" class="img-center img-fluid" width="200">
             <h4 class="mt-1 txt-black">{{__('general.card_3')}}</h4>
             <p class="text-muted mt-1">{{__('general.desc_card_3')}}</p>
           </div>
@@ -66,7 +66,7 @@
     <div class="container">
       <div class="row align-items-center">
       <div class="col-12 col-lg-7 text-center mb-3">
-        <img src="{{url('public/img', $settings->img_4)}}" alt="User" class="img-fluid">
+        <img src="{{url('img', $settings->img_4)}}" alt="User" class="img-fluid">
       </div>
       <div class="col-12 col-lg-5">
         <h1 class="m-0 card-profile txt-black">{{__('general.header_box_3')}}</h1>

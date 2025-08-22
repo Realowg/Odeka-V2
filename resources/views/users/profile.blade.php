@@ -55,6 +55,13 @@
 </div>
 
   <div class="container">
+    <!-- Upload Status Notification -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="popout display-none position-fixed" style="top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;"></div>
+      </div>
+    </div>
+    
     <div class="row">
       <div class="col-lg-12">
         <div class="w-100 text-center py-4 img-profile-user">
@@ -850,9 +857,9 @@
                     if ($payment->type == 'card' ) {
                       $paymentName = '<i class="far fa-credit-card mr-1"></i> '.__('general.debit_credit_card').$recurrent;
                     } else if ($payment->id == 1) {
-                      $paymentName = '<img src="'.url('public/img/payments', auth()->user()->dark_mode == 'off' ? $payment->logo : 'paypal-white.png').'" width="70"/> <small class="w-100 d-block">'.__('general.redirected_to_paypal_website').'</small>';
+                      $paymentName = '<img src="'.url('img/payments', auth()->user()->dark_mode == 'off' ? $payment->logo : 'paypal-white.png').'" width="70"/> <small class="w-100 d-block">'.__('general.redirected_to_paypal_website').'</small>';
                     } else {
-                      $paymentName = '<img src="'.url('public/img/payments', $payment->logo).'" width="70"/>'.$recurrent;
+                      $paymentName = '<img src="'.url('img/payments', $payment->logo).'" width="70"/>'.$recurrent;
                     }
 
                     @endphp
@@ -1038,10 +1045,10 @@
 @section('javascript')
 
 @if (auth()->check() && auth()->id() == $user->id)
-<script src="{{ asset('public/js/upload-avatar-cover.js') }}?v={{$settings->version}}"></script>
+<script src="{{ asset('js/upload-avatar-cover.js') }}?v={{$settings->version}}"></script>
 @endif
 
-<script src="{{ asset('public/js/qrcode.min.js') }}?v={{$settings->version}}"></script>
+<script src="{{ asset('js/qrcode.min.js') }}?v={{$settings->version}}"></script>
 
 <script type="text/javascript">
 

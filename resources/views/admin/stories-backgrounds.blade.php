@@ -57,7 +57,7 @@
                  @foreach ($data as $background)
                    <tr>
                      <td>{{ $background->id }}</td>
-                     <td><img src="{{ url('public/img/stories-bg', $background->name) }}" width="50"></td>
+                     <td><img src="{{ url('img/stories-bg', $background->name) }}" width="50"></td>
                      <td>
                       <form method="POST" action="{{ url('panel/admin/stories/backgrounds/delete', $background->id) }}" accept-charset="UTF-8" class="d-inline-block align-top">
                         @csrf

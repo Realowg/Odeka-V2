@@ -67,5 +67,5 @@
 @endsection
 
 @section('javascript')
-<script src="{{ url('public/js/paginator-creators.js') }}?v={{$settings->version}}"></script>
+<script src="{{ url('js/paginator-creators.js') }}?v={{$settings->version}}"></script>
 @endsection

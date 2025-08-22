@@ -11,7 +11,7 @@
       <div class="row justify-content-center text-center mb-sm">
         <div class="col-lg-12 py-5">
           <h2 class="mb-0 font-montserrat">
-            <img src="{{url('public/img-category', $image)}}" class="mr-2 rounded" width="30" /> {{$title}}</h2>
+            <img src="{{url('img-category', $image)}}" class="mr-2 rounded" width="30" /> {{$title}}</h2>
           <p class="lead text-muted mt-0">{{trans_choice('users.creators_in_this_category', 2 )}}</p>
         </div>
       </div>
@@ -59,5 +59,5 @@
 @endsection
 
 @section('javascript')
-<script src="{{ url('public/js/paginator-creators.js') }}?v={{$settings->version}}"></script>
+<script src="{{ url('js/paginator-creators.js') }}?v={{$settings->version}}"></script>
 @endsection

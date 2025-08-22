@@ -52,6 +52,6 @@
 @endsection
 
 @section('javascript')
-  <script src="{{ asset('public/js/fileuploader/fileuploader-story-file.js') }}"></script> 
-  <script src="{{ asset('public/js/story/create-story.js') }}"></script>
+  <script src="{{ asset('js/fileuploader/fileuploader-story-file.js') }}"></script> 
+  <script src="{{ asset('js/story/create-story.js') }}"></script>
 @endsection

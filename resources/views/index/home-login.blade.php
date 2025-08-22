@@ -5,12 +5,12 @@
     <div class="container pt-lg-md">
       <div class="row">
         <div class="col-lg-7">
-          <img src="{{url('public/img', $settings->home_index)}}" class="img-center img-fluid d-lg-block d-none">
+          <img src="{{url('img', $settings->home_index)}}" class="img-center img-fluid d-lg-block d-none">
         </div>
         <div class="col-lg-5">
 
           <div class="text-center d-block w-100">
-            <img src="{{url('public/img', $settings->logo)}}" alt="{{$settings->title}}" width="50%" class="logo align-baseline mb-1" />
+            <img src="{{url('img', $settings->logo)}}" alt="{{$settings->title}}" width="50%" class="logo align-baseline mb-1" />
           </div>
 
           <div class="card bg-white shadow border-0 b-radio-custom">
@@ -42,7 +42,7 @@
 
                   @if ($settings->google_login == 'on')
                   <a href="{{url('oauth/google')}}" class="btn btn-google auth-form-btn flex-grow w-100">
-                    <img src="{{ url('public/img/google.svg') }}" class="mr-2" width="18" height="18"> <span class="loginRegisterWith">{{ __('auth.login_with') }}</span> Google
+                    <img src="{{ url('img/google.svg') }}" class="mr-2" width="18" height="18"> <span class="loginRegisterWith">{{ __('auth.login_with') }}</span> Google
                   </a>
                 @endif
                 </div>

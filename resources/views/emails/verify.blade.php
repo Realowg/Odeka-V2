@@ -26,7 +26,7 @@
                     <tr>
                         <td style="padding: 25px 0; text-align: center;">
                           <a href="{{ url('/') }}" style="display: inline-block; text-decoration: none;">
-                            <img src="{{ url('public/img', $settings->logo_2) }}" style="position: relative; border: none; height: auto; width: auto; max-width: 190px !important;">
+                            <img src="{{ url('img', $settings->logo_2) }}" style="position: relative; border: none; height: auto; width: auto; max-width: 190px !important;">
                           </a>
                         </td>
                     </tr>

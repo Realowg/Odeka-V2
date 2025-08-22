@@ -165,7 +165,7 @@
 	<div class="card border-0">
 		@if (isset($msg->gift->id))
           <span class="d-block text-center">
-            <img src="{{ url('public/img/gifts', $msg->gift->image) }}" width="100">
+            <img src="{{ url('img/gifts', $msg->gift->image) }}" width="100">
           </span>
         @endif
 
