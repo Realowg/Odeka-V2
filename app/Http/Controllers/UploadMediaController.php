@@ -16,12 +16,10 @@ class UploadMediaController extends Controller
 	public function __construct(Request $request)
 	{
 		$this->request = $request;
-		$this->status = $this->request->postId ? 'active' : 'pending';
-		$this->postId = $this->request->postId ?: 0;
 	}
 
 	/**
-	 * submit the form
+	 * submit the form - only upload to temp storage, no database operations
 	 */
 	public function store(): JsonResponse
 	{
@@ -65,6 +63,26 @@ class UploadMediaController extends Controller
 
 		if ($upload['isSuccess']) {
 			foreach ($upload['files'] as $key => $item) {
+				// Process file based on type but keep in temp storage
+				switch ($item['format']) {
+					case 'image':
+						$processedFile = $this->processImageTemp($item);
+						break;
+
+					case 'video':
+						$processedFile = $this->processVideoTemp($item);
+						break;
+
+					case 'audio':
+						$processedFile = $this->processAudioTemp($item);
+						break;
+
+					default:
+						$processedFile = $item;
+						break;
+				}
+
+				// Return file metadata for frontend to store
 				$upload['files'][$key] = [
 					'extension' => $item['extension'],
 					'format' => $item['format'],
@@ -73,22 +91,10 @@ class UploadMediaController extends Controller
 					'size2' => $item['size2'],
 					'type' => $item['type'],
 					'uploaded' => true,
-					'replaced' => false
+					'replaced' => false,
+					'tempPath' => 'temp/' . $item['name'], // Add temp path for later processing
+					'metadata' => $processedFile['metadata'] ?? null // Store additional metadata
 				];
-
-				switch ($item['format']) {
-					case 'image':
-						$this->resizeImage($item);
-						break;
-
-					case 'video':
-						$this->uploadVideo($item);
-						break;
-
-					case 'audio':
-						$this->uploadMusic($item);
-						break;
-				}
 			}
 		}
 
@@ -96,26 +102,19 @@ class UploadMediaController extends Controller
 	}
 
 	/**
-	 * Resize image and add watermark
+	 * Process image in temp storage (resize and add watermark but keep in temp)
 	 */
-	protected function resizeImage($image): void
+	protected function processImageTemp($image): array
 	{
 		$fileName = $image['name'];
 		$pathImage = public_path('temp/') . $image['name'];
-		$img   = Image::make($pathImage);
-		$token = str_random(150) . uniqid() . now()->timestamp;
-		$url   = ucfirst(Helper::urlToDomain(url('/')));
-		$path  = config('path.images');
+		$img = Image::make($pathImage);
+		$url = ucfirst(Helper::urlToDomain(url('/')));
 
 		$width = $img->width();
 		$height = $img->height();
 
-		if ($image['extension'] == 'gif') {
-			$this->insertImage($fileName, $width, $height, 'gif', $token, $image);
-
-			// Move file to Storage
-			$this->moveFileStorage($fileName, $path);
-		} else {
+		if ($image['extension'] != 'gif') {
 			// Image Large
 			if ($width > 2000) {
 				$scale = 2000;
@@ -156,179 +155,139 @@ class UploadMediaController extends Controller
 					$constraint->upsize();
 				})->save();
 			}
-
-			// Insert in Database
-			$this->insertImage($fileName, $width, $height, null, $token, $image);
-
-			// Move file to Storage
-			$this->moveFileStorage($fileName, $path);
 		}
-	}
 
-
-	/**
-	 * Insert Image to Database
-	 */
-	protected function insertImage($fileName, $width, $height, $imgType, $token, $image): void
-	{
-		Media::create([
-			'updates_id' => $this->postId,
-			'user_id' => auth()->id(),
-			'type' => 'image',
-			'image' => $fileName,
-			'width' => $width,
-			'height' => $height,
-			'video' => '',
-			'video_embed' => '',
-			'music' => '',
-			'file' => '',
-			'file_name' => '',
-			'file_size' => '',
-			'bytes' => $image['size'],
-			'mime' => $image['type'],
-			'img_type' => $imgType ?? '',
-			'token' => $token,
-			'status' => $this->status,
-			'created_at' => now()
-		]);
+		return [
+			'metadata' => [
+				'width' => $width,
+				'height' => $height,
+				'img_type' => $image['extension'] == 'gif' ? 'gif' : null,
+				'bytes' => $image['size'],
+				'mime' => $image['type']
+			]
+		];
 	}
 
 	/**
-	 * Upload Video
+	 * Process video in temp storage (prepare metadata)
 	 */
-	protected function uploadVideo($video): void
+	protected function processVideoTemp($video): array
 	{
-		Media::create([
-			'updates_id' => $this->postId,
+		return [
+			'metadata' => [
+				'bytes' => $video['size'],
+				'mime' => $video['type']
+			]
+		];
+	}
+
+	/**
+	 * Process audio in temp storage (prepare metadata)
+	 */
+	protected function processAudioTemp($audio): array
+	{
+		return [
+			'metadata' => [
+				'bytes' => $audio['size'],
+				'mime' => $audio['type']
+			]
+		];
+	}
+
+	/**
+	 * Move file from temp to final storage and create database record
+	 */
+	public static function moveFromTempToStorage($tempFileName, $postId, $metadata = null): Media
+	{
+		$localFile = public_path('temp/' . $tempFileName);
+		
+		if (!file_exists($localFile)) {
+			throw new \Exception("Temp file not found: " . $tempFileName);
+		}
+
+		$token = str_random(150) . uniqid() . now()->timestamp;
+		$fileInfo = pathinfo($tempFileName);
+		$extension = strtolower($fileInfo['extension']);
+		
+		// Determine file type and path
+		if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+			$type = 'image';
+			$path = config('path.images');
+		} elseif (in_array($extension, ['mp4', 'mov', 'avi', 'wmv', 'flv', 'mkv', '3gp', 'mpeg'])) {
+			$type = 'video';
+			$path = config('path.videos');
+		} elseif (in_array($extension, ['mp3', 'wav', 'ogg', 'flac', 'm4a'])) {
+			$type = 'music';
+			$path = config('path.music');
+		} else {
+			$type = 'file';
+			$path = config('path.files');
+		}
+
+		// Move the file to final storage
+		Storage::putFileAs($path, new File($localFile), $tempFileName);
+
+		// Create database record
+		$media = Media::create([
+			'updates_id' => $postId,
 			'user_id' => auth()->id(),
-			'type' => 'video',
-			'image' => '',
-			'video' => $video['name'],
+			'type' => $type,
+			'image' => $type === 'image' ? $tempFileName : '',
+			'video' => $type === 'video' ? $tempFileName : '',
+			'music' => $type === 'music' ? $tempFileName : '',
+			'file' => !in_array($type, ['image', 'video', 'music']) ? $tempFileName : '',
+			'width' => $metadata['width'] ?? 0,
+			'height' => $metadata['height'] ?? 0,
 			'video_poster' => '',
 			'video_embed' => '',
-			'music' => '',
-			'file' => '',
 			'file_name' => '',
 			'file_size' => '',
-			'bytes' => $video['size'],
-			'mime' => $video['type'],
-			'img_type' => '',
-			'token' => $this->getToken(),
-			'status' => $this->status,
+			'bytes' => $metadata['bytes'] ?? filesize($localFile),
+			'mime' => $metadata['mime'] ?? mime_content_type($localFile),
+			'img_type' => $metadata['img_type'] ?? '',
+			'token' => $token,
+			'status' => 'active',
 			'created_at' => now()
 		]);
-
-		// Move file to Storage
-		if (config('settings.video_encoding') == 'off') {
-			$this->moveFileStorage($video['name'], config('path.videos'));
-		}
-	}
-
-	/**
-	 * Upload Music
-	 */
-	protected function uploadMusic($music): void
-	{
-		Media::create([
-			'updates_id' => $this->postId,
-			'user_id' => auth()->id(),
-			'type' => 'music',
-			'image' => '',
-			'video' => '',
-			'video_embed' => '',
-			'music' => $music['name'],
-			'file' => '',
-			'file_name' => '',
-			'file_size' => '',
-			'bytes' => $music['size'],
-			'mime' => $music['type'],
-			'img_type' => '',
-			'token' => $this->getToken(),
-			'status' => $this->status,
-			'created_at' => now()
-		]);
-
-		// Move file to Storage
-		$this->moveFileStorage($music['name'], config('path.music'));
-	}
-
-	/**
-	 * Move file to Storage
-	 */
-	protected function moveFileStorage($file, $path): void
-	{
-		$localFile = public_path('temp/' . $file);
-
-		// Move the file...
-		Storage::putFileAs($path, new File($localFile), $file);
 
 		// Delete temp file
 		unlink($localFile);
-	}
 
-	protected function getToken(): mixed
-	{
-		return str_random(150) . uniqid() . now()->timestamp;
+		return $media;
 	}
 
 	/**
-	 * delete a file
+	 * Delete a temp file (for when user removes file before submitting form)
 	 */
 	public function delete()
 	{
-		$path = config('path.images');
-		$pathVideo = config('path.videos');
-		$pathMusic = config('path.music');
-		$pathFile = config('path.files');
-		$local = 'temp/';
+		$fileName = $this->request->file;
+		$tempFile = public_path('temp/' . $fileName);
 
-		$media = Media::whereUserId(auth()->id())
-			->whereImage($this->request->file)
-			->orWhere('video', $this->request->file)
-			->whereUserId(auth()->id())
-			->orWhere('music', $this->request->file)
-			->whereUserId(auth()->id())
-			->orWhere('file', $this->request->file)
-			->whereUserId(auth()->id())
-			->first();
-
-		if (!$media) {
-			return false;
-		}
-
-		if ($media->image) {
-			Storage::delete($path . $media->image);
-			// Delete local file (if exist)
-			Storage::disk('default')->delete($local . $media->image);
-
-			$media->delete();
-		}
-
-		if ($media->video) {
-			Storage::delete($pathVideo . $media->video);
-			Storage::delete($pathVideo . $media->video_poster);
-			// Delete local file (if exist)
-			Storage::disk('default')->delete($local . $media->video);
-
-			$media->delete();
-		}
-
-		if ($media->music) {
-			Storage::delete($pathMusic . $media->music);
-			// Delete local file (if exist)
-			Storage::disk('default')->delete($local . $media->music);
-
-			$media->delete();
-		}
-
-		if ($media->file) {
-			Storage::delete($pathFile . $media->file);
-
-			$media->delete();
+		if (file_exists($tempFile)) {
+			unlink($tempFile);
 		}
 
 		return response()->json([
 			'success' => true
 		]);
+	}
+
+	/**
+	 * Clean up old temp files (can be called by a scheduled job)
+	 */
+	public static function cleanupOldTempFiles($hoursOld = 24)
+	{
+		$tempDir = public_path('temp/');
+		$files = glob($tempDir . '*');
+		$now = time();
+
+		foreach ($files as $file) {
+			if (is_file($file)) {
+				if ($now - filemtime($file) >= $hoursOld * 3600) {
+					unlink($file);
+				}
+			}
+		}
 	}
 }
