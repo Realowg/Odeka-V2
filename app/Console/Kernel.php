@@ -10,6 +10,7 @@ use App\Jobs\RebillCardinity;
 use App\Jobs\ExpiredAdvertising;
 use App\Jobs\DeleteInactiveUsers;
 use App\Jobs\LiveStreamingPrivateExpired;
+use App\Jobs\CleanupTempFiles;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -49,6 +50,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new DeleteInactiveUsers)->everySixHours();
         $schedule->job(new ExpiredAdvertising)->hourly();
         $schedule->job(new LiveStreamingPrivateExpired)->everySixHours();
+        $schedule->job(new CleanupTempFiles(24))->daily(); // Clean temp files older than 24 hours
         
     }
 

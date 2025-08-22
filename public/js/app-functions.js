@@ -763,10 +763,8 @@ jQuery(".timeAgo").timeago();
 
 			if (trim(element).length >= 1 && trim(element).length <= maximum) {
 				button.removeAttr('disabled').removeClass('e-none');
-				return false;
 			} else {
 				button.attr({'disabled' : true}).addClass('e-none');
-				return false;
 			}
 		});
 

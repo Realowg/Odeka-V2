@@ -20,6 +20,7 @@ use App\Models\Notifications;
 use League\Glide\ServerFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\UploadMediaController;
 use League\Glide\Responses\LaravelResponseFactory;
 
 class UpdatesController extends Controller
@@ -128,17 +129,23 @@ class UpdatesController extends Controller
     $user->post_locked = $this->request->locked;
     $user->save();
 
-    // Insert Files
+    // Insert Files from temp storage
     if ($fileuploader) {
       foreach ($fileuploader as $key => $media) {
-        Media::whereImage($media['file'])
-          ->orWhere('video', $media['file'])
-          ->orWhere('music', $media['file'])
-          ->update([
-            'updates_id' => $post->id,
-            'user_id' => auth()->id(),
-            'status' => 'active'
+        try {
+          // Move file from temp to final storage and create DB record
+          UploadMediaController::moveFromTempToStorage(
+            $media['file'], 
+            $post->id, 
+            $media['metadata'] ?? null
+          );
+        } catch (\Exception $e) {
+          // Log error but continue with other files
+          \Log::error('Failed to move temp file to storage: ' . $e->getMessage(), [
+            'file' => $media['file'],
+            'post_id' => $post->id
           ]);
+        }
       }
     }
 
