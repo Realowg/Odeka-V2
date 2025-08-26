@@ -1061,7 +1061,7 @@ class AdminController extends Controller
 
 		$rules = array(
 			'logo'   => 'mimes:png,svg',
-			'logo_blue'   => 'mimes:png,svg',
+			'logo_2'   => 'mimes:png,svg',
 			'favicon'   => 'mimes:png,svg',
 			'color' => ['required', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
 			'navbar_background_color' => ['required', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
@@ -1071,6 +1071,15 @@ class AdminController extends Controller
 		);
 
 		$this->validate($request, $rules);
+
+		// Ensure temp and destination directories exist to avoid move() failures
+		if (!\File::exists($temp)) {
+			\File::makeDirectory($temp, 0775, true);
+		}
+
+		if (!\File::exists($path)) {
+			\File::makeDirectory($path, 0775, true);
+		}
 
 		//======= LOGO
 		if ($request->hasFile('logo')) {
@@ -1165,7 +1174,7 @@ class AdminController extends Controller
 				\File::copy($temp . $file, $path . $file);
 				\File::delete($temp . $file);
 				// Delete old
-				\File::delete($path . $this->settings->background);
+				\File::delete($path . $this->settings->bg_gradient);
 			} // End File
 
 			$this->settings->bg_gradient = $file;
