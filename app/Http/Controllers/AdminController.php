@@ -1055,8 +1055,8 @@ class AdminController extends Controller
 
 	public function themeStore(Request $request)
 	{
-		$temp  = 'public/temp/'; // Temp
-		$path  = 'public/img/'; // Path
+		$themeDisk = 'default'; // Use default disk (public_path()) for theme assets
+		$themePath = config('path.theme'); // img/
 		$pathAvatar  = config('path.avatar'); // Path
 
 		$rules = array(
@@ -1072,27 +1072,18 @@ class AdminController extends Controller
 
 		$this->validate($request, $rules);
 
-		// Ensure temp and destination directories exist to avoid move() failures
-		if (!\File::exists($temp)) {
-			\File::makeDirectory($temp, 0775, true);
-		}
-
-		if (!\File::exists($path)) {
-			\File::makeDirectory($path, 0775, true);
-		}
-
 		//======= LOGO
 		if ($request->hasFile('logo')) {
-
 			$extension = $request->file('logo')->getClientOriginalExtension();
-			$file      = 'logo-' . time() . '.' . $extension;
+			$file = 'logo-' . time() . '.' . $extension;
 
-			if ($request->file('logo')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->logo);
-			} // End File
+			// Delete old file if it exists
+			if ($this->settings->logo) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->logo);
+			}
+
+			// Store new file using Laravel Storage
+			$path = $request->file('logo')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->logo = $file;
 			$this->settings->save();
@@ -1101,14 +1092,15 @@ class AdminController extends Controller
 		//======= LOGO BLUE
 		if ($request->hasFile('logo_2')) {
 			$extension = $request->file('logo_2')->getClientOriginalExtension();
-			$file      = 'logo_2-' . time() . '.' . $extension;
+			$file = 'logo_2-' . time() . '.' . $extension;
 
-			if ($request->file('logo_2')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->logo_2);
-			} // End File
+			// Delete old file if it exists
+			if ($this->settings->logo_2) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->logo_2);
+			}
+
+			// Store new file using Laravel Storage
+			$path = $request->file('logo_2')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->logo_2 = $file;
 			$this->settings->save();
@@ -1117,14 +1109,15 @@ class AdminController extends Controller
 		//======= Watermark Video
 		if ($request->hasFile('watermak_video')) {
 			$extension = $request->file('watermak_video')->getClientOriginalExtension();
-			$file      = 'watermak_video-' . time() . '.' . $extension;
+			$file = 'watermak_video-' . time() . '.' . $extension;
 
-			if ($request->file('watermak_video')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->watermak_video);
-			} // End File
+			// Delete old file if it exists
+			if ($this->settings->watermak_video) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->watermak_video);
+			}
+
+			// Store new file using Laravel Storage
+			$path = $request->file('watermak_video')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->watermak_video = $file;
 			$this->settings->save();
@@ -1132,16 +1125,16 @@ class AdminController extends Controller
 
 		//======== FAVICON
 		if ($request->hasFile('favicon')) {
+			$extension = $request->file('favicon')->getClientOriginalExtension();
+			$file = 'favicon-' . time() . '.' . $extension;
 
-			$extension  = $request->file('favicon')->getClientOriginalExtension();
-			$file       = 'favicon-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->favicon) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->favicon);
+			}
 
-			if ($request->file('favicon')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->favicon);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('favicon')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->favicon = $file;
 			$this->settings->save();
@@ -1149,16 +1142,16 @@ class AdminController extends Controller
 
 		//======== Image Header
 		if ($request->hasFile('index_image_top')) {
+			$extension = $request->file('index_image_top')->getClientOriginalExtension();
+			$file = 'home_index-' . time() . '.' . $extension;
 
-			$extension  = $request->file('index_image_top')->getClientOriginalExtension();
-			$file       = 'home_index-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->home_index) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->home_index);
+			}
 
-			if ($request->file('index_image_top')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->home_index);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('index_image_top')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->home_index = $file;
 			$this->settings->save();
@@ -1166,16 +1159,16 @@ class AdminController extends Controller
 
 		//======== Background
 		if ($request->hasFile('background')) {
+			$extension = $request->file('background')->getClientOriginalExtension();
+			$file = 'background-' . time() . '.' . $extension;
 
-			$extension  = $request->file('background')->getClientOriginalExtension();
-			$file       = 'background-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->bg_gradient) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->bg_gradient);
+			}
 
-			if ($request->file('background')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->bg_gradient);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('background')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->bg_gradient = $file;
 			$this->settings->save();
@@ -1183,16 +1176,16 @@ class AdminController extends Controller
 
 		//======== Image on index 1
 		if ($request->hasFile('image_index_1')) {
+			$extension = $request->file('image_index_1')->getClientOriginalExtension();
+			$file = 'image_index_1-' . time() . '.' . $extension;
 
-			$extension  = $request->file('image_index_1')->getClientOriginalExtension();
-			$file       = 'image_index_1-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->img_1) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->img_1);
+			}
 
-			if ($request->file('image_index_1')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->img_1);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('image_index_1')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->img_1 = $file;
 			$this->settings->save();
@@ -1200,16 +1193,16 @@ class AdminController extends Controller
 
 		//======== Image on index 2
 		if ($request->hasFile('image_index_2')) {
+			$extension = $request->file('image_index_2')->getClientOriginalExtension();
+			$file = 'image_index_2-' . time() . '.' . $extension;
 
-			$extension  = $request->file('image_index_2')->getClientOriginalExtension();
-			$file       = 'image_index_2-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->img_2) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->img_2);
+			}
 
-			if ($request->file('image_index_2')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->img_2);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('image_index_2')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->img_2 = $file;
 			$this->settings->save();
@@ -1217,16 +1210,16 @@ class AdminController extends Controller
 
 		//======== Image on index 3
 		if ($request->hasFile('image_index_3')) {
+			$extension = $request->file('image_index_3')->getClientOriginalExtension();
+			$file = 'image_index_3-' . time() . '.' . $extension;
 
-			$extension  = $request->file('image_index_3')->getClientOriginalExtension();
-			$file       = 'image_index_3-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->img_3) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->img_3);
+			}
 
-			if ($request->file('image_index_3')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->img_3);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('image_index_3')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->img_3 = $file;
 			$this->settings->save();
@@ -1234,16 +1227,16 @@ class AdminController extends Controller
 
 		//======== Image on index 4
 		if ($request->hasFile('image_index_4')) {
+			$extension = $request->file('image_index_4')->getClientOriginalExtension();
+			$file = 'image_index_4-' . time() . '.' . $extension;
 
-			$extension  = $request->file('image_index_4')->getClientOriginalExtension();
-			$file       = 'image_index_4-' . time() . '.' . $extension;
+			// Delete old file if it exists
+			if ($this->settings->img_4) {
+				Storage::disk($themeDisk)->delete($themePath . $this->settings->img_4);
+			}
 
-			if ($request->file('image_index_4')->move($temp, $file)) {
-				\File::copy($temp . $file, $path . $file);
-				\File::delete($temp . $file);
-				// Delete old
-				\File::delete($path . $this->settings->img_4);
-			} // End File
+			// Store new file using Laravel Storage
+			$path = $request->file('image_index_4')->storeAs($themePath, $file, $themeDisk);
 
 			$this->settings->img_4 = $file;
 			$this->settings->save();
