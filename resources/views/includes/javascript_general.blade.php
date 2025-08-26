@@ -1,10 +1,65 @@
 <script src="{{ asset('js/core.min.js') }}?v={{$settings->version}}"></script>
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('js/jqueryTimeago_'.Lang::locale().'.js') }}"></script>
-<script src="{{ asset('js/lazysizes.min.js') }}" async=""></script>
-<script src="{{ asset('js/plyr/plyr.min.js') }}?v={{$settings->version}}"></script>
-<script src="{{ asset('js/plyr/plyr.polyfilled.min.js') }}?v={{$settings->version}}"></script>
-<script src="{{ asset('js/app-functions.js') }}?v={{$settings->version}}"></script>
+<script>
+    // Load the locale-specific timeago file with fallback to English
+    function loadTimeagoLocale(callback) {
+        var script = document.createElement('script');
+        script.src = "{{ asset('js/jqueryTimeago_'.Lang::locale().'.js') }}";
+        script.onload = function() {
+            if (callback) callback();
+        };
+        script.onerror = function() {
+            // If locale file fails to load, fall back to English
+			console.log('Failed to load timeago library, falling back to English');
+            var fallbackScript = document.createElement('script');
+            fallbackScript.src = "{{ asset('js/jqueryTimeago_en.js') }}";
+            fallbackScript.onload = function() {
+                if (callback) callback();
+            };
+            fallbackScript.onerror = function() {
+                console.warn('Failed to load timeago library');
+                if (callback) callback();
+            };
+            document.head.appendChild(fallbackScript);
+        };
+        document.head.appendChild(script);
+    }
+    
+    // Load timeago first, then load other scripts
+    loadTimeagoLocale(function() {
+        // Load remaining scripts after timeago is ready
+        var scripts = [
+            "{{ asset('js/lazysizes.min.js') }}",
+            "{{ asset('js/plyr/plyr.min.js') }}?v={{$settings->version}}",
+            "{{ asset('js/plyr/plyr.polyfilled.min.js') }}?v={{$settings->version}}",
+            "{{ asset('js/app-functions.js') }}?v={{$settings->version}}"
+        ];
+        
+        function loadScript(index) {
+            if (index >= scripts.length) return;
+            
+            var script = document.createElement('script');
+            script.src = scripts[index];
+            
+            // For lazysizes, add async attribute
+            if (scripts[index].includes('lazysizes')) {
+                script.async = true;
+            }
+            
+            script.onload = function() {
+                loadScript(index + 1);
+            };
+            script.onerror = function() {
+                console.warn('Failed to load script:', scripts[index]);
+                loadScript(index + 1);
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        loadScript(0);
+    });
+</script>
 
 @if (! request()->is('live/*'))
 <script src="{{ asset('js/install-app.js') }}?v={{$settings->version}}"></script>
