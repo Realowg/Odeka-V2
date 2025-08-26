@@ -35,4 +35,7 @@ return [
 
     // Advertising
     'ads' => 'uploads/ads/',
+
+    // Theme Assets (local disk only)
+    'theme' => 'img/',
 ];
