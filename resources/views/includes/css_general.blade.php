@@ -181,6 +181,19 @@
   var max_size_id_lang = "{{__('general.max_size_id').' '.Helper::formatBytes($settings->file_size_allowed_verify_account * 1024)}}";
   var maxSizeInMb = "{{ floor($settings->file_size_allowed / 1024)}}";
   var file_size_allowed_verify_account = {{$settings->file_size_allowed_verify_account * 1024}};
+  
+  // PHP upload limits in bytes
+  @php
+    $uploadMaxFilesize = ini_get('upload_max_filesize');
+    $postMaxSize = ini_get('post_max_size');
+    
+    // Convert to bytes
+    $uploadBytes = Helper::parseSize($uploadMaxFilesize ?: '8M');
+    $postBytes = Helper::parseSize($postMaxSize ?: '8M');
+    $phpMaxUpload = min($uploadBytes, $postBytes);
+  @endphp
+  var php_max_upload_size = {{ $phpMaxUpload }};
+  var php_max_upload_size_formatted = "{{ Helper::formatBytes($phpMaxUpload) }}";
   var error_width_min = "{{__('general.width_min',['data' => 20])}}";
   var story_length = {{$settings->story_length}};
   var payment_card_error = "{{ __('general.payment_card_error') }}";

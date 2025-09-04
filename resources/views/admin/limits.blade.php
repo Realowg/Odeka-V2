@@ -74,6 +74,20 @@
               <small class="d-block w-100">
                 {{ __('admin.upload_max_filesize_info') }} <strong><?php echo str_replace('M', 'MB', ini_get('upload_max_filesize')) ?></strong>
               </small>
+              
+              @php
+                $phpMaxUpload = min(Helper::parseSize(ini_get('upload_max_filesize') ?: '8M'), Helper::parseSize(ini_get('post_max_size') ?: '8M'));
+                $appMaxUpload = $settings->file_size_allowed * 1024;
+              @endphp
+              
+              @if($appMaxUpload > $phpMaxUpload)
+                <div class="alert alert-warning mt-2">
+                  <i class="bi bi-exclamation-triangle"></i>
+                  <strong>Warning:</strong> Your app file size limit ({{ Helper::formatBytes($appMaxUpload) }}) exceeds PHP limits ({{ Helper::formatBytes($phpMaxUpload) }}). 
+                  Users will only be able to upload files up to {{ Helper::formatBytes($phpMaxUpload) }}.
+                  <br><small>To fix this, increase <code>upload_max_filesize</code> and <code>post_max_size</code> in your PHP configuration.</small>
+                </div>
+              @endif
              </div>
            </div><!-- end row -->
 

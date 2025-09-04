@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 	// enable fileuploader plugin
 	$('input[name="photo[]"]').fileuploader({
-		fileMaxSize: maxSizeInMb,
+		fileMaxSize: Math.min(maxSizeInMb, Math.floor(php_max_upload_size / 1024 / 1024)),
     limit: maximum_files_post,
     extensions: extensionsPostMessage,
 
@@ -133,6 +133,17 @@ $(document).ready(function() {
             chunk: 50,
             beforeSend: function(item, listEl, parentEl, newInputEl, inputEl) {
 
+              // Check file size against PHP limits
+              if (item.size > php_max_upload_size) {
+                  swal({
+                      title: error_oops,
+                      text: 'File too large! Maximum upload size is ' + php_max_upload_size_formatted + '. Please choose a smaller file.',
+                      type: "error",
+                      confirmButtonText: ok
+                  });
+                  return false;
+              }
+
               $('.btn-blocked').show();
 
               if (typeof postId !== 'undefined') {
@@ -169,8 +180,18 @@ $(document).ready(function() {
             error += '<li><i class="fa fa-times-circle"></i> ' + data.warnings[warning];
 					}
 
-          $('#showErrorsUdpate').html(error);
-  				$('#errorUdpate').fadeIn(500);
+          // Show more user-friendly error messages
+          if (error.includes('PHP limits') || error.includes('file_too_large_php_limit')) {
+              swal({
+                  title: error_oops,
+                  text: data.warnings[0] || 'File upload failed due to size limitations.',
+                  type: "error",
+                  confirmButtonText: ok
+              });
+          } else {
+              $('#showErrorsUdpate').html(error);
+              $('#errorUdpate').fadeIn(500);
+          }
 
           item.remove();
 

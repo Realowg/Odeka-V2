@@ -1402,4 +1402,5 @@ return array(
 		'write_short_message' => 'Write a short message (optional)',
 		'allow_comments' => 'Allow comments on your posts',
 		'comments_disabled' => 'Comments have been disabled',
+		'file_too_large_php_limit' => 'File too large! Maximum upload size is :max_size (PHP limits: post_max_size=:post_max, upload_max_filesize=:upload_max). Please choose a smaller file or contact administrator to increase limits.',
 );

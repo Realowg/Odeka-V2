@@ -1403,4 +1403,5 @@ return array(
 	'write_short_message' => 'Escribe un mensaje corto (opcional)',
 	'allow_comments' => 'Permitir comentarios en tus publicaciones',
 	'comments_disabled' => 'Los comentarios han sido desactivados',
+	'file_too_large_php_limit' => '¡Archivo demasiado grande! El tamaño máximo de subida es :max_size (Límites PHP: post_max_size=:post_max, upload_max_filesize=:upload_max). Por favor elige un archivo más pequeño o contacta al administrador para aumentar los límites.',
 );
