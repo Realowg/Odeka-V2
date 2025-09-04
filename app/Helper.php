@@ -1356,4 +1356,31 @@ class Helper
 
 		return $amount;
 	}
+
+	/**
+	 * Parse a size string (like "8M" or "128K") to bytes
+	 */
+	public static function parseSize($size)
+	{
+		$size = trim($size);
+		if (empty($size)) {
+			return 0;
+		}
+		
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = (int) $size;
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// fall through
+			case 'm':
+				$size *= 1024;
+				// fall through
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
+	}
 }

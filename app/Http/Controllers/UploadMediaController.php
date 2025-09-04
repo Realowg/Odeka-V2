@@ -10,9 +10,12 @@ use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as ImageManager;
 
 class UploadMediaController extends Controller
 {
+	protected $request;
+
 	public function __construct(Request $request)
 	{
 		$this->request = $request;
@@ -23,6 +26,21 @@ class UploadMediaController extends Controller
 	 */
 	public function store(): JsonResponse
 	{
+		// Check if request was truncated due to PHP limits
+		if ($this->isRequestTruncated()) {
+			return response()->json([
+				'isSuccess' => false,
+				'hasWarnings' => true,
+				'warnings' => [
+					__('general.file_too_large_php_limit', [
+						'max_size' => $this->getMaxUploadSize(),
+						'post_max' => ini_get('post_max_size'),
+						'upload_max' => ini_get('upload_max_filesize')
+					])
+				]
+			]);
+		}
+
 		$publicPath = public_path('temp/');
 		$file = strtolower(auth()->id() . uniqid() . time() . str_random(20));
 
@@ -49,10 +67,16 @@ class UploadMediaController extends Controller
 			];
 		}
 
+		// Get the effective maximum file size (minimum of app setting and PHP limits)
+		$maxFileSizeKB = min(
+			floor(config('settings.file_size_allowed') / 1024),
+			floor($this->getMaxUploadSize() / 1024)
+		);
+
 		// initialize FileUploader
 		$FileUploader = new FileUploader('photo', array(
 			'limit' => config('settings.maximum_files_post'),
-			'fileMaxSize' => floor(config('settings.file_size_allowed') / 1024),
+			'fileMaxSize' => $maxFileSizeKB,
 			'extensions' => $extensions,
 			'title' => $file,
 			'uploadDir' => $publicPath
@@ -108,7 +132,7 @@ class UploadMediaController extends Controller
 	{
 		$fileName = $image['name'];
 		$pathImage = public_path('temp/') . $image['name'];
-		$img = Image::make($pathImage);
+		$img = ImageManager::make($pathImage);
 		$url = ucfirst(Helper::urlToDomain(url('/')));
 
 		$width = $img->width();
@@ -289,5 +313,63 @@ class UploadMediaController extends Controller
 				}
 			}
 		}
+	}
+
+	/**
+	 * Check if the request was truncated due to PHP limits
+	 */
+	protected function isRequestTruncated(): bool
+	{
+		// Check if content length exceeds post_max_size
+		$contentLength = $_SERVER['CONTENT_LENGTH'] ?? 0;
+		$postMaxSize = $this->parseSize(ini_get('post_max_size'));
+		
+		if ($contentLength > $postMaxSize && $postMaxSize > 0) {
+			return true;
+		}
+
+		// Check if $_POST and $_FILES are empty but content was sent
+		if ($contentLength > 0 && empty($_POST) && empty($_FILES)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the maximum upload size based on PHP configuration
+	 */
+	protected function getMaxUploadSize(): int
+	{
+		$maxUpload = $this->parseSize(ini_get('upload_max_filesize'));
+		$maxPost = $this->parseSize(ini_get('post_max_size'));
+		$memoryLimit = $this->parseSize(ini_get('memory_limit'));
+
+		// Return the smallest of the three
+		$limits = array_filter([$maxUpload, $maxPost, $memoryLimit]);
+		return min($limits);
+	}
+
+	/**
+	 * Parse a size string (like "8M" or "128K") to bytes
+	 */
+	protected function parseSize(string $size): int
+	{
+		$size = trim($size);
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = (int) $size;
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// fall through
+			case 'm':
+				$size *= 1024;
+				// fall through
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
 	}
 }
