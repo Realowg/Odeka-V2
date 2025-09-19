@@ -72,6 +72,13 @@ class SubscriptionsController extends Controller
       ]);
     }
 
+    // Normalize any posted amount-like inputs to base (future-proof)
+    if ($this->request->has('amount')) {
+      $this->request->merge([
+        'amount' => Helper::toBaseCurrency($this->request->amount)
+      ]);
+    }
+
     // Wallet
     if ($this->request->payment_gateway == 'wallet') {
       return $this->sendWallet();

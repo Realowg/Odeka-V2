@@ -54,6 +54,8 @@ use App\Http\Controllers\UploadMediaPreviewShopController;
 use App\Http\Controllers\UploadMediaWelcomeMessageController;
 use Illuminate\Support\Str;
 use App\Http\Controllers\KkiapayController;
+use App\Http\Controllers\CurrencyController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -901,6 +903,16 @@ Route::post('refresh/creators', [HomeController::class, 'refreshCreators']);
 Route::get('payment/paystack', [PaystackController::class, 'show'])->name('paystack');
 Route::get('payment/ccbill', [CCBillController::class, 'show'])->name('ccbill');
 Route::get('payment/kkiapay', [KkiapayController::class, 'show'])->name('kkiapay');
+Route::match(['get','post'], 'kkiapay/callback', [KkiapayController::class, 'callback'])->name('kkiapay.callback');
+
+// Currency switcher
+Route::post('currency-switch', [CurrencyController::class, 'switch'])->name('currency.switch');
+
+// Admin: manual fetch currency rates
+Route::post('panel/admin/currency/fetch', function () {
+    Artisan::call('currency:fetch');
+    return back()->with('success_message', 'Currency rates fetched.');
+})->middleware('role');
 // File Media
 Route::get('file/media/{typeMedia}/{fileId}/{filename}', [UpdatesController::class, 'getFileMedia']);
 

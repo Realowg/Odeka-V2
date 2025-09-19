@@ -85,6 +85,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script src='https://checkout.razorpay.com/v1/checkout.js'></script>
 <script src='https://js.paystack.co/v1/inline.js'></script>
+<script src="https://cdn.kkiapay.me/k.js"></script>
 @if (request()->is('my/wallet'))
 <script src="{{ asset('js/add-funds.js') }}?v={{$settings->version}}"></script>
 @else

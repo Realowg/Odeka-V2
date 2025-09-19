@@ -34,6 +34,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('currency:fetch')->daily();
         $schedule->command('queue:work --tries=3 --timeout=8600')
             ->cron('* * * * *')
             ->withoutOverlapping();

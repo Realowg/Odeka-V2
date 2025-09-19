@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Notifications\AdminDepositPending;
 use Illuminate\Support\Facades\Notification;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Kkiapay\Kkiapay;
 
 class AddFundsController extends Controller
 {
@@ -89,6 +90,13 @@ class AddFundsController extends Controller
       ]);
     }
 
+    // Normalize posted amount to base currency before any math
+    if ($this->request->has('amount')) {
+      $this->request->merge([
+        'amount' => Helper::toBaseCurrency($this->request->amount)
+      ]);
+    }
+
     switch ($this->request->payment_gateway) {
       case 'PayPal':
         return $this->sendPayPal();
@@ -149,6 +157,10 @@ class AddFundsController extends Controller
       case 'Binance':
         return $this->sendBinance();
         break;
+
+      case 'Kkiapay':
+        return $this->sendKkiapay();
+        break;
     }
 
     return response()->json([
@@ -156,6 +168,32 @@ class AddFundsController extends Controller
       'insertBody' => '<i></i>'
     ]);
   } // End method Send
+
+  protected function sendKkiapay()
+  {
+    $payment = PaymentGateways::whereName('Kkiapay')->whereEnabled(1)->firstOrFail();
+
+    $fee   = $payment->fee;
+    $cents = $payment->fee_cents;
+
+    $taxes = $this->settings->tax_on_wallet ? ($this->request->amount * auth()->user()->isTaxable()->sum('percentage') / 100) : 0;
+
+    $amountFormatted = number_format($this->request->amount + ($this->request->amount * $fee / 100) + $cents + $taxes, 2, '.', '');
+    // Kkiapay expects an integer amount; round to nearest integer for safety
+    $amount = (int) round($amountFormatted);
+
+    $callback = route('kkiapay.callback', [
+      'type' => 'deposit',
+      'user' => auth()->id(),
+      'amount' => $this->request->amount,
+      'taxes' => $this->settings->tax_on_wallet ? auth()->user()->taxesPayable() : null,
+    ]);
+
+    return response()->json([
+      'success' => true,
+      'insertBody' => "<script type='text/javascript'>(function(){\n        function openWidget(){\n          try {\n            openKkiapayWidget({\n              amount: " . $amount . ",\n              key: '" . $payment->key . "',\n              callback: '" . $callback . "',\n              sandbox: " . ($payment->sandbox === 'true' ? 'true' : 'false') . "\n            });\n          } catch(e){ console.error(e); }\n        }\n        if (typeof openKkiapayWidget === 'function') { openWidget(); } else {\n          var s=document.createElement('script');\n          s.src='https://cdn.kkiapay.me/k.js';\n          s.onload=openWidget;\n          s.onerror=function(){ alert('Failed to load Kkiapay widget. Please try again.'); };\n          document.body.appendChild(s);\n        }\n      })();</script>"
+    ]);
+  }
 
   /**
    *  Add funds PayPal
@@ -257,14 +295,14 @@ class AddFundsController extends Controller
 
     $taxes = $this->settings->tax_on_wallet ? ($this->request->amount * auth()->user()->isTaxable()->sum('percentage') / 100) : 0;
 
-    if (in_array(config('settings.currency_code'), config('currencies.zero-decimal'))) {
+    if (Helper::isZeroDecimalCurrency()) {
       $amountFixed = round($this->request->amount + ($this->request->amount * $feeStripe / 100) + $centsStripe + $taxes);
     } else {
       $amountFixed = number_format($this->request->amount + ($this->request->amount * $feeStripe / 100) + $centsStripe + $taxes, 2, '.', '');
     }
 
     $amountGross = ($this->request->amount);
-    $amount   = in_array(config('settings.currency_code'), config('currencies.zero-decimal')) ? $amountFixed : ($amountFixed * 100);
+    $amount   = Helper::isZeroDecimalCurrency() ? $amountFixed : ($amountFixed * 100);
 
     $currency_code = $this->settings->currency_code;
     $description = __('general.add_funds') . ' @' . auth()->user()->username;

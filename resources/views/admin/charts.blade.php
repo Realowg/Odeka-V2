@@ -14,27 +14,27 @@
 
      switch ('{{$settings->currency_position}}') {
        case 'left':
-       var currency_symbol_left = '{{$settings->currency_symbol}}';
+       var currency_symbol_left = '{{ \App\Helper::displayCurrencySymbol() }}';
        var currency_symbol_right = '';
        break;
 
        case 'left_space':
-       var currency_symbol_left = '{{$settings->currency_symbol}} ';
+       var currency_symbol_left = '{{ \App\Helper::displayCurrencySymbol() }} ';
        var currency_symbol_right = '';
        break;
 
        case 'right':
-       var currency_symbol_right = '{{$settings->currency_symbol}}';
+       var currency_symbol_right = '{{ \App\Helper::displayCurrencySymbol() }}';
        var currency_symbol_left = '';
        break;
 
        case 'right_space':
-       var currency_symbol_right = ' {{$settings->currency_symbol}}';
+       var currency_symbol_right = ' {{ \App\Helper::displayCurrencySymbol() }}';
        var currency_symbol_left = '';
        break;
 
        default:
-       var currency_symbol_right = '{{$settings->currency_symbol}}';
+       var currency_symbol_right = '{{ \App\Helper::displayCurrencySymbol() }}';
        var currency_symbol_left = '';
        break;
      }// End switch

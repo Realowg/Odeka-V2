@@ -61,7 +61,7 @@
                   <label class="w-100 ">{{__('general.price_welcome_message')}} ({{ __('general.optional') }})</label>
                   <div class="input-group mb-2">
                     <div class="input-group-prepend">
-                      <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                      <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
                     </div>
                         <input value="{{ auth()->user()->price_welcome_message }}" class="form-control form-control-lg isNumber" name="price_welcome_message" autocomplete="off" placeholder="0.00" type="text">
                     </div>

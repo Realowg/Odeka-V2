@@ -47,6 +47,13 @@ class StripeController extends Controller
       ->whereInterval($this->request->interval)
       ->firstOrFail();
 
+    // Normalize amounts to base currency before any math
+    if ($this->request->has('amount')) {
+      $this->request->merge([
+        'amount' => \App\Helper::toBaseCurrency($this->request->amount)
+      ]);
+    }
+
     $payment = PaymentGateways::whereName($this->request->payment_gateway)->whereEnabled(1)->firstOrFail();
     $stripe = new \Stripe\StripeClient($payment->key_secret);
     $userPlan = $plan->name;

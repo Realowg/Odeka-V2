@@ -78,7 +78,7 @@
             <div class="form-group mb-4">
               <div class="input-group mb-2">
               <div class="input-group-prepend">
-                <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
                   <input class="form-control form-control-lg" required id="onlyNumber" name="amount" min="{{ $settings->min_deposits_amount }}" max="{{ $settings->max_deposits_amount }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="number">
                   <small class="d-block w-100 my-1">

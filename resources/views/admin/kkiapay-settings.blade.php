@@ -6,7 +6,7 @@
       <i class="bi-chevron-right me-1 fs-6"></i>
       <span class="text-muted">{{ __('admin.payment_settings') }}</span>
       <i class="bi-chevron-right me-1 fs-6"></i>
-      <span class="text-muted">{{ trans('general.bank_transfer') }}</span>
+      <span class="text-muted">Kkiapay</span>
   </h5>
 
 <div class="content">
@@ -19,7 +19,7 @@
               <i class="bi bi-check2 me-1"></i>	{{ session('success_message') }}
 
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-									<i class="bi bi-x-lg"></i>
+                  <i class="bi bi-x-lg"></i>
                 </button>
                 </div>
               @endif
@@ -39,17 +39,31 @@
 		          </div>
 		        </div>
 
-						<div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ trans('general.flat_rate') }} ({{ \App\Helper::displayCurrencySymbol() }})</label>
+            <div class="row mb-3">
+		          <label class="col-sm-2 col-form-label text-lg-end">{{ trans('admin.fee_cents') }}</label>
 		          <div class="col-sm-10">
 		            <input value="{{ $data->fee_cents }}" name="fee_cents" type="text" class="form-control">
 		          </div>
 		        </div>
 
-						<div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('general.bank_details') }}</label>
+            <div class="row mb-3">
+		          <label class="col-sm-2 col-form-label text-lg-end">Public Key</label>
 		          <div class="col-sm-10">
-		            <textarea name="bank_info" rows="7" id="description" class="form-control">{{$data->bank_info}}</textarea>
+		            <input value="{{ $data->key }}" name="key" type="password" class="form-control">
+		          </div>
+		        </div>
+
+            <div class="row mb-3">
+		          <label class="col-sm-2 col-form-label text-lg-end">Private Key</label>
+		          <div class="col-sm-10">
+		            <input value="{{ $data->key_secret }}" name="key_secret" type="password" class="form-control">
+		          </div>
+		        </div>
+
+            <div class="row mb-3">
+		          <label class="col-sm-2 col-form-label text-lg-end">Secret</label>
+		          <div class="col-sm-10">
+		            <input value="{{ $data->webhook_secret }}" name="webhook_secret" type="password" class="form-control">
 		          </div>
 		        </div>
 
@@ -71,8 +85,8 @@
 		       </form>
 
 				 </div><!-- card-body -->
- 			</div><!-- card  -->
- 		</div><!-- col-lg-12 -->
+		 	</div><!-- card  -->
+		 </div><!-- col-lg-12 -->
 
 	</div><!-- end row -->
 </div><!-- end content -->

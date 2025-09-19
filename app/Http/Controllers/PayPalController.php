@@ -52,6 +52,13 @@ class PayPalController extends Controller
       ->firstOrFail();
 
     // Get Payment Gateway
+    // Normalize amounts to base currency before any math
+    if ($this->request->has('amount')) {
+      $this->request->merge([
+        'amount' => \App\Helper::toBaseCurrency($this->request->amount)
+      ]);
+    }
+
     $payment = PaymentGateways::whereName($this->request->payment_gateway)->whereEnabled(1)->firstOrFail();
 
     $urlSuccess = route('subscription.success', ['user' => $user->username, 'delay' => 'paypal']);

@@ -590,8 +590,8 @@ class AdminController extends Controller
 	public function payments()
 	{
 		$stripeConnectCountries = explode(',', $this->settings->stripe_connect_countries);
-
-		return view('admin.payments-settings')->withStripeConnectCountries($stripeConnectCountries);
+        $lastRateAt = \DB::table('currency_rates')->max('fetched_at');
+        return view('admin.payments-settings')->withStripeConnectCountries($stripeConnectCountries)->with('lastRateAt', $lastRateAt);
 	}
 
 	public function savePayments(Request $request)
