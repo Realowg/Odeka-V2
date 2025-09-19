@@ -62,37 +62,6 @@ class KkiapayController extends Controller
             'success' => true,
             'insertBody' => "<script type='text/javascript'>\n              if (typeof openKkiapayWidget === 'function') {\n                openKkiapayWidget({\n                  amount: '" . $amount . "',\n                  key: '" . e($payment->key) . "',\n                  callback: '" . e($callback) . "',\n                  sandbox: " . ($payment->sandbox === 'true' ? 'true' : 'false') . "\n                });\n              } else { console.error('Kkiapay SDK not loaded'); }\n            </script>"
         ]);
-
-        // Removed unrelated PayPal code
-
-        $product_id = 'product_' . $plan->name;
-
-        try {
-            // Get Product Details
-            $product = $provider->showProductDetails($product_id);
-
-            $getProductId = $product['id'];
-        } catch (\Exception $e) {
-
-            // Create Product
-            $requestId = 'create-product-' . time();
-
-            $product = $provider->createProduct([
-                'id' => $product_id,
-                'name' => '@' . $user->username . ' - ' . $plan->name,
-                'description' => 'Product of @' . $user->username,
-                'type' => 'DIGITAL',
-                'category' => 'DIGITAL_MEDIA_BOOKS_MOVIES_MUSIC',
-            ], $requestId);
-        }
-
-        try {
-            // no-op
-
-        } catch (\Exception $e) {
-            // no-op
-        }
-        // end
     } // End methd show
 
     public function callback(Request $request)
