@@ -179,8 +179,11 @@ class AddFundsController extends Controller
     $taxes = $this->settings->tax_on_wallet ? ($this->request->amount * auth()->user()->isTaxable()->sum('percentage') / 100) : 0;
 
     $amountFormatted = number_format($this->request->amount + ($this->request->amount * $fee / 100) + $cents + $taxes, 2, '.', '');
-    // Kkiapay expects an integer amount; round to nearest integer for safety
-    $amount = (int) round($amountFormatted);
+    // Use integer only for zero-decimal currencies; keep decimals otherwise to avoid precision loss
+    $baseCode = Helper::baseCurrencyCode();
+    $amount = Helper::isZeroDecimalCurrency($baseCode)
+      ? (int) round($amountFormatted)
+      : (float) $amountFormatted;
 
     $callback = route('kkiapay.callback', [
       'type' => 'deposit',
