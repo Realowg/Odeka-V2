@@ -32,6 +32,14 @@ class ForgotPasswordController extends Controller
         $this->middleware('guest');
     }
 
+    public function showLinkRequestForm()
+    {
+        if (config('settings.home_style') == 0) {
+            return view('auth.passwords.email-odeka');
+        }
+        return view('auth.passwords.email');
+    }
+
     protected function validateEmail(Request $request)
     {
         $settings = AdminSettings::first();

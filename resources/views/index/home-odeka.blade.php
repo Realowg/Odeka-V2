@@ -9,12 +9,17 @@
       .tabular-nums { font-variant-numeric: tabular-nums; }
     </style>
   </head>
-  <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ request('locale', 'en-US') }}" data-currency="{{ request('currency', 'XOF') }}">
+  <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ str_replace('_','-', app()->getLocale()) }}" data-currency="{{ \App\Helper::displayCurrencyCode() }}">
     <div class="sticky top-0 z-40 backdrop-blur border-b border-neutral-900/60">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
           <a href="#top" class="flex items-center gap-3">
-            <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0 shadow-[0_0_30px_-10px_rgba(255,255,255,0.7)]"></div>
+            @php $logo = config('settings.logo') ? asset('img/'.config('settings.logo')) : null; @endphp
+            @if($logo)
+              <img src="{{ $logo }}" alt="Logo" class="h-7 w-auto" />
+            @else
+              <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0 shadow-[0_0_30px_-10px_rgba(255,255,255,0.7)]"></div>
+            @endif
             <span class="font-semibold tracking-tight">Odeka Media</span>
           </a>
           <div class="hidden md:flex items-center gap-2 p-1 rounded-full border border-neutral-800" id="header-tabs">
@@ -22,7 +27,7 @@
             <button data-tab="Media" class="px-4 py-1.5 text-sm rounded-full transition">Media</button>
           </div>
           <div class="flex items-center gap-3">
-            <a href="#signin" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm hover:border-neutral-700">Sign in</a>
+            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm hover:border-neutral-700">Sign in</a>
             <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium hover:bg-neutral-200">Open the app</a>
           </div>
         </div>
@@ -41,23 +46,26 @@
               <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">We create, distribute & monetize content for brands and creators.</h1>
               <p class="mt-5 max-w-2xl text-neutral-300 leading-relaxed">Odeka Media is a content studio and platform. We craft story‑first campaigns, produce original shows, and turn attention into revenue.</p>
               <div class="mt-8 flex flex-wrap gap-3">
-                <a href="#watch" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-medium hover:bg-neutral-200">Watch on O'Channel</a>
-                <a href="#signin" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">Creator sign in</a>
-                <a href="#brief" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">Start a campaign</a>
+                <a href="{{ url('channel') }}" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-medium hover:bg-neutral-200">Watch on O'Channel</a>
+                <a href="{{ route('login') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">Creator sign in</a>
+                <a href="{{ url('brief') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">Start a campaign</a>
               </div>
               <p class="mt-6 text-xs text-neutral-400">Trusted by advertisers, creators, and partners.</p>
             </div>
             <div class="lg:col-span-5">
-              <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 to-neutral-800 p-2">
-                <div class="h-full w-full rounded-2xl bg-neutral-950 relative">
-                  <div class="absolute inset-0 grid place-items-center">
-                    <div class="text-center">
-                      <div class="mx-auto mb-4 h-12 w-12 rounded-xl bg-neutral-800"></div>
-                      <p class="text-sm text-neutral-400">Promo reel placeholder</p>
-                    </div>
-                  </div>
+              @php $heroType = config('settings.hero_type') ?? 'image'; @endphp
+              @if($heroType === 'youtube' && config('settings.hero_youtube_url'))
+                <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800">
+                  <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed(config('settings.hero_youtube_url')) }}" title="Hero video" loading="lazy" allowfullscreen></iframe>
                 </div>
-              </div>
+              @else
+                @php $heroSrc = App\Helper::assetUrl(config('settings.hero_image_source'), config('settings.hero_image_url'), config('settings.hero_image_file')); @endphp
+                @if($heroSrc)
+                  <img src="{{ $heroSrc }}" alt="Hero" class="aspect-[4/3] w-full rounded-3xl border border-neutral-800 object-cover" />
+                @else
+                  <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 to-neutral-800"></div>
+                @endif
+              @endif
             </div>
           </div>
         </div>
@@ -71,9 +79,9 @@
       <div class="mt-6 grid gap-6 md:grid-cols-3">
         @php
           $access = [
-            ['title'=>"Watch O'Channel", 'desc'=>"Open the platform to watch episodes and shorts.", 'cta'=>"Open platform", 'href'=>'#open-app'],
-            ['title'=>"Creators", 'desc'=>"Sign in to manage episodes, assets, and analytics.", 'cta'=>"Creator sign in", 'href'=>'#signin'],
-            ['title'=>"Advertisers", 'desc'=>"Start a story‑driven campaign with measurable outcomes.", 'cta'=>"Start a campaign", 'href'=>'#brief'],
+            ['title'=>"Watch O'Channel", 'desc'=>"Open the platform to watch episodes and shorts.", 'cta'=>"Open platform", 'href'=>url('channel')],
+            ['title'=>"Creators", 'desc'=>"Sign in to manage episodes, assets, and analytics.", 'cta'=>"Creator sign in", 'href'=>route('login')],
+            ['title'=>"Advertisers", 'desc'=>"Start a story‑driven campaign with measurable outcomes.", 'cta'=>"Start a campaign", 'href'=>url('brief')],
           ];
         @endphp
         @foreach ($access as $e)
@@ -110,8 +118,8 @@
               <li>• Measurement: view‑through, brand lift, conversions</li>
             </ul>
             <div class="mt-7 flex gap-3">
-              <a href="#brief" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">Submit a brief</a>
-              <a href="#media-kit" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">Download media kit</a>
+              <a href="{{ url('brief') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">Submit a brief</a>
+              <a href="{{ url('media-kit') }}" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">Download media kit</a>
             </div>
           </div>
           <div class="lg:col-span-7">
@@ -166,7 +174,7 @@
       <section id="campaigns" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="flex items-end justify-between gap-6">
           <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Marketing campaigns with brand storytelling</h2>
-          <a href="#case-study" class="text-sm text-neutral-300 hover:text-white">See case study →</a>
+          <a href="{{ url('case-study') }}" class="text-sm text-neutral-300 hover:text-white">See case study →</a>
         </div>
         <div class="mt-10 grid gap-6 lg:grid-cols-12">
           <div class="lg:col-span-7">
@@ -190,7 +198,7 @@
               <div class="p-6">
                 <div class="text-lg font-medium">Case study — Local Launch</div>
                 <p class="mt-2 text-sm text-neutral-300">4‑video story arc, creator collaborations, and paid boosts. Outcome example: +38% visits in 4 weeks, +12% repeat.</p>
-                <div class="mt-4"><a href="#download-pdf" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">Download PDF</a></div>
+                <div class="mt-4"><a href="{{ url('case-study') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">Download PDF</a></div>
               </div>
             </div>
           </div>
@@ -214,17 +222,28 @@
       <section id="channel" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="flex items-end justify-between gap-6">
           <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">O'Channel — Emissions</h2>
-          <a href="#channel-all" class="text-sm text-neutral-300 hover:text-white">See all shows →</a>
+          <a href="{{ url('explore') }}" class="text-sm text-neutral-300 hover:text-white">See all shows →</a>
         </div>
         <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          @php $shows=[["name"=>"O'Show (flagship)","tag"=>'Interviews • Music • Culture'],["name"=>'Street Stories',"tag"=>'People • Places • Food'],["name"=>'Creator Spotlight',"tag"=>'Models • Creators • Makers'],["name"=>'Business Now',"tag"=>'Entrepreneurs • Playbooks']]; @endphp
-          @foreach ($shows as $s)
+          @php
+            $cards = [
+              ["name"=>"O'Show (flagship)","tag"=>'Interviews • Music • Culture', 'img' => config('settings.img_1') ? asset('img/'.config('settings.img_1')) : null],
+              ["name"=>'Street Stories',"tag"=>'People • Places • Food', 'img' => config('settings.img_2') ? asset('img/'.config('settings.img_2')) : null],
+              ["name"=>'Creator Spotlight',"tag"=>'Models • Creators • Makers', 'img' => config('settings.img_3') ? asset('img/'.config('settings.img_3')) : null],
+              ["name"=>'Business Now',"tag"=>'Entrepreneurs • Playbooks', 'img' => config('settings.img_4') ? asset('img/'.config('settings.img_4')) : null],
+            ];
+          @endphp
+          @foreach ($cards as $c)
             <div class="group relative overflow-hidden rounded-3xl border border-neutral-900 bg-neutral-950">
-              <div class="aspect-video w-full bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent)]"></div>
+              @if($c['img'])
+                <img src="{{ $c['img'] }}" alt="{{ $c['name'] }}" class="aspect-video w-full object-cover" />
+              @else
+                <div class="aspect-video w-full bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent)]"></div>
+              @endif
               <div class="p-5">
-                <div class="text-lg font-medium">{{ $s['name'] }}</div>
-                <div class="mt-1 text-sm text-neutral-400">{{ $s['tag'] }}</div>
-                <div class="mt-4"><a href="#" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">Watch episodes</a></div>
+                <div class="text-lg font-medium">{{ $c['name'] }}</div>
+                <div class="mt-1 text-sm text-neutral-400">{{ $c['tag'] }}</div>
+                <div class="mt-4"><a href="{{ url('explore') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">Watch episodes</a></div>
               </div>
             </div>
           @endforeach
@@ -246,12 +265,25 @@
                 <li>• Options: live studio audience, giveaway, meet‑and‑greet</li>
               </ul>
               <div class="mt-7 flex gap-3">
-                <a href="#sponsor-oshow" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">Get sponsorship kit</a>
-                <a href="#watch-oshow" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">Watch latest episode</a>
+                <a href="{{ url('sponsor/oshow') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">Get sponsorship kit</a>
+                <a href="{{ url('channel/o-show/latest') }}" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">Watch latest episode</a>
               </div>
             </div>
             <div class="lg:col-span-6 order-1 lg:order-2">
-              <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-900 bg-[radial-gradient(closest-side,rgba(255,255,255,0.10),transparent_70%)]"></div>
+              @php
+                $oshowType = config('settings.oshow_media_type') ?? 'image';
+                $oshowYt = config('settings.oshow_youtube_url');
+                $oshowImg = App\Helper::assetUrl(config('settings.oshow_image_source'), config('settings.oshow_image_url'), config('settings.oshow_image_file'));
+              @endphp
+              @if($oshowType === 'youtube' && $oshowYt)
+                <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-900">
+                  <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed($oshowYt) }}" title="O'Show" loading="lazy" allowfullscreen></iframe>
+                </div>
+              @elseif($oshowImg)
+                <img src="{{ $oshowImg }}" alt="O'Show" class="aspect-[16/10] w-full rounded-3xl border border-neutral-900 object-cover" />
+              @else
+                <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-900 bg-[radial-gradient(closest-side,rgba(255,255,255,0.10),transparent_70%)]"></div>
+              @endif
             </div>
           </div>
         </div>
@@ -358,6 +390,18 @@
       if (curSel) curSel.value = state.currency;
       langSel.addEventListener('change', () => { state.locale = langSel.value; recompute(); });
       curSel.addEventListener('change', () => { document.getElementById('currency-form').submit(); });
+      // Simulator defaults from admin settings
+      window.SIM = {
+        conversion: {{ (float) (config('settings.sim_default_conversion') ?? 0.05) }},
+        fee: {{ (float) (config('settings.sim_platform_fee') ?? 0.05) }},
+        ranges: {!! json_encode(config('settings.sim_price_ranges_json') ?? []) !!}
+      };
+      if (SIM.ranges[state.currency]) {
+        const r = SIM.ranges[state.currency];
+        if (r.min != null) priceEl.min = r.min;
+        if (r.max != null) priceEl.max = r.max;
+        if (r.step != null) priceEl.step = r.step;
+      }
       applyTabUI();
       recompute();
     </script>

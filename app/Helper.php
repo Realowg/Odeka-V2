@@ -446,6 +446,29 @@ class Helper
 		return false;
 	}
 
+	// Return an embeddable YouTube URL (nocookie domain)
+	public static function youtubeEmbed($url)
+	{
+		$id = self::getYoutubeId((string) $url);
+		if ($id) {
+			return 'https://www.youtube-nocookie.com/embed/' . $id . '?rel=0';
+		}
+		return '';
+	}
+
+	// Resolve asset URL from either external URL or uploaded file on the configured disk
+	public static function assetUrl($source = 'upload', $url = null, $file = null)
+	{
+		$source = strtolower((string) $source);
+		if ($source === 'url' && filter_var($url, FILTER_VALIDATE_URL)) {
+			return $url;
+		}
+		if ($file) {
+			return self::getFile($file);
+		}
+		return '';
+	}
+
 	public static function getVimeoId($url)
 	{
 		$url = explode('/', $url);

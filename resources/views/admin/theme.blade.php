@@ -55,6 +55,168 @@
 			         </div>
 			       </fieldset><!-- end row -->
 
+              <hr class="my-4">
+              <h6 class="mb-3 fw-medium">Homepage (Odeka)</h6>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Hero Type</label>
+                <div class="col-sm-10">
+                  <select name="hero_type" class="form-select">
+                    <option value="image" @selected($settings->hero_type=='image')>Image</option>
+                    <option value="youtube" @selected($settings->hero_type=='youtube')>YouTube</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Hero Image Source</label>
+                <div class="col-sm-10">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <select name="hero_image_source" class="form-select">
+                        <option value="upload" @selected($settings->hero_image_source=='upload')>Upload</option>
+                        <option value="url" @selected($settings->hero_image_source=='url')>External URL</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                      <input type="text" name="hero_image_url" value="{{ $settings->hero_image_url }}" class="form-control" placeholder="https://... (optional)">
+                    </div>
+                  </div>
+                  <div class="input-group mt-2">
+                    <input name="hero_image_file" type="file" class="form-control custom-file rounded-pill">
+                  </div>
+                  <small class="d-block">Recommended: 4:3, ≥1280×960 (JPG/PNG/WEBP)</small>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Hero YouTube URL</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hero_youtube_url" value="{{ $settings->hero_youtube_url }}" class="form-control" placeholder="https://youtube.com/watch?v=...">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">O'Show Media Type</label>
+                <div class="col-sm-10">
+                  <select name="oshow_media_type" class="form-select">
+                    <option value="image" @selected($settings->oshow_media_type=='image')>Image</option>
+                    <option value="youtube" @selected($settings->oshow_media_type=='youtube')>YouTube</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">O'Show Image</label>
+                <div class="col-sm-10">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <select name="oshow_image_source" class="form-select">
+                        <option value="upload" @selected($settings->oshow_image_source=='upload')>Upload</option>
+                        <option value="url" @selected($settings->oshow_image_source=='url')>External URL</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                      <input type="text" name="oshow_image_url" value="{{ $settings->oshow_image_url }}" class="form-control" placeholder="https://... (optional)">
+                    </div>
+                  </div>
+                  <div class="input-group mt-2">
+                    <input name="oshow_image_file" type="file" class="form-control custom-file rounded-pill">
+                  </div>
+                  <small class="d-block">Recommended: 16:10, ≥1600×1000 (JPG/PNG/WEBP)</small>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">O'Show YouTube URL</label>
+                <div class="col-sm-10">
+                  <input type="text" name="oshow_youtube_url" value="{{ $settings->oshow_youtube_url }}" class="form-control" placeholder="https://youtube.com/watch?v=...">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Latest Episode URL</label>
+                <div class="col-sm-10">
+                  <input type="text" name="oshow_latest_watch_url" value="{{ $settings->oshow_latest_watch_url }}" class="form-control" placeholder="https://...">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Sponsorship Kit (PDF)</label>
+                <div class="col-sm-10">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <select name="oshow_sponsorship_pdf_source" class="form-select">
+                        <option value="upload" @selected($settings->oshow_sponsorship_pdf_source=='upload')>Upload</option>
+                        <option value="url" @selected($settings->oshow_sponsorship_pdf_source=='url')>External URL</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                      <input type="text" name="oshow_sponsorship_pdf_url" value="{{ $settings->oshow_sponsorship_pdf_url }}" class="form-control" placeholder="https://... (optional)">
+                    </div>
+                  </div>
+                  <div class="input-group mt-2">
+                    <input name="oshow_sponsorship_pdf_file" type="file" class="form-control custom-file rounded-pill" accept="application/pdf">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Media Kit (PDF)</label>
+                <div class="col-sm-10">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <select name="media_kit_source" class="form-select">
+                        <option value="upload" @selected($settings->media_kit_source=='upload')>Upload</option>
+                        <option value="url" @selected($settings->media_kit_source=='url')>External URL</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                      <input type="text" name="media_kit_url" value="{{ $settings->media_kit_url }}" class="form-control" placeholder="https://... (optional)">
+                    </div>
+                  </div>
+                  <div class="input-group mt-2">
+                    <input name="media_kit_file" type="file" class="form-control custom-file rounded-pill" accept="application/pdf">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Case Study (PDF)</label>
+                <div class="col-sm-10">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <select name="case_study_source" class="form-select">
+                        <option value="upload" @selected($settings->case_study_source=='upload')>Upload</option>
+                        <option value="url" @selected($settings->case_study_source=='url')>External URL</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                      <input type="text" name="case_study_url" value="{{ $settings->case_study_url }}" class="form-control" placeholder="https://... (optional)">
+                    </div>
+                  </div>
+                  <div class="input-group mt-2">
+                    <input name="case_study_file" type="file" class="form-control custom-file rounded-pill" accept="application/pdf">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Simulator Defaults</label>
+                <div class="col-sm-10">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <input type="number" step="0.001" min="0" max="1" name="sim_default_conversion" value="{{ $settings->sim_default_conversion }}" class="form-control" placeholder="Conversion (e.g. 0.05)">
+                    </div>
+                    <div class="col-md-4">
+                      <input type="number" step="0.001" min="0" max="1" name="sim_platform_fee" value="{{ $settings->sim_platform_fee }}" class="form-control" placeholder="Platform fee (e.g. 0.05)">
+                    </div>
+                  </div>
+                  <small class="d-block mt-2">Optional per-currency ranges JSON: {"XOF":{"min":500,"max":20000,"step":100}}</small>
+                  <textarea name="sim_price_ranges_json" rows="3" class="form-control mt-2">{{ $settings->sim_price_ranges_json }}</textarea>
+                </div>
+              </div>
+
 		        <div class="row mb-3">
 		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('general.logo') }}</label>
 		          <div class="col-lg-5 col-sm-10">

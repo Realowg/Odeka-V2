@@ -55,6 +55,9 @@ use App\Http\Controllers\UploadMediaWelcomeMessageController;
 use Illuminate\Support\Str;
 use App\Http\Controllers\KkiapayController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\PublicAssetsController;
+use App\Http\Controllers\BriefController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -927,6 +930,19 @@ Route::post('2fa/resend',[TwoFactorAuthController::class, 'resend']);
 Route::get('explore/creators/live',[HomeController::class, 'creatorsBroadcastingLive']);
 
 Route::post('webhook/mollie', [AddFundsController::class, 'webhookMollie']);
+
+// ===== Odeka Homepage auxiliary routes (non-breaking) =====
+Route::get('channel', [ChannelController::class, 'index']);
+Route::get('channel/o-show/latest', [ChannelController::class, 'latestOshow']);
+Route::get('channel/{show:slug}', [ChannelController::class, 'show']);
+Route::get('channel/{show:slug}/{episode:slug}', [ChannelController::class, 'episode']);
+
+Route::get('brief', [BriefController::class, 'create']);
+Route::post('brief', [BriefController::class, 'store']);
+
+Route::get('media-kit', [PublicAssetsController::class, 'mediaKit']);
+Route::get('case-study', [PublicAssetsController::class, 'caseStudy']);
+Route::get('sponsor/oshow', [PublicAssetsController::class, 'oshowSponsorKit']);
 
 // PayPal Webhook
 Route::post('webhook/paypal', [PayPalController::class, 'webhook']);

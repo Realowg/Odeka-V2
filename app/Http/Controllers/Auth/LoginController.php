@@ -50,10 +50,9 @@ class LoginController extends Controller
   public function showLoginForm()
   {
     if (config('settings.home_style') == 0) {
-      return view('auth.login');
-    } else {
-      return redirect('/');
+      return view('auth.login-odeka');
     }
+    return redirect('/');
   }
 
   public function login(Request $request)

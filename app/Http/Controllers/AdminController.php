@@ -1300,6 +1300,78 @@ class AdminController extends Controller
 				'button_style' => $request->get('button_style')
 			]);
 
+		// ====== Odeka Homepage fields ======
+		$rulesHomepage = [
+			'hero_type' => 'nullable|in:image,youtube',
+			'hero_image_source' => 'nullable|in:url,upload',
+			'hero_image_url' => 'nullable|url',
+			'hero_image_file' => 'nullable|mimes:jpg,jpeg,png,webp,avif|max:3072',
+			'hero_youtube_url' => 'nullable|url',
+			'oshow_media_type' => 'nullable|in:image,youtube',
+			'oshow_image_source' => 'nullable|in:url,upload',
+			'oshow_image_url' => 'nullable|url',
+			'oshow_image_file' => 'nullable|mimes:jpg,jpeg,png,webp,avif|max:3072',
+			'oshow_youtube_url' => 'nullable|url',
+			'oshow_latest_watch_url' => 'nullable|url',
+			'oshow_sponsorship_pdf_source' => 'nullable|in:url,upload',
+			'oshow_sponsorship_pdf_url' => 'nullable|url',
+			'oshow_sponsorship_pdf_file' => 'nullable|mimes:pdf|max:20480',
+			'media_kit_source' => 'nullable|in:url,upload',
+			'media_kit_url' => 'nullable|url',
+			'media_kit_file' => 'nullable|mimes:pdf|max:20480',
+			'case_study_source' => 'nullable|in:url,upload',
+			'case_study_url' => 'nullable|url',
+			'case_study_file' => 'nullable|mimes:pdf|max:20480',
+			'sim_default_conversion' => 'nullable|numeric|min:0|max:1',
+			'sim_platform_fee' => 'nullable|numeric|min:0|max:1',
+			'sim_price_ranges_json' => 'nullable|string',
+		];
+
+		$this->validate($request, $rulesHomepage);
+
+		// Simple assigners
+		$assign = [
+			'hero_type','hero_image_source','hero_image_url','hero_youtube_url',
+			'oshow_media_type','oshow_image_source','oshow_image_url','oshow_youtube_url','oshow_latest_watch_url',
+			'oshow_sponsorship_pdf_source','oshow_sponsorship_pdf_url',
+			'media_kit_source','media_kit_url','case_study_source','case_study_url',
+			'sim_default_conversion','sim_platform_fee','sim_price_ranges_json'
+		];
+		foreach ($assign as $key) {
+			if ($request->filled($key) || $request->has($key)) {
+				$this->settings->$key = $request->input($key);
+			}
+		}
+
+		// Upload helpers
+		$uploadPublic = function($inputName, $destKey) use ($request) {
+			if ($request->hasFile($inputName)) {
+				$ext = $request->file($inputName)->getClientOriginalExtension();
+				$file = $destKey . '-' . time() . '.' . $ext;
+				$path = $request->file($inputName)->storeAs('uploads/theme', $file);
+				return $path; // relative path
+			}
+			return null;
+		};
+
+		if ($path = $uploadPublic('hero_image_file', 'hero')) {
+			$this->settings->hero_image_file = $path;
+		}
+		if ($path = $uploadPublic('oshow_image_file', 'oshow')) {
+			$this->settings->oshow_image_file = $path;
+		}
+		if ($path = $uploadPublic('oshow_sponsorship_pdf_file', 'oshow_sponsorship')) {
+			$this->settings->oshow_sponsorship_pdf_file = $path;
+		}
+		if ($path = $uploadPublic('media_kit_file', 'media_kit')) {
+			$this->settings->media_kit_file = $path;
+		}
+		if ($path = $uploadPublic('case_study_file', 'case_study')) {
+			$this->settings->case_study_file = $path;
+		}
+
+		$this->settings->save();
+		// ====== End Odeka Homepage fields ======
 
 		\Artisan::call('cache:clear');
 		\Artisan::call('view:clear');
