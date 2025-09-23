@@ -53,14 +53,31 @@ class KkiapayController extends Controller
         // Get Payment Gateway (must be enabled and named exactly as radio value)
         $payment = PaymentGateways::whereName('Kkiapay')->whereEnabled(1)->firstOrFail();
 
-        $amount = Helper::amountGross($plan->price);
+        // Calculate gross amount (includes taxes), normalize to base currency numeric
+        $gross = Helper::amountGross($plan->price);
+        $baseCode = Helper::baseCurrencyCode();
+        $amount = (float) $gross;
+        if (Helper::isZeroDecimalCurrency($baseCode)) {
+            $amount = (int) round($amount);
+        } else {
+            $amount = (float) number_format($amount, 2, '.', '');
+        }
+
         $callback = route('kkiapay.callback');
+
+        // Safely serialize widget config to prevent JS injection
+        $widgetConfig = [
+            'amount' => $amount,
+            'key' => $payment->key,
+            'callback' => $callback,
+            'sandbox' => $payment->sandbox === 'true',
+        ];
 
         // Return a small JS snippet injected into #bodyContainer that opens the widget
         // The frontend expects { success: true, insertBody: '<script>...</script>' }
         return response()->json([
             'success' => true,
-            'insertBody' => "<script type='text/javascript'>\n              if (typeof openKkiapayWidget === 'function') {\n                openKkiapayWidget({\n                  amount: '" . $amount . "',\n                  key: '" . e($payment->key) . "',\n                  callback: '" . e($callback) . "',\n                  sandbox: " . ($payment->sandbox === 'true' ? 'true' : 'false') . "\n                });\n              } else { console.error('Kkiapay SDK not loaded'); }\n            </script>"
+            'insertBody' => "<script type='text/javascript'>\nif (typeof openKkiapayWidget === 'function') { openKkiapayWidget(" . json_encode($widgetConfig, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) . "); } else { console.error('Kkiapay SDK not loaded'); }\n</script>"
         ]);
     } // End methd show
 
