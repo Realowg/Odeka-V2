@@ -30,15 +30,21 @@ class CurrencyService
 
             // Provider fetch
             $rate = (float) Currency::convert()->from($base)->to($to)->amount(1)->get();
-            // persist
-            DB::table('currency_rates')->insert([
-                'base_currency' => $base,
-                'target_currency' => $to,
-                'rate' => $rate,
-                'fetched_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // Persist atomically to avoid duplicates under concurrency
+            DB::table('currency_rates')->upsert(
+                [
+                    [
+                        'base_currency' => $base,
+                        'target_currency' => $to,
+                        'rate' => $rate,
+                        'fetched_at' => now(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                ],
+                ['base_currency', 'target_currency'],
+                ['rate', 'fetched_at', 'updated_at']
+            );
             return $rate;
         });
     }
@@ -52,7 +58,8 @@ class CurrencyService
     public function convertToBase(float $amount, string $fromCode): float
     {
         $rate = $this->getRate($fromCode);
-        if ($rate == 0.0) {
+        $epsilon = 1e-12;
+        if (abs($rate) < $epsilon) {
             return $amount;
         }
         return $amount / $rate;
