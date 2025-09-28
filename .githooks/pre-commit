@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Guard against committing env files or secrets
+
+set -euo pipefail
+
+files=$(git diff --cached --name-only)
+for f in $files; do
+  case "$f" in
+    .env|.env.*|*.env|*.env.*)
+      echo "Error: refusing to commit environment file: $f" >&2
+      echo "Tip: keep secrets in local .env or CI secrets only." >&2
+      exit 1
+      ;;
+  esac
+done
+
+exit 0
+
+
