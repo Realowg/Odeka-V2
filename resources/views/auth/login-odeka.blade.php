@@ -82,6 +82,10 @@
               @endif
             </form>
 
+            <div id="errorLogin" role="alert" aria-live="assertive" class="hidden mt-3 rounded-md border border-red-700 bg-red-900/30 text-red-300 p-3 text-sm">
+              <ul id="showErrorsLogin" class="list-disc pl-5"></ul>
+            </div>
+
             @if ($settings->captcha == 'on')
               <small class="btn-block text-center mt-3">{{__('auth.protected_recaptcha')}} <a href="https://policies.google.com/privacy" target="_blank">{{__('general.privacy')}}</a> - <a href="https://policies.google.com/terms" target="_blank">{{__('general.terms')}}</a></small>
             @endif
@@ -121,6 +125,13 @@
           try { data = await res.json(); } catch (_) { data = null; }
           const errBox = document.getElementById('errorLogin');
           const errList = document.getElementById('showErrorsLogin');
+          if (!res.ok && errBox && errList) {
+            errList.innerHTML = `<li>{{ __('auth.failed') }}</li>`;
+            errBox.classList.remove('hidden');
+            document.getElementById('username_email')?.focus();
+            if (btn) btn.removeAttribute('disabled');
+            return;
+          }
           if (data && data.success) {
             const url = (data.url_return) ? data.url_return : '{{ url('/') }}';
             window.location.href = url;
@@ -134,6 +145,7 @@
           if (data && data.errors && errBox && errList) {
             errList.innerHTML = Object.values(data.errors).map(m => `<li>${m}</li>`).join('');
             errBox.classList.remove('display-none');
+            document.getElementById('username_email')?.focus();
           }
           if (window.grecaptcha) { try { grecaptcha.reset(); } catch(_){} }
           if (btn) btn.removeAttribute('disabled');

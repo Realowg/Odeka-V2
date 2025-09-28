@@ -16,7 +16,7 @@
           <a href="#top" class="flex items-center gap-3">
             @php $logo = config('settings.logo') ? asset('img/'.config('settings.logo')) : null; @endphp
             @if($logo)
-              <img src="{{ $logo }}" alt="Logo" class="h-7 w-auto" />
+              <img src="{{ $logo }}" alt="Odeka logo" class="h-7 w-auto" />
             @else
               <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0 shadow-[0_0_30px_-10px_rgba(255,255,255,0.7)]"></div>
             @endif
@@ -295,18 +295,23 @@
         <div class="grid gap-10 md:grid-cols-4">
           <div>
             <div class="flex items-center gap-3">
-              <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0"></div>
+              @php $logo = config('settings.logo') ? asset('img/'.config('settings.logo')) : null; @endphp
+              @if($logo)
+                <img src="{{ $logo }}" alt="Odeka logo" class="h-7 w-auto" />
+              @else
+                <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0"></div>
+              @endif
               <span class="font-semibold tracking-tight">Odeka Media</span>
             </div>
             <p class="mt-4 text-sm text-neutral-400 max-w-xs">We create, distribute, and monetize content that moves culture.</p>
           </div>
-          @php $links=['Company'=>['About','Careers','Contact'],'Products'=>['Odeka',"O'Channel","O'Show",'Studio'],'Advertisers'=>['Media kit','Pricing','Case studies'],'Legal'=>['Privacy','Terms']]; @endphp
+          @php $links=['Company'=>['About'=>'/about','Careers'=>'/careers','Contact'=>'/contact'],'Products'=>['Odeka'=>'/','O\'Channel'=>'/channel','O\'Show'=>'/channel/o-show/latest','Studio'=>'/studio'],'Advertisers'=>['Media kit'=>'/media-kit','Pricing'=>'/pricing','Case studies'=>'/case-study'],'Legal'=>['Privacy'=>'/privacy','Terms'=>'/terms']]; @endphp
           @foreach ($links as $k=>$arr)
             <div>
               <div class="text-sm font-medium text-neutral-300">{{ $k }}</div>
               <ul class="mt-3 space-y-2 text-sm text-neutral-400">
-                @foreach ($arr as $v)
-                  <li><a href="#" class="hover:text-white">{{ $v }}</a></li>
+                @foreach ($arr as $label=>$href)
+                  <li><a href="{{ url($href) }}" class="hover:text-white">{{ $label }}</a></li>
                 @endforeach
               </ul>
             </div>

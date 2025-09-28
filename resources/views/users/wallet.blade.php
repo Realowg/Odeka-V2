@@ -3,7 +3,7 @@
 @section('title') {{__('general.wallet')}} -@endsection
 
 @section('content')
-<section class="section section-sm">
+<section class="section section-sm" lang="en">
     <div class="container">
       <div class="row justify-content-center text-center mb-sm">
         <div class="col-lg-8 py-5">
@@ -84,9 +84,9 @@
                     $minDepositNumeric = \App\Helper::fromBaseCurrency($settings->min_deposits_amount);
                     $maxDepositNumeric = \App\Helper::fromBaseCurrency($settings->max_deposits_amount);
                   @endphp
-                  <input class="form-control form-control-lg" required id="onlyNumber" name="amount" min="{{ $minDepositNumeric }}" max="{{ $maxDepositNumeric }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="number" step="any">
-                  <small class="d-block w-100 my-1">
-                    <i class="bi-arrow-up-square mr-1"></i> <i class="bi-arrow-down-square mr-1"></i> {{ __('general.increase_decrease_amount') }}
+                  <input class="form-control form-control-lg" required id="onlyNumber" name="amount" min="{{ $minDepositNumeric }}" max="{{ $maxDepositNumeric }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="number" step="any" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" aria-describedby="amountHelp">
+                  <small id="amountHelp" class="d-block w-100 my-1 text-muted">
+                    {{ __('general.enter_valid_amount') }}
                   </small>
               </div>
 
@@ -296,6 +296,12 @@
   var minDeposit = parseFloat('{{ \App\Helper::fromBaseCurrency($settings->min_deposits_amount) }}');
   var maxDeposit = parseFloat('{{ \App\Helper::fromBaseCurrency($settings->max_deposits_amount) }}');
 
+  // Normalize decimal input on keyup (replace comma with dot before parse)
+  function normalize(val){
+    if (typeof val !== 'string') return val;
+    return val.replace(',', '.');
+  }
+
   function toFixed(number, decimals) {
         var x = Math.pow(10, Number(decimals) + 1);
         return (Number(number) + (1 / x)).toFixed(decimals);
@@ -304,7 +310,7 @@
   $('input[name=payment_gateway]').on('click', function() {
 
     var valueOriginal = $('#onlyNumber').val();
-    var value = parseFloat($('#onlyNumber').val());
+    var value = parseFloat(normalize($('#onlyNumber').val()));
     var element = $(this).val();
 
     //==== Start Taxes
@@ -370,7 +376,7 @@
 $('#onlyNumber').on('keyup', function() {
 
     var valueOriginal = $(this).val();
-    var value = parseFloat($(this).val());
+    var value = parseFloat(normalize($(this).val()));
     var paymentGateway = $('input[name=payment_gateway]:checked').val();
 
     if (value > maxDeposit || valueOriginal.length == 0) {

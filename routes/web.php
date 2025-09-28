@@ -997,3 +997,14 @@ Route::get('verify/squad', [AddFundsController::class, 'verifySquad'])->name('we
 
 // Binance
 Route::any('webhook/binance', [AddFundsController::class, 'webhookBinance'])->name('webhook.binance');
+
+// Fallback basic pages to avoid 404s from footer/header links
+Route::view('/privacy', 'index.contact')->name('privacy');
+Route::view('/terms', 'index.contact')->name('terms');
+Route::view('/about', 'index.contact')->name('about');
+Route::view('/careers', 'index.contact')->name('careers');
+Route::view('/contact', 'index.contact')->name('contact');
+Route::view('/pricing', 'index.contact')->name('pricing');
+Route::view('/studio', 'index.contact')->name('studio');
+Route::get('/case-study', function(){ return redirect('/media-kit'); })->name('case-study');
+Route::get('/media-kit', [\App\Http\Controllers\PublicAssetsController::class, 'mediaKit'])->name('media-kit');

@@ -53,6 +53,13 @@ class KkiapayController extends Controller
         // Get Payment Gateway (must be enabled and named exactly as radio value)
         $payment = PaymentGateways::whereName('Kkiapay')->whereEnabled(1)->firstOrFail();
 
+        // Prefer env/config keys; fallback to gateway row
+        $kconf = config('services.kkiapay');
+        $publicKey = $kconf['public_key'] ?? $payment->key;
+        $privateKey = $kconf['private_key'] ?? $payment->key_secret;
+        $secretKey = $kconf['secret'] ?? $payment->webhook_secret;
+        $isSandbox = (bool) ($kconf['sandbox'] ?? ($payment->sandbox === 'true'));
+
         // Calculate gross amount (includes taxes), normalize to base currency numeric
         $gross = Helper::amountGross($plan->price);
         $baseCode = Helper::baseCurrencyCode();
@@ -68,9 +75,9 @@ class KkiapayController extends Controller
         // Safely serialize widget config to prevent JS injection
         $widgetConfig = [
             'amount' => $amount,
-            'key' => $payment->key,
+            'key' => $publicKey,
             'callback' => $callback,
-            'sandbox' => $payment->sandbox === 'true',
+            'sandbox' => $isSandbox,
         ];
 
         // Return a robust JS snippet that ensures the SDK is present, then opens the widget
@@ -86,13 +93,13 @@ class KkiapayController extends Controller
 
     public function callback(Request $request)
     {
-        // Verify with PHP SDK
+        // Verify with PHP SDK using config/env with DB fallback
         $payment = PaymentGateways::whereName('Kkiapay')->firstOrFail();
-
-        $publicKey = $payment->key;
-        $privateKey = $payment->key_secret;
-        $secret = $payment->webhook_secret;
-        $isSandbox = $payment->sandbox === 'true';
+        $kconf = config('services.kkiapay');
+        $publicKey = $kconf['public_key'] ?? $payment->key;
+        $privateKey = $kconf['private_key'] ?? $payment->key_secret;
+        $secret = $kconf['secret'] ?? $payment->webhook_secret;
+        $isSandbox = (bool) ($kconf['sandbox'] ?? ($payment->sandbox === 'true'));
 
         try {
             $kkiapay = new \Kkiapay\Kkiapay($publicKey, $privateKey, $secret, $isSandbox);
