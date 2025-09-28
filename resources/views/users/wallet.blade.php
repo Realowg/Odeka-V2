@@ -80,7 +80,11 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
-                  <input class="form-control form-control-lg" required id="onlyNumber" name="amount" min="{{ $settings->min_deposits_amount }}" max="{{ $settings->max_deposits_amount }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="number">
+                  @php
+                    $minDepositNumeric = \App\Helper::fromBaseCurrency($settings->min_deposits_amount);
+                    $maxDepositNumeric = \App\Helper::fromBaseCurrency($settings->max_deposits_amount);
+                  @endphp
+                  <input class="form-control form-control-lg" required id="onlyNumber" name="amount" min="{{ $minDepositNumeric }}" max="{{ $maxDepositNumeric }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="number" step="any">
                   <small class="d-block w-100 my-1">
                     <i class="bi-arrow-up-square mr-1"></i> <i class="bi-arrow-down-square mr-1"></i> {{ __('general.increase_decrease_amount') }}
                   </small>
@@ -141,6 +145,10 @@
                 $paymentName = '<img src="'.url('img/payments', auth()->user()->dark_mode == 'off' ? $payment->logo : 'mollie-white.png').'" width="80"/>';
               } else if ($payment->name == 'Razorpay') {
                 $paymentName = '<img src="'.url('img/payments', auth()->user()->dark_mode == 'off' ? $payment->logo : 'razorpay-white.png').'" width="110"/>';
+              } else if ($payment->name == 'Kkiapay') {
+                $candidate = public_path('images/icons/kkiapay-wallets.png');
+                $src = file_exists($candidate) ? url('images/icons/kkiapay-wallets.png') : url('images/icons/kkiapay.svg');
+                $paymentName = '<img src="'.$src.'" width="150"/>';
               } else {
                 $paymentName = '<img src="'.url('img/payments', $payment->logo).'" width="100"/>';
               }
@@ -284,6 +292,10 @@
   $decimal = 2;
   @endif
 
+  // Display-currency aware limits
+  var minDeposit = parseFloat('{{ \App\Helper::fromBaseCurrency($settings->min_deposits_amount) }}');
+  var maxDeposit = parseFloat('{{ \App\Helper::fromBaseCurrency($settings->max_deposits_amount) }}');
+
   function toFixed(number, decimals) {
         var x = Math.pow(10, Number(decimals) + 1);
         return (Number(number) + (1 / x)).toFixed(decimals);
@@ -300,9 +312,9 @@
     var totalTax = 0;
 
     if (valueOriginal.length == 0
-				|| valueOriginal == ''
-				|| value < {{ $settings->min_deposits_amount }}
-				|| value > {{$settings->max_deposits_amount}}
+                || valueOriginal == ''
+                || value < minDeposit
+                || value > maxDeposit
       ) {
         // Reset
   			for (var i = 1; i <= taxes; i++) {
@@ -322,8 +334,8 @@
       //==== End Taxes
 
     if (element != ''
-        && value <= {{ $settings->max_deposits_amount }}
-        && value >= {{ $settings->min_deposits_amount }}
+        && value <= maxDeposit
+        && value >= minDeposit
         && valueOriginal != ''
       ) {
       // Fees
@@ -361,7 +373,7 @@ $('#onlyNumber').on('keyup', function() {
     var value = parseFloat($(this).val());
     var paymentGateway = $('input[name=payment_gateway]:checked').val();
 
-    if (value > {{ $settings->max_deposits_amount }} || valueOriginal.length == 0) {
+    if (value > maxDeposit || valueOriginal.length == 0) {
       $('#handlingFee').html('0');
       $('#total, #total2').html('0');
     }
@@ -371,9 +383,9 @@ $('#onlyNumber').on('keyup', function() {
     var totalTax = 0;
 
     if (valueOriginal.length == 0
-				|| valueOriginal == ''
-				|| value < {{ $settings->min_deposits_amount }}
-				|| value > {{$settings->max_deposits_amount}}
+                || valueOriginal == ''
+                || value < minDeposit
+                || value > maxDeposit
       ) {
         // Reset
   			for (var i = 1; i <= taxes; i++) {
@@ -393,8 +405,8 @@ $('#onlyNumber').on('keyup', function() {
       //==== End Taxes
 
     if (paymentGateway
-        && value <= {{ $settings->max_deposits_amount }}
-        && value >= {{ $settings->min_deposits_amount }}
+        && value <= maxDeposit
+        && value >= minDeposit
         && valueOriginal != ''
       ) {
 
@@ -413,9 +425,9 @@ $('#onlyNumber').on('keyup', function() {
       var total = (parseFloat(value) + parseFloat(amountFinal) + parseFloat(totalTaxes));
 
       if (valueOriginal.length != 0
-  				|| valueOriginal != ''
-  				|| value >= {{ $settings->min_deposits_amount }}
-  				|| value <= {{$settings->max_deposits_amount}}
+                || valueOriginal != ''
+                || value >= minDeposit
+                || value <= maxDeposit
         ) {
         $('#handlingFee').html(amountFinal);
         $('#total, #total2').html(total.toFixed($decimal));

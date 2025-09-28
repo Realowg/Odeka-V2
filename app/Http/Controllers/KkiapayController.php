@@ -73,11 +73,14 @@ class KkiapayController extends Controller
             'sandbox' => $payment->sandbox === 'true',
         ];
 
-        // Return a small JS snippet injected into #bodyContainer that opens the widget
+        // Return a robust JS snippet that ensures the SDK is present, then opens the widget
         // The frontend expects { success: true, insertBody: '<script>...</script>' }
+        $cfg = json_encode($widgetConfig, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT);
+        $script = "<script type='text/javascript'>(function(){\n  function openWidget(){\n    try { openKkiapayWidget(" . $cfg . "); } catch(e){ console.error(e); }\n  }\n  if (typeof openKkiapayWidget === 'function') {\n    openWidget();\n  } else {\n    var s=document.createElement('script');\n    s.src='https://cdn.kkiapay.me/k.js';\n    s.onload=openWidget;\n    s.onerror=function(){ alert('Failed to load Kkiapay widget. Please try again.'); };\n    document.body.appendChild(s);\n  }\n})();</script>";
+
         return response()->json([
             'success' => true,
-            'insertBody' => "<script type='text/javascript'>\nif (typeof openKkiapayWidget === 'function') { openKkiapayWidget(" . json_encode($widgetConfig, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) . "); } else { console.error('Kkiapay SDK not loaded'); }\n</script>"
+            'insertBody' => $script,
         ]);
     } // End methd show
 
