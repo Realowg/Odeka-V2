@@ -27,3 +27,21 @@ RedirectMatch 404 /database/.*
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# Route all non-file requests to public/index.php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Handle Authorization Header for proxies
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+    # Redirect Trailing Slashes...
+    RewriteRule ^(.+)/$ /$1 [L,R=301]
+
+    # If request is not a real file or directory, send to public/index.php
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ public/index.php [L]
+</IfModule>

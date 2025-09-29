@@ -580,7 +580,7 @@ Route::group(['middleware' => 'private.content'], function() {
   | Admin Panel
   |--------- -------------------------
   */
- Route::group(['middleware' => 'role'], function() {
+ Route::group(['middleware' => 'enhanced.role'], function() {
 
     // Upgrades
  	Route::get('update/{version}',[UpgradeController::class, 'update']);
@@ -787,6 +787,7 @@ Route::group(['middleware' => 'private.content'], function() {
 		Route::post('/role-management/remove', [App\Http\Controllers\RoleManagementController::class, 'removeRole'])->name('role.remove');
 		Route::post('/role-management/migrate', [App\Http\Controllers\RoleManagementController::class, 'migrateUsers'])->name('role.migrate');
 		Route::get('/role-management/stats', [App\Http\Controllers\RoleManagementController::class, 'getRoleStats'])->name('role.stats');
+		Route::get('/role-management/effective-permissions', [App\Http\Controllers\RoleManagementController::class, 'effectivePermissions'])->name('role.effective_permissions');
 
 		// Shop Categories
 		Route::get('/shop-categories', [AdminController::class, 'shopCategories'])->name('shop_categories');

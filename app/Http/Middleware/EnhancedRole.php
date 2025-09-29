@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Auth\Guard;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class EnhancedRole
 {
@@ -90,9 +91,17 @@ class EnhancedRole
      */
     private function getEnhancedUserRole($user)
     {
-        return UserRole::where('user_id', $user->id)
-            ->where('is_active', true)
-            ->first();
+        try {
+            if (!Schema::hasTable('user_roles')) {
+                return null;
+            }
+
+            return UserRole::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->first();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     /**

@@ -4,8 +4,8 @@
     Header set Content-Disposition "attachment"
 </FilesMatch>
 
-# Deny execution of PHP files in uploads
-<FilesMatch "\.php$">
+# Deny execution of PHP files except the front controller
+<FilesMatch "^(?!index\.php$).+\.php$">
     Order allow,deny
     Deny from all
 </FilesMatch>
@@ -15,3 +15,24 @@
     Order allow,deny
     Deny from all
 </FilesMatch>
+
+# Laravel front controller and routing
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+    # Redirect Trailing Slashes...
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>

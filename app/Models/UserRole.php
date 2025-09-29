@@ -50,6 +50,15 @@ class UserRole extends Model
     }
 
     /**
+     * Return default permissions for a role
+     */
+    public static function getDefaultPermissionsForRole(string $roleName): array
+    {
+        $map = self::getRolePermissions();
+        return $map[$roleName] ?? [];
+    }
+
+    /**
      * Check if role has specific permission
      */
     public static function roleHasPermission(string $role, string $permission): bool
