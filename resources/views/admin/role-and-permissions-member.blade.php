@@ -39,13 +39,29 @@
 			<div class="card shadow-custom border-0">
 				<div class="card-body p-lg-5">
 
-					 <form method="POST" action="{{ url('panel/admin/members/roles-and-permissions', $user->id) }}" enctype="multipart/form-data">
+         @php($enhancedRole = $user->userRole)
+
+         @if ($enhancedRole)
+           <div class="alert alert-info d-flex align-items-center" role="alert">
+             <i class="bi-shield-lock me-2"></i>
+             <div>
+               Enhanced role active: <strong>{{ ucfirst(str_replace('_',' ', $enhancedRole->role_name)) }}</strong>.
+               Manage via <a class="alert-link" href="{{ url('panel/admin/role-management') }}">Role Management</a>. The legacy role selector below is disabled while an enhanced role is active.
+             </div>
+           </div>
+         @else
+           <div class="alert alert-secondary" role="alert">
+             To assign an enhanced role (Super Admin, Admin, Moderator, Finance, Support), first set legacy Role to <strong>Admin</strong> here, then go to <a class="alert-link" href="{{ url('panel/admin/role-management') }}">Role Management</a>.
+           </div>
+         @endif
+
+         <form method="POST" action="{{ url('panel/admin/members/roles-and-permissions', $user->id) }}" enctype="multipart/form-data">
 						 @csrf
 
 						 <div class="row mb-3">
  		          <label class="col-sm-2 col-form-labe text-lg-end">{{ __('admin.role') }}</label>
  		          <div class="col-sm-10">
- 		            <select name="role" class="form-select">
+                 <select name="role" class="form-select" @if ($enhancedRole) disabled @endif>
 									<option @if ($user->role == 'normal') selected="selected" @endif value="normal">{{trans('admin.normal')}}</option>
 									<option @if ($user->role == 'admin') selected="selected" @endif value="admin">{{trans('admin.role_admin')}}</option>
  		           </select>

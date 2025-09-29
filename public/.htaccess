@@ -1,3 +1,22 @@
+# Security headers for file uploads
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|mp4|mp3|pdf)$">
+    Header set X-Content-Type-Options nosniff
+    Header set Content-Disposition "attachment"
+</FilesMatch>
+
+# Deny execution of PHP files except the front controller
+<FilesMatch "^(?!index\.php$).+\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to potentially dangerous files
+<FilesMatch "\.(php|phtml|php3|php4|php5|phar|jsp|asp|aspx|cgi|pl|py|rb|sh|bat|cmd|exe|scr|vbs|js|jar)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Laravel front controller and routing
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -7,16 +26,13 @@
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    # Redirect Trailing Slashes...
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-

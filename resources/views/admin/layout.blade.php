@@ -60,7 +60,7 @@
       <div class="offcanvas-body px-0 scrollbar">
           <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-start list-sidebar" id="menu">
 
-              @if (auth()->user()->hasPermission('dashboard'))
+              @if (auth()->user()->hasEnhancedPermission('dashboard'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin') }}" class="nav-link text-truncate @if (request()->is('panel/admin')) active @endif">
                       <i class="bi-speedometer2 me-2"></i> {{ __('admin.dashboard') }}
@@ -68,7 +68,7 @@
               </li><!-- /end list -->
             @endif
 
-              @if (auth()->user()->hasPermission('general'))
+              @if (auth()->user()->hasEnhancedPermission('general'))
               <li class="nav-item">
                   <a href="#settings" data-bs-toggle="collapse" class="nav-link text-truncate dropdown-toggle @if (request()->is(['panel/admin/settings', 'panel/admin/settings/limits', 'panel/admin/video/encoding'])) active @endif" @if (request()->is(['panel/admin/settings', 'panel/admin/settings/limits', 'panel/admin/video/encoding'])) aria-expanded="true" @endif>
                       <i class="bi-gear me-2"></i> {{ __('admin.general_settings') }}
@@ -93,7 +93,7 @@
                 </li>
               </div><!-- /end collapse settings -->
 
-              @if (auth()->user()->hasPermission('reports'))
+              @if (auth()->user()->hasEnhancedPermission('reports'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/reports') }}" class="nav-link text-truncate @if (request()->is('panel/admin/reports')) active @endif">
                       <i class="bi-flag me-2"></i> 
@@ -107,7 +107,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('withdrawals'))
+              @if (auth()->user()->hasEnhancedPermission('withdrawals'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/withdrawals') }}" class="nav-link text-truncate @if (request()->is('panel/admin/withdrawals')) active @endif">
                       <i class="bi-bank me-2"></i>
@@ -121,7 +121,7 @@
               </li><!-- /end list -->
               @endif
               
-              @if (auth()->user()->hasPermission('verification_requests'))
+              @if (auth()->user()->hasEnhancedPermission('verification_requests'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/verification/members') }}" class="nav-link text-truncate @if (request()->is('panel/admin/verification/members')) active @endif">
                       <i class="bi-person-badge me-2"></i>
@@ -135,7 +135,7 @@
               </li><!-- /end list -->
             @endif
 
-            @if (auth()->user()->hasPermission('deposits'))
+            @if (auth()->user()->hasEnhancedPermission('deposits'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/deposits') }}" class="nav-link text-truncate @if (request()->is('panel/admin/deposits')) active @endif">
                       <i class="bi-cash-stack me-2"></i>
@@ -149,7 +149,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('posts'))
+              @if (auth()->user()->hasEnhancedPermission('posts'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/posts') }}" class="nav-link text-truncate @if (request()->is('panel/admin/posts')) active @endif">
                       <i class="bi-pencil-square me-2"></i>
@@ -163,7 +163,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('subscriptions'))
+              @if (auth()->user()->hasEnhancedPermission('subscriptions'))
             <li class="nav-item">
                 <a href="{{ url('panel/admin/subscriptions') }}" class="nav-link text-truncate @if (request()->is('panel/admin/subscriptions')) active @endif">
                     <i class="bi-arrow-repeat me-2"></i> {{ __('admin.subscriptions') }}
@@ -171,7 +171,7 @@
             </li><!-- /end list -->
             @endif
 
-              @if (auth()->user()->hasPermission('transactions'))
+              @if (auth()->user()->hasEnhancedPermission('transactions'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/transactions') }}" class="nav-link text-truncate @if (request()->is('panel/admin/transactions')) active @endif">
                       <i class="bi-receipt me-2"></i> {{ __('admin.transactions') }}
@@ -179,7 +179,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('members'))
+              @if (auth()->user()->hasEnhancedPermission('members'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/members') }}" class="nav-link text-truncate @if (request()->is('panel/admin/members')) active @endif">
                       <i class="bi-people me-2"></i> {{ __('admin.members') }}
@@ -187,7 +187,15 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('advertising'))
+              @if (auth()->user()->hasEnhancedPermission('members'))
+              <li class="nav-item">
+                  <a href="{{ url('panel/admin/role-management') }}" class="nav-link text-truncate @if (request()->is('panel/admin/role-management')) active @endif">
+                      <i class="bi-shield-lock me-2"></i> Role Management
+                  </a>
+              </li><!-- /end list -->
+              @endif
+
+              @if (auth()->user()->hasEnhancedPermission('advertising'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/advertising') }}" class="nav-link text-truncate @if (request()->is('panel/admin/advertising')) active @endif">
                       <i class="bi-badge-ad me-2"></i> {{ __('general.advertising') }}
@@ -195,7 +203,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('gifts'))
+              @if (auth()->user()->hasEnhancedPermission('gifts'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/gifts') }}" class="nav-link text-truncate @if (request()->is('panel/admin/gifts')) active @endif">
                       <i class="bi-gift me-2"></i> {{ __('general.gifts') }}
@@ -203,7 +211,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('comments_replies'))
+              @if (auth()->user()->hasEnhancedPermission('comments_replies'))
               <li class="nav-item">
                   <a href="#comments_replies" data-bs-toggle="collapse" class="nav-link text-truncate dropdown-toggle @if (request()->is(['panel/admin/comments', 'panel/admin/replies'])) active @endif" @if (request()->is(['panel/admin/comments', 'panel/admin/replies'])) aria-expanded="true" @endif>
                       <i class="bi-chat me-2"></i> {{ __('general.comments_replies') }}
@@ -225,7 +233,7 @@
               </div><!-- /end collapse settings -->
 
 
-              @if (auth()->user()->hasPermission('messages'))
+              @if (auth()->user()->hasEnhancedPermission('messages'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/messages') }}" class="nav-link text-truncate @if (request()->is('panel/admin/messages')) active @endif">
                       <i class="bi-send me-2"></i> {{ __('general.messages') }}
@@ -233,7 +241,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('announcements'))
+              @if (auth()->user()->hasEnhancedPermission('announcements'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/announcements') }}" class="nav-link text-truncate @if (request()->is('panel/admin/announcements')) active @endif">
                       <i class="bi-megaphone me-2"></i> {{ __('general.announcements') }}
@@ -241,7 +249,7 @@
               </li><!-- /end list -->
             @endif
 
-              @if (auth()->user()->hasPermission('maintenance_mode'))
+              @if (auth()->user()->hasEnhancedPermission('maintenance_mode'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/maintenance/mode') }}" class="nav-link text-truncate @if (request()->is('panel/admin/maintenance/mode')) active @endif">
                       <i class="bi bi-tools me-2"></i> {{ __('admin.maintenance_mode') }}
@@ -249,7 +257,7 @@
               </li><!-- /end list -->
             @endif
 
-            @if (auth()->user()->hasPermission('billing'))
+            @if (auth()->user()->hasEnhancedPermission('billing'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/billing') }}" class="nav-link text-truncate @if (request()->is('panel/admin/billing')) active @endif">
                       <i class="bi-receipt-cutoff me-2"></i> {{ __('general.billing_information') }}
@@ -257,7 +265,7 @@
               </li><!-- /end list -->
             @endif
 
-                @if (auth()->user()->hasPermission('tax'))
+                @if (auth()->user()->hasEnhancedPermission('tax'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/tax-rates') }}" class="nav-link text-truncate @if (request()->is('panel/admin/tax-rates')) active @endif">
                       <i class="bi-receipt me-2"></i> {{ __('general.tax_rates') }}
@@ -265,7 +273,7 @@
               </li><!-- /end list -->
             @endif
 
-            @if (auth()->user()->hasPermission('countries_states'))
+            @if (auth()->user()->hasEnhancedPermission('countries_states'))
               <li class="nav-item">
                   <a href="#countriesStates" data-bs-toggle="collapse"  class="nav-link text-truncate dropdown-toggle @if (request()->is('panel/admin/countries') || request()->is('panel/admin/states')) active @endif" @if (request()->is('panel/admin/countries') || request()->is('panel/admin/states')) aria-expanded="true" @endif>
                       <i class="bi-globe me-2"></i> {{ __('general.countries_states') }}
@@ -286,7 +294,7 @@
                 </li><!-- /end list -->
               </div><!-- /end collapse settings -->
 
-              @if (auth()->user()->hasPermission('email'))
+              @if (auth()->user()->hasEnhancedPermission('email'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/settings/email') }}" class="nav-link text-truncate @if (request()->is('panel/admin/settings/email')) active @endif">
                       <i class="bi-at me-2"></i> {{ __('admin.email_settings') }}
@@ -294,7 +302,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('live_streaming'))
+              @if (auth()->user()->hasEnhancedPermission('live_streaming'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/live-streaming') }}" class="nav-link text-truncate @if (request()->is('panel/admin/live-streaming')) active @endif">
                       <i class="bi-camera-video me-2"></i> {{ __('general.live_streaming') }}
@@ -302,7 +310,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('live_streaming_private_requests'))
+              @if (auth()->user()->hasEnhancedPermission('live_streaming_private_requests'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/live-streaming-private-requests') }}" title="{{ __('general.live_streaming_private_requests') }}" class="nav-link text-truncate @if (request()->is('panel/admin/live-streaming-private-requests')) active @endif">
                       <i class="bi-person-video3 me-2"></i> {{ __('general.live_streaming_private_requests') }}
@@ -310,7 +318,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('push_notifications'))
+              @if (auth()->user()->hasEnhancedPermission('push_notifications'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/push-notifications') }}" class="nav-link text-truncate @if (request()->is('panel/admin/push-notifications')) active @endif">
                       <i class="bi-app-indicator me-2"></i> {{ __('general.push_notifications') }}
@@ -318,7 +326,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('stories'))
+              @if (auth()->user()->hasEnhancedPermission('stories'))
               <li class="nav-item">
                   <a href="#stories" data-bs-toggle="collapse" class="nav-link text-truncate dropdown-toggle @if (request()->is('panel/admin/stories/settings') || request()->is('panel/admin/stories/posts') || request()->is('panel/admin/stories/backgrounds')) active @endif" @if (request()->is('panel/admin/stories/settings') || request()->is('panel/admin/stories/posts') || request()->is('panel/admin/stories/backgrounds') || request()->is('panel/admin/stories/fonts')) aria-expanded="true" @endif>
                       <i class="bi-clock-history me-2"></i> {{ __('general.stories') }}
@@ -349,7 +357,7 @@
                 </li><!-- /end list -->
               </div><!-- /end collapse settings -->
 
-              @if (auth()->user()->hasPermission('shop'))
+              @if (auth()->user()->hasEnhancedPermission('shop'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/shop') }}" class="nav-link text-truncate @if (request()->is('panel/admin/shop')) active @endif">
                       <i class="bi-shop-window me-2"></i> {{ __('general.shop') }}
@@ -357,7 +365,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('products'))
+              @if (auth()->user()->hasEnhancedPermission('products'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/products') }}" class="nav-link text-truncate @if (request()->is('panel/admin/products')) active @endif">
                       <i class="bi-tag me-2"></i> {{ __('general.products') }}
@@ -365,7 +373,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('shop_categories'))
+              @if (auth()->user()->hasEnhancedPermission('shop_categories'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/shop-categories') }}" class="nav-link text-truncate @if (request()->is('panel/admin/shop-categories')) active @endif">
                       <i class="bi-list-ul me-2"></i> {{ __('general.shop_categories') }}
@@ -373,7 +381,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('sales'))
+              @if (auth()->user()->hasEnhancedPermission('sales'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/sales') }}" class="nav-link text-truncate @if (request()->is('panel/admin/sales')) active @endif">
                       <i class="bi-cart me-2"></i> {{ __('general.sales') }}
@@ -381,7 +389,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('storage'))
+              @if (auth()->user()->hasEnhancedPermission('storage'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/storage') }}" class="nav-link text-truncate @if (request()->is('panel/admin/storage')) active @endif">
                       <i class="bi-server me-2"></i> {{ __('admin.storage') }}
@@ -389,7 +397,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('theme'))
+              @if (auth()->user()->hasEnhancedPermission('theme'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/theme') }}" class="nav-link text-truncate @if (request()->is('panel/admin/theme')) active @endif">
                       <i class="bi-brush me-2"></i> {{ __('admin.theme') }}
@@ -397,7 +405,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('custom_css_js'))
+              @if (auth()->user()->hasEnhancedPermission('custom_css_js'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/custom-css-js') }}" class="nav-link text-truncate @if (request()->is('panel/admin/custom-css-js')) active @endif">
                       <i class="bi-code-slash me-2"></i> {{ __('general.custom_css_js') }}
@@ -405,7 +413,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('referrals'))
+              @if (auth()->user()->hasEnhancedPermission('referrals'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/referrals') }}" class="nav-link text-truncate @if (request()->is('panel/admin/referrals')) active @endif">
                       <i class="bi-person-plus me-2"></i> {{ __('general.referrals') }}
@@ -413,7 +421,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('languages'))
+              @if (auth()->user()->hasEnhancedPermission('languages'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/languages') }}" class="nav-link text-truncate @if (request()->is('panel/admin/languages')) active @endif">
                       <i class="bi-translate me-2"></i> {{ __('admin.languages') }}
@@ -421,7 +429,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('categories'))
+              @if (auth()->user()->hasEnhancedPermission('categories'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/categories') }}" class="nav-link text-truncate @if (request()->is('panel/admin/categories')) active @endif">
                       <i class="bi-list-stars me-2"></i> {{ __('admin.categories') }}
@@ -429,7 +437,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('pages'))
+              @if (auth()->user()->hasEnhancedPermission('pages'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/pages') }}" class="nav-link text-truncate @if (request()->is('panel/admin/pages')) active @endif">
                       <i class="bi-file-earmark-text me-2"></i> {{ __('admin.pages') }}
@@ -437,7 +445,7 @@
               </li><!-- /end list -->
                 @endif
 
-                @if (auth()->user()->hasPermission('blog'))
+                @if (auth()->user()->hasEnhancedPermission('blog'))
                 <li class="nav-item">
                     <a href="{{ url('panel/admin/blog') }}" class="nav-link text-truncate @if (request()->is('panel/admin/blog')) active @endif">
                         <i class="bi-pencil me-2"></i> {{ __('general.blog') }}
@@ -445,7 +453,7 @@
                 </li><!-- /end list -->
                   @endif
 
-                @if (auth()->user()->hasPermission('payments'))
+              @if (auth()->user()->hasEnhancedPermission('payments'))
               <li class="nav-item">
                   <a href="#payments" data-bs-toggle="collapse" class="nav-link text-truncate dropdown-toggle @if (request()->is('panel/admin/payments') || request()->is('panel/admin/payments/*')) active @endif" @if (request()->is('panel/admin/payments') || request()->is('panel/admin/payments/*')) aria-expanded="true" @endif>
                       <i class="bi-credit-card me-2"></i> {{ __('admin.payment_settings') }}
@@ -469,7 +477,7 @@
               </div><!-- /end collapse settings -->
               @endif
 
-              @if (auth()->user()->hasPermission('profiles_social'))
+              @if (auth()->user()->hasEnhancedPermission('profiles_social'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/profiles-social') }}" class="nav-link text-truncate @if (request()->is('panel/admin/profiles-social')) active @endif">
                       <i class="bi-share me-2"></i> {{ __('admin.profiles_social') }}
@@ -477,7 +485,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('social_login'))
+              @if (auth()->user()->hasEnhancedPermission('social_login'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/social-login') }}" class="nav-link text-truncate @if (request()->is('panel/admin/social-login')) active @endif">
                       <i class="bi-facebook me-2"></i> {{ __('admin.social_login') }}
@@ -485,7 +493,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('google'))
+              @if (auth()->user()->hasEnhancedPermission('google'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/google') }}" class="nav-link text-truncate @if (request()->is('panel/admin/google')) active @endif">
                       <i class="bi-google me-2"></i> Google
@@ -493,7 +501,7 @@
               </li><!-- /end list -->
               @endif
 
-              @if (auth()->user()->hasPermission('pwa'))
+              @if (auth()->user()->hasEnhancedPermission('pwa'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/pwa') }}" class="nav-link text-truncate @if (request()->is('panel/admin/pwa')) active @endif">
                       <i class="bi-phone me-2"></i> PWA

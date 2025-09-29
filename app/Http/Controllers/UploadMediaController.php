@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManagerStatic as ImageManager;
+use App\Http\Controllers\SecureFileValidator;
 
 class UploadMediaController extends Controller
 {
@@ -87,6 +88,27 @@ class UploadMediaController extends Controller
 
 		if ($upload['isSuccess']) {
 			foreach ($upload['files'] as $key => $item) {
+				// Enhanced security validation
+				try {
+					// Build absolute path to the stored temp file; fallback to uploader-provided path keys
+					$absoluteTempPath = public_path('temp/' . $item['name']);
+					$uploaderPath = $item['relative_file'] ?? ($item['file'] ?? null);
+					$tmpName = is_file($absoluteTempPath) ? $absoluteTempPath : $uploaderPath;
+
+					$fileArray = [
+						'tmp_name' => $tmpName,
+						'name' => $item['name'],
+						'size' => $item['size'],
+						'error' => UPLOAD_ERR_OK
+					];
+					SecureFileValidator::validateFile($fileArray);
+				} catch (\InvalidArgumentException $e) {
+					return response()->json([
+						'isSuccess' => false,
+						'hasWarnings' => true,
+						'warnings' => ['Security validation failed: ' . $e->getMessage()]
+					]);
+				}
 				// Process file based on type but keep in temp storage
 				switch ($item['format']) {
 					case 'image':
