@@ -1,0 +1,19 @@
+#!/bin/sh
+# Block pushes to master branch. Work on feature branches and merge into betasor.
+
+remote_name="$1"
+remote_url="$2"
+
+blocked_branch="master"
+
+while read local_ref local_sha remote_ref remote_sha
+do
+  branch="$(echo "$remote_ref" | sed 's,refs/heads/,,')"
+  if [ "$branch" = "$blocked_branch" ]; then
+    echo "Error: Push to '$blocked_branch' is blocked. Use feature branches and open PRs into 'betasor'."
+    exit 1
+  fi
+done
+
+exit 0
+
