@@ -20,7 +20,14 @@
         </div>
         <div class="col-md-3 mb-3">
           <label class="form-label">Default role (optional)</label>
-          <input type="text" name="default_role" class="form-control" placeholder="member">
+          <select name="default_role" class="form-select">
+            <option value="">— None —</option>
+            @if(isset($roles) && is_array($roles))
+              @foreach($roles as $role)
+                <option value="{{ $role }}">{{ ucwords(str_replace('_',' ', $role)) }}</option>
+              @endforeach
+            @endif
+          </select>
         </div>
         <div class="col-md-3 mb-3 d-flex align-items-end">
           <div class="form-check me-4">

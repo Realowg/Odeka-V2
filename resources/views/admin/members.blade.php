@@ -54,6 +54,11 @@
 							<i class="bi bi-search btn-search bar-search"></i>
              <input type="text" name="q" class="form-control ps-5 w-auto" value="" placeholder="{{ __('general.search') }}">
           </form><!-- form -->
+
+							<div class="mt-2 mt-lg-0">
+								<a href="{{ url('panel/admin/users/import') }}" class="btn btn-primary rounded-pill btn-sm">Import users</a>
+								<a href="{{ url('panel/admin/users/import/sample') }}" class="btn btn-secondary rounded-pill btn-sm ms-2">Sample CSV</a>
+							</div>
 				</div>
 
             @endif

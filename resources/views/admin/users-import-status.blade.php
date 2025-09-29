@@ -10,6 +10,14 @@
         <dd class="col-sm-9">{{ $import->status }}</dd>
         <dt class="col-sm-3">File</dt>
         <dd class="col-sm-9">{{ $import->filename }}</dd>
+        <dt class="col-sm-3">Import options</dt>
+        <dd class="col-sm-9">
+          @php $opts = $import->options ?? []; @endphp
+          <code>default_role={{ $opts['default_role'] ?? 'none' }}</code>
+          <code class="ms-2">update_existing={{ !empty($opts['update_existing']) ? 'true' : 'false' }}</code>
+          <code class="ms-2">send_invite={{ !empty($opts['send_invite']) ? 'true' : 'false' }}</code>
+          <code class="ms-2">dry_run={{ !empty($opts['dry_run']) ? 'true' : 'false' }}</code>
+        </dd>
         <dt class="col-sm-3">Counts</dt>
         <dd class="col-sm-9">Total: {{ $import->total_rows }}, Created: {{ $import->created_count }}, Updated: {{ $import->updated_count }}, Skipped: {{ $import->skipped_count }}, Failed: {{ $import->failed_count }}</dd>
       </dl>
