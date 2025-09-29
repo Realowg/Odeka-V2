@@ -198,10 +198,10 @@ Route::get('verify/account/{confirmation_code}', [HomeController::class, 'getVer
  	});
 
 	// Stripe Webhook
-	Route::post('stripe/webhook', [StripeWebHookController::class, 'handleWebhook']);
+	Route::post('stripe/webhook', [StripeWebHookController::class, 'handleWebhook'])->middleware('webhook');
 
 	// Paystack Webhook
-	Route::post('webhook/paystack', [PaystackController::class, 'webhooks']);
+	Route::post('webhook/paystack', [PaystackController::class, 'webhooks'])->middleware('webhook');
 
 	// Paypal IPN (TIPS)
   Route::post('paypal/tip/ipn', [TipController::class, 'paypalTipIpn']);
@@ -222,8 +222,8 @@ Route::get('verify/account/{confirmation_code}', [HomeController::class, 'getVer
    	});
 
 		// CCBill Webhook
-		Route::post('webhook/ccbill', [CCBillController::class, 'webhooks']);
-		Route::any('ccbill/approved', [CCBillController::class, 'approved']);
+		Route::post('webhook/ccbill', [CCBillController::class, 'webhooks'])->middleware('webhook');
+		Route::any('ccbill/approved', [CCBillController::class, 'approved'])->middleware('webhook');
 
 		// Paypal IPN (PPV)
 	  Route::post('paypal/ppv/ipn', [PayPerViewController::class, 'paypalPPVIpn']);
@@ -591,6 +591,11 @@ Route::group(['middleware' => 'private.content'], function() {
 		// Dashboard
 		Route::get('/', [AdminController::class, 'admin'])->name('dashboard');
 
+		// Webhook Monitoring
+		Route::get('/webhook/monitoring', [App\Http\Controllers\WebhookMonitoringController::class, 'dashboard'])->name('webhook.monitoring');
+		Route::get('/webhook/stats', [App\Http\Controllers\WebhookMonitoringController::class, 'getStats'])->name('webhook.stats');
+		Route::post('/webhook/test', [App\Http\Controllers\WebhookMonitoringController::class, 'testWebhook'])->name('webhook.test');
+
 		// Settings
 		Route::get('/settings', [AdminController::class, 'settings'])->name('general');
 		Route::post('/settings', [AdminController::class, 'saveSettings']);
@@ -763,9 +768,16 @@ Route::group(['middleware' => 'private.content'], function() {
 		Route::view('/pwa', 'admin.pwa')->name('pwa');
 		Route::post('/pwa', [AdminController::class, 'pwa']);
 
-		// Role and permissions
+		// Role and permissions (Legacy)
 		Route::get('/members/roles-and-permissions/{id}', [AdminController::class, 'roleAndPermissions'])->name('members');
 		Route::post('/members/roles-and-permissions/{id}', [AdminController::class, 'storeRoleAndPermissions']);
+
+		// Enhanced Role Management
+		Route::get('/role-management', [App\Http\Controllers\RoleManagementController::class, 'index'])->name('role.management');
+		Route::post('/role-management/assign', [App\Http\Controllers\RoleManagementController::class, 'assignRole'])->name('role.assign');
+		Route::post('/role-management/remove', [App\Http\Controllers\RoleManagementController::class, 'removeRole'])->name('role.remove');
+		Route::post('/role-management/migrate', [App\Http\Controllers\RoleManagementController::class, 'migrateUsers'])->name('role.migrate');
+		Route::get('/role-management/stats', [App\Http\Controllers\RoleManagementController::class, 'getRoleStats'])->name('role.stats');
 
 		// Shop Categories
 		Route::get('/shop-categories', [AdminController::class, 'shopCategories'])->name('shop_categories');
@@ -919,7 +931,7 @@ Route::post('panel/admin/currency/fetch', function () {
 // File Media
 Route::get('file/media/{typeMedia}/{fileId}/{filename}', [UpdatesController::class, 'getFileMedia']);
 
-Route::any('coinpayments/ipn', [AddFundsController::class, 'coinPaymentsIPN'])->name('coinpaymentsIPN');
+Route::any('coinpayments/ipn', [AddFundsController::class, 'coinPaymentsIPN'])->name('coinpaymentsIPN')->middleware('webhook');
 Route::get('wallet/payment/success', [AddFundsController::class, 'paymentProcess'])->name('paymentProcess');
 
 Route::get('media/storage/focus/{type}/{path}', [UpdatesController::class, 'imageFocus'])->where(['type' => '(video|photo|message)$', 'path' => '.*']);
@@ -929,7 +941,7 @@ Route::post('2fa/resend',[TwoFactorAuthController::class, 'resend']);
 
 Route::get('explore/creators/live',[HomeController::class, 'creatorsBroadcastingLive']);
 
-Route::post('webhook/mollie', [AddFundsController::class, 'webhookMollie']);
+Route::post('webhook/mollie', [AddFundsController::class, 'webhookMollie'])->middleware('webhook');
 
 // ===== Odeka Homepage auxiliary routes (non-breaking) =====
 Route::get('channel', [ChannelController::class, 'index']);
@@ -945,7 +957,7 @@ Route::get('case-study', [PublicAssetsController::class, 'caseStudy']);
 Route::get('sponsor/oshow', [PublicAssetsController::class, 'oshowSponsorKit']);
 
 // PayPal Webhook
-Route::post('webhook/paypal', [PayPalController::class, 'webhook']);
+Route::post('webhook/paypal', [PayPalController::class, 'webhook'])->middleware('webhook');
 
 // Verify Transactions PayPal
 Route::get('paypal/verify', [PayPalController::class, 'verifyTransaction'])->name('paypal.success');
@@ -954,19 +966,19 @@ Route::get('paypal/verify', [PayPalController::class, 'verifyTransaction'])->nam
 Route::post('video/views/{id}', [UpdatesController::class, 'videoViews']);
 
 // Payku Notify
-Route::post('webhook/payku', [AddFundsController::class, 'paykuNotify']);
+Route::post('webhook/payku', [AddFundsController::class, 'paykuNotify'])->middleware('webhook');
 
 // Coinbase
-Route::any('webhook/coinbase', [AddFundsController::class, 'webhookCoinbase']);
+Route::any('webhook/coinbase', [AddFundsController::class, 'webhookCoinbase'])->middleware('webhook');
 
 // NOWPayments
-Route::post('webhook/nowpayments', [AddFundsController::class, 'webhookNowpayments'])->name('webhook.nowpayments');
+Route::post('webhook/nowpayments', [AddFundsController::class, 'webhookNowpayments'])->name('webhook.nowpayments')->middleware('webhook');
 
 // Cardinity
 Route::get('payment/cardinity', [CardinityController::class, 'show'])->name('cardinity');
-Route::post('webhook/cardinity', [CardinityController::class, 'webhook'])->name('webhook.cardinity');
+Route::post('webhook/cardinity', [CardinityController::class, 'webhook'])->name('webhook.cardinity')->middleware('webhook');
 Route::post('subscription/cardinity/cancel/{id}',[CardinityController::class, 'cancelSubscription']);
-Route::post('webhook/cardinity/cancel', [CardinityController::class, 'cancelPayment'])->name('cardinity.cancel');
+Route::post('webhook/cardinity/cancel', [CardinityController::class, 'cancelPayment'])->name('cardinity.cancel')->middleware('webhook');
 
 // Resize Images
 Route::get('assets/{path}/{size}/{file}', [HomeController::class, 'resizeImage'])
@@ -996,7 +1008,7 @@ Route::get('click/ad/{ad}', [AdvertisingController::class, 'clicksAds'])->name('
 Route::get('verify/squad', [AddFundsController::class, 'verifySquad'])->name('webhook.squad');
 
 // Binance
-Route::any('webhook/binance', [AddFundsController::class, 'webhookBinance'])->name('webhook.binance');
+Route::any('webhook/binance', [AddFundsController::class, 'webhookBinance'])->name('webhook.binance')->middleware('webhook');
 
 // Fallback basic pages to avoid 404s from footer/header links
 Route::view('/privacy', 'index.contact')->name('privacy');

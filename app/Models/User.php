@@ -462,6 +462,30 @@ class User extends Authenticatable implements HasLocalePreference
   }
 
   /**
+   * Relationship to enhanced user role
+   */
+  public function userRole()
+  {
+    return $this->hasOne(\App\Models\UserRole::class)->where('is_active', true);
+  }
+
+  /**
+   * Enhanced permission checking
+   */
+  public function hasEnhancedPermission($section): bool
+  {
+    $enhancedRole = $this->userRole;
+    
+    if ($enhancedRole) {
+      return \App\Models\UserRole::roleHasPermission($enhancedRole->role_name, $section) ||
+             in_array($section, $enhancedRole->permissions ?? []);
+    }
+    
+    // Fallback to legacy system
+    return $this->hasPermission($section);
+  }
+
+  /**
    * Get the user's blocked countries.
    */
   public function blockedCountries()
