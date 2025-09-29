@@ -58,6 +58,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\PublicAssetsController;
 use App\Http\Controllers\BriefController;
+use App\Http\Controllers\Admin\UserImportController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -730,6 +731,14 @@ Route::group(['middleware' => 'private.content'], function() {
 
 		// Clear Cache
 		Route::get('/clear-cache', [AdminController::class, 'clearCache'])->name('maintenance_mode');
+
+		// Users Import
+		Route::get('/users/import', [UserImportController::class, 'form']);
+		Route::get('/users/import/sample', [UserImportController::class, 'sample']);
+		Route::post('/users/import', [UserImportController::class, 'upload']);
+		Route::get('/users/import/{import}', [UserImportController::class, 'status']);
+		Route::get('/users/import/{import}/errors.csv', [UserImportController::class, 'errorsCsv']);
+		Route::get('/users/import/{import}/summary.json', [UserImportController::class, 'summaryJson']);
 
 		// Blog
 		Route::get('/blog', [AdminController::class, 'blog'])->name('blog');
