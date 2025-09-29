@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessUserImport;
 use App\Models\UserImport;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -13,7 +14,10 @@ class UserImportController extends Controller
 {
     public function form()
     {
-        return view('admin.users-import');
+        $roles = array_keys(UserRole::getRolePermissions());
+        return view('admin.users-import', [
+            'roles' => $roles,
+        ]);
     }
 
     public function sample(): StreamedResponse
@@ -24,9 +28,10 @@ class UserImportController extends Controller
         ];
         $callback = function () {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['email','username','name','role','status','language','preferred_currency','password','send_invite']);
-            fputcsv($out, ['jane@example.com','jane','Jane Doe','member','active','en','EUR','','true']);
-            fputcsv($out, ['john@example.com','johnny','John Smith','creator','active','fr','XOF','MyS3cur3Pwd','false']);
+            // Columns no longer include send_invite or role; role can be set via the form dropdown
+            fputcsv($out, ['email','username','name','status','language','preferred_currency','password']);
+            fputcsv($out, ['jane@example.com','jane','Jane Doe','active','en','EUR','']);
+            fputcsv($out, ['john@example.com','johnny','John Smith','active','fr','XOF','MyS3cur3Pwd']);
             fclose($out);
         };
         return response()->stream($callback, 200, $headers);
@@ -34,9 +39,18 @@ class UserImportController extends Controller
 
     public function upload(Request $request)
     {
+        // Normalize checkbox values prior to validation to avoid boolean rule failing on "on"/missing
+        $request->merge([
+            'update_existing' => $request->has('update_existing'),
+            'send_invite' => $request->has('send_invite'),
+            'dry_run' => $request->has('dry_run'),
+        ]);
+
+        $roles = array_keys(UserRole::getRolePermissions());
+
         $request->validate([
             'file' => 'required|file|mimetypes:text/plain,text/csv,text/tsv,text/*,application/csv,application/vnd.ms-excel|max:10240',
-            'default_role' => 'nullable|string',
+            'default_role' => 'nullable|in:'.implode(',', $roles),
             'update_existing' => 'nullable|boolean',
             'send_invite' => 'nullable|boolean',
             'dry_run' => 'nullable|boolean',
@@ -49,10 +63,10 @@ class UserImportController extends Controller
             'filename' => $request->file('file')->getClientOriginalName(),
             'storage_path' => $path,
             'options' => [
-                'default_role' => $request->boolean('default_role') ? $request->input('default_role') : null,
-                'update_existing' => $request->boolean('update_existing'),
-                'send_invite' => $request->boolean('send_invite'),
-                'dry_run' => $request->boolean('dry_run'),
+                'default_role' => $request->input('default_role') ?: null,
+                'update_existing' => (bool) $request->input('update_existing'),
+                'send_invite' => (bool) $request->input('send_invite'),
+                'dry_run' => (bool) $request->input('dry_run'),
             ],
             'status' => 'queued',
         ]);
