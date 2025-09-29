@@ -90,8 +90,13 @@ class UploadMediaController extends Controller
 			foreach ($upload['files'] as $key => $item) {
 				// Enhanced security validation
 				try {
+					// Build absolute path to the stored temp file; fallback to uploader-provided path keys
+					$absoluteTempPath = public_path('temp/' . $item['name']);
+					$uploaderPath = $item['relative_file'] ?? ($item['file'] ?? null);
+					$tmpName = is_file($absoluteTempPath) ? $absoluteTempPath : $uploaderPath;
+
 					$fileArray = [
-						'tmp_name' => $item['file'],
+						'tmp_name' => $tmpName,
 						'name' => $item['name'],
 						'size' => $item['size'],
 						'error' => UPLOAD_ERR_OK

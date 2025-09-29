@@ -55,7 +55,24 @@ class SecureFileValidator
     public static function validateFile(array $file, string $fileType = 'any'): bool
     {
         // Basic file validation
-        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+        if (!isset($file['tmp_name'])) {
+            throw new InvalidArgumentException('Invalid file upload');
+        }
+
+        $tmpPath = $file['tmp_name'];
+        $isUploaded = is_uploaded_file($tmpPath);
+
+        // Allow files that were already moved by the uploader into the public temp directory
+        $isMovedToTemp = false;
+        if (is_file($tmpPath)) {
+            $realTmp = @realpath($tmpPath);
+            $realTempDir = @realpath(public_path('temp'));
+            if ($realTmp !== false && $realTempDir !== false && strpos($realTmp, $realTempDir) === 0) {
+                $isMovedToTemp = true;
+            }
+        }
+
+        if (!$isUploaded && !$isMovedToTemp) {
             throw new InvalidArgumentException('Invalid file upload');
         }
 
