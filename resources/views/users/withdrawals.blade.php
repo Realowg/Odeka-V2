@@ -99,7 +99,7 @@
                    <div class="form-group mt-3">
                      <div class="input-group mb-2">
                      <div class="input-group-prepend">
-                       <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                      <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
                      </div>
                          <input class="form-control form-control-lg isNumber" autocomplete="off" name="amount" placeholder="{{trans('admin.amount')}}" type="text">
                      </div>

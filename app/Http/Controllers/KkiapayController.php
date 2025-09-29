@@ -35,33 +35,11 @@ class KkiapayController extends Controller
      */
     public function show()
     {
-        $payment = PaymentGateways::whereName($this->request->payment_gateway)->whereEnabled(1)->firstOrFail();
-        $amount = 1000;
-        $publicKey = 'ecbad200652011efbf02478c5adba4b8';
-        $name = 'John Doe';
-        $email = 'john@example.com';
-        $phone = '229XXXXXXXX';
-        $transactionId = uniqid();
-        $callback = route('subscription.success', ['user' => 'pritam', 'delay' => 'paypal']);
-
-        $url = sprintf(
-            'https://widget-v2.kkiapay.me/?amount=%d&key=%s&name=%s&email=%s&phone=%s&transactionId=%s&callback=%s',
-            $amount,
-            $publicKey,
-            urlencode($name),
-            urlencode($email),
-            $phone,
-            $transactionId,
-            urlencode($callback)
-        );
-
-        return redirect($url);
-
         if (!$this->request->expectsJson()) {
             abort(404);
         }
 
-        // Find the User
+        // Find the User to subscribe
         $user = User::whereVerifiedId('yes')
             ->whereId($this->request->id)
             ->where('id', '<>', auth()->id())
@@ -70,178 +48,101 @@ class KkiapayController extends Controller
         // Check if Plan exists
         $plan = $user->plans()
             ->whereInterval($this->request->interval)
-            ->whereStatus('1')
             ->firstOrFail();
 
-        // Get Payment Gateway
-        $payment = PaymentGateways::whereName($this->request->payment_gateway)->whereEnabled(1)->firstOrFail();
+        // Get Payment Gateway (must be enabled and named exactly as radio value)
+        $payment = PaymentGateways::whereName('Kkiapay')->whereEnabled(1)->firstOrFail();
 
-        $urlSuccess = route('subscription.success', ['user' => $user->username, 'delay' => 'paypal']);
-        $urlCancel = url('buy/subscription/cancel', $user->username);
+        // Prefer env/config keys; fallback to gateway row
+        $kconf = config('services.kkiapay');
+        $publicKey = $kconf['public_key'] ?? $payment->key;
+        $privateKey = $kconf['private_key'] ?? $payment->key_secret;
+        $secretKey = $kconf['secret'] ?? $payment->webhook_secret;
+        $isSandbox = (bool) ($kconf['sandbox'] ?? ($payment->sandbox === 'true'));
 
-        switch ($plan->interval) {
-            case 'weekly':
-                $interval = 'DAY';
-                $interval_count = 7;
-                break;
-
-            case 'monthly':
-                $interval = 'MONTH';
-                $interval_count = 1;
-                break;
-
-            case 'quarterly':
-                $interval = 'MONTH';
-                $interval_count = 3;
-                break;
-
-            case 'biannually':
-                $interval = 'MONTH';
-                $interval_count = 6;
-                break;
-
-            case 'yearly':
-                $interval = 'YEAR';
-                $interval_count = 1;
-                break;
+        // Calculate gross amount (includes taxes), normalize to base currency numeric
+        $gross = Helper::amountGross($plan->price);
+        $baseCode = Helper::baseCurrencyCode();
+        // Ensure amount is in BASE currency for Kkiapay
+        $amount = (float) Helper::toBaseCurrency($gross, Helper::displayCurrencyCode());
+        if (Helper::isZeroDecimalCurrency($baseCode)) {
+            $amount = (int) round($amount);
+        } else {
+            $amount = (float) number_format($amount, 2, '.', '');
         }
 
+        $callback = route('kkiapay.callback');
 
-        $curl = curl_init();
-
-        $data = [
-            "amount" => Helper::amountGross($plan->price),
-            "phoneNumber" => "22998765432",
-            "email" => "customer@example.com",
-            "reason" => 'Product of @' . $user->username,
-            "callback" => $urlSuccess
+        // Safely serialize widget config to prevent JS injection
+        $widgetConfig = [
+            'amount' => $amount,
+            'key' => $publicKey,
+            'callback' => $callback,
+            'sandbox' => $isSandbox,
         ];
 
-        curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.kkiapay.me/api/v1/payment-link",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "X-API-KEY: " . $payment->token
-            ],
-            CURLOPT_POSTFIELDS => json_encode($data),
+        // Return a robust JS snippet that ensures the SDK is present, then opens the widget
+        // The frontend expects { success: true, insertBody: '<script>...</script>' }
+        $cfg = json_encode($widgetConfig, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT);
+        $script = "<script type='text/javascript'>(function(){\n  function openWidget(){\n    try { openKkiapayWidget(" . $cfg . "); } catch(e){ console.error(e); }\n  }\n  if (typeof openKkiapayWidget === 'function') {\n    openWidget();\n  } else {\n    var s=document.createElement('script');\n    s.src='https://cdn.kkiapay.me/k.js';\n    s.onload=openWidget;\n    s.onerror=function(){ alert('Failed to load Kkiapay widget. Please try again.'); };\n    document.body.appendChild(s);\n  }\n})();</script>";
+
+        return response()->json([
+            'success' => true,
+            'insertBody' => $script,
         ]);
-
-        $response = curl_exec($curl);
-        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        if (curl_errno($curl)) {
-            echo 'Curl error: ' . curl_error($curl);
-        } else {
-            echo "HTTP Status Code: $httpCode\n";
-            echo "Response: $response";
-        }
-
-        curl_close($curl);
-        return Redirect::to($response);
-
-        // Init PayPal
-        $provider = new PayPalClient();
-        $token = $provider->getAccessToken();
-        $provider->setAccessToken($token);
-
-        $product_id = 'product_' . $plan->name;
-
-        try {
-            // Get Product Details
-            $product = $provider->showProductDetails($product_id);
-
-            $getProductId = $product['id'];
-        } catch (\Exception $e) {
-
-            // Create Product
-            $requestId = 'create-product-' . time();
-
-            $product = $provider->createProduct([
-                'id' => $product_id,
-                'name' => '@' . $user->username . ' - ' . $plan->name,
-                'description' => 'Product of @' . $user->username,
-                'type' => 'DIGITAL',
-                'category' => 'DIGITAL_MEDIA_BOOKS_MOVIES_MUSIC',
-            ], $requestId);
-        }
-
-        try {
-            // Create Plan
-            $planPayPal = 'plan_' . $plan->name;
-
-            $requestIdPlan = 'create-plan-' . time();
-
-            $paypalPlan = $provider->createPlan([
-                'product_id' => $product['id'],
-                'name' => $planPayPal,
-                'status' => 'ACTIVE',
-                'billing_cycles' => [
-                    [
-                        'frequency' => [
-                            'interval_unit' => $interval,
-                            'interval_count' => $interval_count,
-                        ],
-                        'tenure_type' => 'REGULAR',
-                        'sequence' => 1,
-                        'total_cycles' => 0,
-                        'pricing_scheme' => [
-                            'fixed_price' => [
-                                'value' => Helper::amountGross($plan->price),
-                                'currency_code' => $this->settings->currency_code,
-                            ],
-                        ]
-                    ]
-                ],
-                'payment_preferences' => [
-                    'auto_bill_outstanding' => true,
-                    'payment_failure_threshold' => 0,
-                ],
-            ], $requestIdPlan);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'errors' => ['error' => $e->getMessage()]
-            ]);
-        }
-
-        try {
-            // Create Subscription
-            $subscription = $provider->createSubscription([
-                'plan_id' => $paypalPlan['id'],
-                'application_context' => [
-                    'brand_name' => $this->settings->title,
-                    'locale' => 'en-US',
-                    'shipping_preference' => 'SET_PROVIDED_ADDRESS',
-                    'user_action' => 'SUBSCRIBE_NOW',
-                    'payment_method' => [
-                        'payer_selected' => 'PAYPAL',
-                        'payee_preferred' => 'IMMEDIATE_PAYMENT_REQUIRED',
-                    ],
-                    'return_url' => $urlSuccess,
-                    'cancel_url' => $urlCancel
-                ],
-                'custom_id' => http_build_query([
-                    'id' => $this->request->id,
-                    'amount' => $plan->price,
-                    'subscriber' => auth()->id(),
-                    'plan' => $plan->name,
-                    'taxes' => auth()->user()->taxesPayable(),
-                ])
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'url' => $subscription['links'][0]['href']
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'errors' => ['error' => $e->getMessage()]
-            ]);
-        }
     } // End methd show
+
+    public function callback(Request $request)
+    {
+        // Verify with PHP SDK using config/env with DB fallback
+        $payment = PaymentGateways::whereName('Kkiapay')->firstOrFail();
+        $kconf = config('services.kkiapay');
+        $publicKey = $kconf['public_key'] ?? $payment->key;
+        $privateKey = $kconf['private_key'] ?? $payment->key_secret;
+        $secret = $kconf['secret'] ?? $payment->webhook_secret;
+        $isSandbox = (bool) ($kconf['sandbox'] ?? ($payment->sandbox === 'true'));
+
+        try {
+            $kkiapay = new \Kkiapay\Kkiapay($publicKey, $privateKey, $secret, $isSandbox);
+            $transactionId = $request->input('transactionId') ?? $request->input('transaction_id');
+            if (!$transactionId) {
+                return redirect('/');
+            }
+
+            $transaction = $kkiapay->verifyTransaction($transactionId);
+
+            if (($transaction->status ?? null) === 'SUCCESS') {
+                $type = $request->query('type');
+
+                // Wallet deposits flow
+                if ($type === 'deposit') {
+                    $userId = (int) $request->query('user');
+                    $amount = (float) $request->query('amount');
+                    $taxes  = $request->query('taxes');
+
+                    // Insert Deposit if not exists and credit wallet
+                    try {
+                        $verifiedTxnId = \App\Models\Deposits::where('txn_id', $transactionId)->first();
+                        if (! $verifiedTxnId) {
+                            $this->deposit($userId, $transactionId, $amount, 'Kkiapay', $taxes);
+                            \App\Models\User::find($userId)?->increment('wallet', $amount);
+                        }
+                    } catch (\Exception $e) {
+                        // ignore but still redirect
+                    }
+
+                    return redirect('my/wallet');
+                }
+
+                // Default to subscription success page when type not provided
+                return redirect()->route('subscription.success', ['user' => auth()->user()->username]);
+            }
+        } catch (\Exception $e) {
+            // fallthrough
+        }
+
+        return redirect('/');
+    }
 
     public function cancelSubscription($id)
     {

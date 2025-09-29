@@ -40,7 +40,7 @@
 		        </div>
 
 						<div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ trans('general.flat_rate') }} ({{$settings->currency_symbol}})</label>
+		          <label class="col-sm-2 col-form-label text-lg-end">{{ trans('general.flat_rate') }} ({{ \App\Helper::displayCurrencySymbol() }})</label>
 		          <div class="col-sm-10">
 		            <input value="{{ $data->fee_cents }}" name="fee_cents" type="text" class="form-control">
 		          </div>

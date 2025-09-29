@@ -97,10 +97,9 @@ class RegisterController extends Controller
   public function showRegistrationForm()
   {
     if ($this->settings->registration_active == '1' && $this->settings->home_style == 0) {
-      return view('auth.register');
-    } else {
-      return redirect('/');
+      return view('auth.register-odeka');
     }
+    return redirect('/');
   }
 
 

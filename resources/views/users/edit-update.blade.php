@@ -51,7 +51,7 @@
                 <div class="form-group @if ($data->price == 0.00) display-none @endif" id="price" >
                   <div class="input-group mb-2">
                   <div class="input-group-prepend">
-                    <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                    <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
                   </div>
                       <input class="form-control isNumber" value="{{$data->price != 0.00 ? $data->price : null}}" autocomplete="off" name="price" placeholder="{{__('general.price')}}" type="text">
                   </div>

@@ -56,7 +56,7 @@
 							<div class="form-group mb-0">
 		            <div class="input-group">
 		            <div class="input-group-prepend">
-		              <span class="input-group-text">{{$settings->currency_symbol}}</span>
+				      <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
 		            </div>
 		                <input type="number" min="{{$settings->live_streaming_minimum_price}}" autocomplete="off" id="onlyNumber" class="form-control priceLive" name="price" placeholder="{{ __('general.price') }} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->live_streaming_minimum_price) }})">
 		            </div>

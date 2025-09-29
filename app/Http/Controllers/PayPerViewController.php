@@ -79,6 +79,13 @@ class PayPerViewController extends Controller
       ]);
     }
 
+    // Normalize posted amount to base currency before any math (if provided)
+    if ($this->request->has('amount')) {
+      $this->request->merge([
+        'amount' => Helper::toBaseCurrency($this->request->amount)
+      ]);
+    }
+
     switch ($this->request->payment_gateway_ppv) {
       case 'wallet':
         return $this->sendWallet();

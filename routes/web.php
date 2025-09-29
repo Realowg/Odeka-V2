@@ -54,6 +54,12 @@ use App\Http\Controllers\UploadMediaPreviewShopController;
 use App\Http\Controllers\UploadMediaWelcomeMessageController;
 use Illuminate\Support\Str;
 use App\Http\Controllers\KkiapayController;
+use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\PublicAssetsController;
+use App\Http\Controllers\BriefController;
+use App\Http\Controllers\Admin\UserImportController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -726,6 +732,14 @@ Route::group(['middleware' => 'private.content'], function() {
 		// Clear Cache
 		Route::get('/clear-cache', [AdminController::class, 'clearCache'])->name('maintenance_mode');
 
+		// Users Import
+		Route::get('/users/import', [UserImportController::class, 'form']);
+		Route::get('/users/import/sample', [UserImportController::class, 'sample']);
+		Route::post('/users/import', [UserImportController::class, 'upload']);
+		Route::get('/users/import/{import}', [UserImportController::class, 'status']);
+		Route::get('/users/import/{import}/errors.csv', [UserImportController::class, 'errorsCsv']);
+		Route::get('/users/import/{import}/summary.json', [UserImportController::class, 'summaryJson']);
+
 		// Blog
 		Route::get('/blog', [AdminController::class, 'blog'])->name('blog');
 		Route::post('/blog/delete/{id}', [AdminController::class, 'deleteBlog']);
@@ -901,6 +915,16 @@ Route::post('refresh/creators', [HomeController::class, 'refreshCreators']);
 Route::get('payment/paystack', [PaystackController::class, 'show'])->name('paystack');
 Route::get('payment/ccbill', [CCBillController::class, 'show'])->name('ccbill');
 Route::get('payment/kkiapay', [KkiapayController::class, 'show'])->name('kkiapay');
+Route::match(['get','post'], 'kkiapay/callback', [KkiapayController::class, 'callback'])->name('kkiapay.callback');
+
+// Currency switcher
+Route::post('currency-switch', [CurrencyController::class, 'switch'])->name('currency.switch');
+
+// Admin: manual fetch currency rates
+Route::post('panel/admin/currency/fetch', function () {
+    Artisan::call('currency:fetch');
+    return back()->with('success_message', 'Currency rates fetched.');
+})->middleware('role');
 // File Media
 Route::get('file/media/{typeMedia}/{fileId}/{filename}', [UpdatesController::class, 'getFileMedia']);
 
@@ -915,6 +939,19 @@ Route::post('2fa/resend',[TwoFactorAuthController::class, 'resend']);
 Route::get('explore/creators/live',[HomeController::class, 'creatorsBroadcastingLive']);
 
 Route::post('webhook/mollie', [AddFundsController::class, 'webhookMollie']);
+
+// ===== Odeka Homepage auxiliary routes (non-breaking) =====
+Route::get('channel', [ChannelController::class, 'index']);
+Route::get('channel/o-show/latest', [ChannelController::class, 'latestOshow']);
+Route::get('channel/{show:slug}', [ChannelController::class, 'show']);
+Route::get('channel/{show:slug}/{episode:slug}', [ChannelController::class, 'episode']);
+
+Route::get('brief', [BriefController::class, 'create']);
+Route::post('brief', [BriefController::class, 'store']);
+
+Route::get('media-kit', [PublicAssetsController::class, 'mediaKit']);
+Route::get('case-study', [PublicAssetsController::class, 'caseStudy']);
+Route::get('sponsor/oshow', [PublicAssetsController::class, 'oshowSponsorKit']);
 
 // PayPal Webhook
 Route::post('webhook/paypal', [PayPalController::class, 'webhook']);
@@ -969,3 +1006,14 @@ Route::get('verify/squad', [AddFundsController::class, 'verifySquad'])->name('we
 
 // Binance
 Route::any('webhook/binance', [AddFundsController::class, 'webhookBinance'])->name('webhook.binance');
+
+// Fallback basic pages to avoid 404s from footer/header links
+Route::view('/privacy', 'index.contact')->name('privacy');
+Route::view('/terms', 'index.contact')->name('terms');
+Route::view('/about', 'index.contact')->name('about');
+Route::view('/careers', 'index.contact')->name('careers');
+Route::view('/contact', 'index.contact')->name('contact');
+Route::view('/pricing', 'index.contact')->name('pricing');
+Route::view('/studio', 'index.contact')->name('studio');
+Route::get('/case-study', function(){ return redirect('/media-kit'); })->name('case-study');
+Route::get('/media-kit', [\App\Http\Controllers\PublicAssetsController::class, 'mediaKit'])->name('media-kit');

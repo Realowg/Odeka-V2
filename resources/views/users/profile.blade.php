@@ -892,7 +892,7 @@
                   @endforeach
 
                     <div class="custom-control custom-radio mb-3">
-                        <input name="payment_gateway" value="kikiapaymomo13" id="radiomomo13" class="custom-control-input" type="radio">
+                        <input name="payment_gateway" value="Kkiapay" id="radiomomo13" class="custom-control-input" type="radio">
                         <label class="custom-control-label" for="radiomomo13">
                             <span><strong><img src="{{ url('images/icons/kkiapay.svg') }}" width="70"/></strong></span>
                         </label>

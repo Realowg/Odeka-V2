@@ -12,6 +12,16 @@
       <span class="text-muted">{{ __('admin.payment_settings') }}</span>
   </h5>
 
+  <div class="d-flex align-items-center mb-3">
+    <form action="{{ url('panel/admin/currency/fetch') }}" method="POST" class="mr-3">
+      @csrf
+      <button type="submit" class="btn btn-sm btn-outline-primary">Fetch latest currency rates</button>
+    </form>
+    <div>
+      <small class="text-muted">Last rates update: {{ $lastRateAt ? $lastRateAt : '—' }}</small>
+    </div>
+  </div>
+
 <div class="content">
 	<div class="row">
 
@@ -36,16 +46,26 @@
              @csrf
 
             <div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ trans('admin.currency_code') }}</label>
-		          <div class="col-sm-10">
-		            <input value="{{ $settings->currency_code }}" name="currency_code" type="text" class="form-control">
-		          </div>
-		        </div>
+              <label class="col-sm-2 col-form-label text-lg-end">{{ trans('admin.currency_code') }}</label>
+              <div class="col-sm-10">
+                <select name="currency_code" class="form-select">
+                  @foreach (config('currencies.supported') as $code => $label)
+                    @php $v = is_numeric($code) ? $label : $code; $t = is_numeric($code) ? $label : $label.' ('.$code.')'; @endphp
+                    <option value="{{ $v }}" @if ($settings->currency_code == $v) selected @endif>{{ $t }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
 
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label text-lg-end">{{ trans('admin.currency_symbol') }}</label>
               <div class="col-sm-10">
-                <input value="{{ $settings->currency_symbol }}" name="currency_symbol" type="text" class="form-control">
+                <select name="currency_symbol" class="form-select">
+                  @foreach (config('currencies.supported') as $code => $label)
+                    @php $v = is_numeric($code) ? $label : $code; $sym = config('currencies.symbols')[$v] ?? $settings->currency_symbol; @endphp
+                    <option value="{{ $sym }}" @if ($settings->currency_code == $v) selected @endif>{{ $sym }} ({{ $v }})</option>
+                  @endforeach
+                </select>
                 <small class="d-block">{{ __('admin.notice_currency') }}</small>
               </div>
             </div>

@@ -377,25 +377,28 @@ class Helper
 
 	public static function amountFormat($value)
 	{
+		// Convert and format using display currency
+		$value = self::fromBaseCurrency($value);
+		$symbol = self::displayCurrencySymbol();
 		switch (config('settings.currency_position')) {
 			case 'left':
-				$amount = config('settings.currency_symbol') . number_format($value);
+				$amount = $symbol . number_format($value);
 				break;
 
 			case 'left_space':
-				$amount = config('settings.currency_symbol') . ' ' . number_format($value);
+				$amount = $symbol . ' ' . number_format($value);
 				break;
 
 			case 'right':
-				$amount = number_format($value) . config('settings.currency_symbol');
+				$amount = number_format($value) . $symbol;
 				break;
 
 			case 'right_space':
-				$amount = number_format($value) . ' ' . config('settings.currency_symbol');
+				$amount = number_format($value) . ' ' . $symbol;
 				break;
 
 			default:
-				$amount = config('settings.currency_symbol') . number_format($value);
+				$amount = $symbol . number_format($value);
 				break;
 		}
 
@@ -404,25 +407,26 @@ class Helper
 
 	public static function amountWithoutFormat($value)
 	{
+		$symbol = self::displayCurrencySymbol();
 		switch (config('settings.currency_position')) {
 			case 'left':
-				$amount = config('settings.currency_symbol') . $value;
+				$amount = $symbol . $value;
 				break;
 
 			case 'left_space':
-				$amount = config('settings.currency_symbol') . ' ' . $value;
+				$amount = $symbol . ' ' . $value;
 				break;
 
 			case 'right':
-				$amount = $value . config('settings.currency_symbol');
+				$amount = $value . $symbol;
 				break;
 
 			case 'right_space':
-				$amount = $value . ' ' . config('settings.currency_symbol');
+				$amount = $value . ' ' . $symbol;
 				break;
 
 			default:
-				$amount = config('settings.currency_symbol') . $value;
+				$amount = $symbol . $value;
 				break;
 		}
 
@@ -440,6 +444,29 @@ class Helper
 			return $matches[1];
 		}
 		return false;
+	}
+
+	// Return an embeddable YouTube URL (nocookie domain)
+	public static function youtubeEmbed($url)
+	{
+		$id = self::getYoutubeId((string) $url);
+		if ($id) {
+			return 'https://www.youtube-nocookie.com/embed/' . $id . '?rel=0';
+		}
+		return '';
+	}
+
+	// Resolve asset URL from either external URL or uploaded file on the configured disk
+	public static function assetUrl($source = 'upload', $url = null, $file = null)
+	{
+		$source = strtolower((string) $source);
+		if ($source === 'url' && filter_var($url, FILTER_VALIDATE_URL)) {
+			return $url;
+		}
+		if ($file) {
+			return self::getFile($file);
+		}
+		return '';
 	}
 
 	public static function getVimeoId($url)
@@ -488,6 +515,69 @@ class Helper
 		return substr(strtolower(md5(time() . mt_rand(1000, 9999))), 0, 8);
 	} // End method
 
+	// ===== Currency helpers (centralized) =====
+	public static function baseCurrencyCode()
+	{
+		return config('settings.currency_code');
+	}
+
+	public static function displayCurrencyCode()
+	{
+		return app()->bound('display_currency') ? app('display_currency') : self::baseCurrencyCode();
+	}
+
+	public static function displayCurrencySymbol()
+	{
+		$code = self::displayCurrencyCode();
+		$symbols = config('currencies.symbols') ?? [];
+		if (isset($symbols[$code])) {
+			return $symbols[$code];
+		}
+		return config('settings.currency_symbol');
+	}
+
+	public static function isZeroDecimalCurrency($code = null)
+	{
+		$code = $code ?: self::baseCurrencyCode();
+		return in_array($code, config('currencies.zero-decimal')) ? true : false;
+	}
+
+	public static function currencyDecimals($code = null)
+	{
+		$code = $code ?: self::baseCurrencyCode();
+		$map = config('currencies.decimals') ?? [];
+		if (array_key_exists($code, $map)) {
+			return (int) $map[$code];
+		}
+		return self::isZeroDecimalCurrency($code) ? 0 : 2;
+	}
+
+	public static function toBaseCurrency($amount, $fromCode = null)
+	{
+		$from = strtoupper($fromCode ?: (app()->bound('display_currency') ? app('display_currency') : self::baseCurrencyCode()));
+		$base = self::baseCurrencyCode();
+		if ($from === $base) return $amount;
+		try {
+			$svc = app(\App\Services\CurrencyService::class);
+			return $svc->convertToBase((float)$amount, $from);
+		} catch (\Throwable $e) {
+			return $amount;
+		}
+	}
+
+	public static function fromBaseCurrency($amount, $toCode = null)
+	{
+		$to = strtoupper($toCode ?: (app()->bound('display_currency') ? app('display_currency') : self::baseCurrencyCode()));
+		$base = self::baseCurrencyCode();
+		if ($to === $base) return $amount;
+		try {
+			$svc = app(\App\Services\CurrencyService::class);
+			return $svc->convertFromBase((float)$amount, $to);
+		} catch (\Throwable $e) {
+			return $amount;
+		}
+	}
+
 	public static function amountFormatDecimal($value, $applyTax = null)
 	{
 		// Apply Taxes
@@ -505,8 +595,14 @@ class Helper
 			}
 		} // isTaxable
 
-		if (in_array(config('settings.currency_code'), config('currencies.zero-decimal'))) {
-			return config('settings.currency_symbol') . number_format($value);
+		// Convert to display currency for formatting
+		$value = self::fromBaseCurrency($value);
+
+		$displayCode = self::displayCurrencyCode();
+		$displaySymbol = self::displayCurrencySymbol();
+
+		if (self::isZeroDecimalCurrency($displayCode)) {
+			return $displaySymbol . number_format($value);
 		}
 
 		if (config('settings.decimal_format') == 'dot') {
@@ -519,23 +615,23 @@ class Helper
 		
 		switch (config('settings.currency_position')) {
 			case 'left':
-				$amount = config('settings.currency_symbol') . number_format($value, 2, $decimalDot, $decimalComma);
+				$amount = $displaySymbol . number_format($value, 2, $decimalDot, $decimalComma);
 				break;
 
 			case 'left_space':
-				$amount = config('settings.currency_symbol') . ' ' . number_format($value, 2, $decimalDot, $decimalComma);
+				$amount = $displaySymbol . ' ' . number_format($value, 2, $decimalDot, $decimalComma);
 				break;
 
 			case 'right':
-				$amount = number_format($value, 2, $decimalDot, $decimalComma) . config('settings.currency_symbol');
+				$amount = number_format($value, 2, $decimalDot, $decimalComma) . $displaySymbol;
 				break;
 
 			case 'right_space':
-				$amount = number_format($value, 2, $decimalDot, $decimalComma) . ' ' . config('settings.currency_symbol');
+				$amount = number_format($value, 2, $decimalDot, $decimalComma) . ' ' . $displaySymbol;
 				break;
 
 			default:
-				$amount = config('settings.currency_symbol') . number_format($value, 2, $decimalDot, $decimalComma);
+				$amount = $displaySymbol . number_format($value, 2, $decimalDot, $decimalComma);
 				break;
 		}
 
@@ -1227,7 +1323,7 @@ class Helper
 	{
 		switch (config('settings.wallet_format')) {
 			case 'real_money':
-				$moneyFormat = self::amountWithoutFormat($amount);
+				$moneyFormat = self::amountWithoutFormat(self::fromBaseCurrency($amount));
 				break;
 
 			case 'credits':
@@ -1249,7 +1345,8 @@ class Helper
 	public static function symbolPositionLeft()
 	{
 		if (config('settings.wallet_format') == 'real_money') {
-			return config('settings.currency_position') == 'left'  ? config('settings.currency_symbol') : ((config('settings.currency_position') == 'left_space') ? config('settings.currency_symbol') . ' ' : null);
+			$symbol = self::displayCurrencySymbol();
+			return config('settings.currency_position') == 'left'  ? $symbol : ((config('settings.currency_position') == 'left_space') ? $symbol . ' ' : null);
 		}
 
 		return null;
@@ -1258,7 +1355,8 @@ class Helper
 	public static function symbolPositionRight()
 	{
 		if (config('settings.wallet_format') == 'real_money') {
-			return config('settings.currency_position') == 'right'  ? config('settings.currency_symbol') : ((config('settings.currency_position') == 'right_space') ? ' ' . config('settings.currency_symbol') : null);
+			$symbol = self::displayCurrencySymbol();
+			return config('settings.currency_position') == 'right'  ? $symbol : ((config('settings.currency_position') == 'right_space') ? ' ' . $symbol : null);
 		} else {
 			switch (config('settings.wallet_format')) {
 				case 'credits':

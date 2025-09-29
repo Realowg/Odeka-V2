@@ -144,7 +144,7 @@
           <div class="d-flex py-3 my-1 my-lg-0 justify-content-center">
             <span class="mr-3 display-4"><i class="bi bi-cash-coin align-baseline"></i></span>
             <div>
-              <h3 class="mb-0">@if($settings->currency_position == 'left') {{ $settings->currency_symbol }}@endif{!! Helper::formatNumbersStats(Transactions::whereApproved('1')->sum('earning_net_user')) !!}@if($settings->currency_position == 'right'){{ $settings->currency_symbol }} @endif</h3>
+              <h3 class="mb-0">@if($settings->currency_position == 'left') {{ \App\Helper::displayCurrencySymbol() }}@endif{!! Helper::formatNumbersStats(Transactions::whereApproved('1')->sum('earning_net_user')) !!}@if($settings->currency_position == 'right'){{ \App\Helper::displayCurrencySymbol() }} @endif</h3>
               <h5 class="font-weight-light">{{__('general.earnings_of_creators')}}</h5>
             </div>
           </div>
@@ -181,7 +181,7 @@
       <div class="col-md-6">
         <label for="rangeMonthlySubscription" class="w-100">{{ __('general.monthly_subscription_price') }}
           <span class="float-right">
-            {{ $settings->currency_position == 'left' ? $settings->currency_symbol : null }}<span id="monthlySubscription">{{ $settings->min_subscription_amount }}</span>{{ $settings->currency_position == 'right' ? $settings->currency_symbol : null }}
+            {{ $settings->currency_position == 'left' ? \App\Helper::displayCurrencySymbol() : null }}<span id="monthlySubscription">{{ $settings->min_subscription_amount }}</span>{{ $settings->currency_position == 'right' ? \App\Helper::displayCurrencySymbol() : null }}
         </span>
         </label>
         <input type="range" class="custom-range" value="0" onInput="$('#monthlySubscription').html($(this).val())" min="{{ $settings->min_subscription_amount }}" max="{{ $settings->max_subscription_amount }}" id="rangeMonthlySubscription">
@@ -234,10 +234,10 @@
      @endif
 
      @if ($settings->currency_position == 'left')
-     var currency_symbol_left = '{{$settings->currency_symbol}}';
+    var currency_symbol_left = '{{ \App\Helper::displayCurrencySymbol() }}';
      var currency_symbol_right = '';
      @else
-     var currency_symbol_right = '{{$settings->currency_symbol}}';
+    var currency_symbol_right = '{{ \App\Helper::displayCurrencySymbol() }}';
      var currency_symbol_left = '';
      @endif
 

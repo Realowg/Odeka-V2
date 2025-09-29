@@ -61,7 +61,7 @@
               <label><strong>{{trans('general.subscription_price_weekly')}}</strong></label>
               <div class="input-group mb-2">
               <div class="input-group-prepend">
-                <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
                   <input class="form-control form-control-lg isNumber subscriptionPrice" @if (auth()->user()->verified_id == 'no' || auth()->user()->verified_id == 'reject' || auth()->user()->free_subscription == 'yes') disabled @endif name="price_weekly" placeholder="0.00" value="{{$settings->currency_code == 'JPY' ? round(auth()->user()->getPlan('weekly', 'price')) : auth()->user()->getPlan('weekly', 'price')}}"  type="text">
                     @error('price_weekly')
@@ -79,7 +79,7 @@
               <label class="mt-4"><strong>{{trans('users.subscription_price')}} *</strong></label>
               <div class="input-group mb-2">
               <div class="input-group-prepend">
-                <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
                   <input class="form-control form-control-lg isNumber subscriptionPrice" @if (auth()->user()->verified_id == 'no' || auth()->user()->verified_id == 'reject' || auth()->user()->free_subscription == 'yes') disabled @endif name="price" placeholder="0.00" value="{{$settings->currency_code == 'JPY' ? round(auth()->user()->getPlan('monthly', 'price')) : auth()->user()->getPlan('monthly', 'price')}}"  type="text">
                     @error('price')
@@ -92,7 +92,7 @@
               <label class="mt-4"><strong>{{trans('general.subscription_price_quarterly')}}</strong></label>
               <div class="input-group mb-2">
               <div class="input-group-prepend">
-                <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
                   <input class="form-control form-control-lg isNumber subscriptionPrice" @if (auth()->user()->verified_id == 'no' || auth()->user()->verified_id == 'reject' || auth()->user()->free_subscription == 'yes') disabled @endif name="price_quarterly" placeholder="0.00" value="{{$settings->currency_code == 'JPY' ? round(auth()->user()->getPlan('quarterly', 'price')) : auth()->user()->getPlan('quarterly', 'price')}}"  type="text">
                     @error('price_quarterly')
@@ -110,7 +110,7 @@
               <label class="mt-4"><strong>{{trans('general.subscription_price_biannually')}}</strong></label>
               <div class="input-group mb-2">
               <div class="input-group-prepend">
-                <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
                   <input class="form-control form-control-lg isNumber subscriptionPrice" @if (auth()->user()->verified_id == 'no' || auth()->user()->verified_id == 'reject' || auth()->user()->free_subscription == 'yes') disabled @endif name="price_biannually" placeholder="0.00" value="{{$settings->currency_code == 'JPY' ? round(auth()->user()->getPlan('biannually', 'price')) : auth()->user()->getPlan('biannually', 'price')}}"  type="text">
                     @error('price_biannually')
@@ -128,7 +128,7 @@
               <label class="mt-4"><strong>{{trans('general.subscription_price_yearly')}}</strong></label>
               <div class="input-group mb-2">
               <div class="input-group-prepend">
-                <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
               </div>
                   <input class="form-control form-control-lg isNumber subscriptionPrice" @if (auth()->user()->verified_id == 'no' || auth()->user()->verified_id == 'reject' || auth()->user()->free_subscription == 'yes') disabled @endif name="price_yearly" placeholder="0.00" value="{{$settings->currency_code == 'JPY' ? round(auth()->user()->getPlan('yearly', 'price')) : auth()->user()->getPlan('yearly', 'price')}}"  type="text">
                     @error('price_yearly')

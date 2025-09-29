@@ -266,8 +266,8 @@
 					</li>
 				@endif
 
-				<li class="nav-item dropdown d-lg-block d-none">
-					<a href="{{url('messages')}}" class="nav-link px-2" title="{{ __('general.messages') }}">
+                <li class="nav-item dropdown d-lg-block d-none">
+                    <a href="{{url('messages')}}" class="nav-link px-2" title="{{ __('general.messages') }}">
 
 						<span class="noti_msg notify @if (auth()->user()->messagesInbox() != 0) d-block @endif">
 							{{ auth()->user()->messagesInbox() }}
@@ -276,7 +276,12 @@
 						<i class="feather icon-send icon-navbar"></i>
 						<span class="d-lg-none align-middle ml-1">{{ __('general.messages') }}</span>
 					</a>
-				</li>
+                </li>
+
+                <!-- Currency switcher (desktop) -->
+                <li class="nav-item d-none d-lg-flex align-items-center mr-2">
+                  @include('includes.currency-switcher')
+                </li>
 
 				<li class="nav-item dropdown d-lg-block d-none">
 					<a href="{{url('notifications')}}" class="nav-link px-2" title="{{ __('general.notifications') }}">
@@ -303,16 +308,17 @@
 						@endif
 
 						@if (auth()->user()->verified_id == 'yes')
-						<span class="dropdown-item dropdown-navbar balance">
-							<i class="iconmoon icon-Dollar mr-2"></i> {{__('general.balance')}}: {{Helper::amountFormatDecimal(auth()->user()->balance)}}
-						</span>
+                        <span class="dropdown-item dropdown-navbar balance">
+                            <i class="iconmoon icon-Dollar mr-2"></i> {{__('general.balance')}}:
+                            {{ Helper::amountFormatDecimal(\App\Helper::fromBaseCurrency(auth()->user()->balance)) }}
+                        </span>
 					@endif
 
 					@if ($settings->disable_wallet == 'on' && auth()->user()->wallet != 0.00 || $settings->disable_wallet == 'off')
 						@if ($settings->disable_wallet == 'off')
 							<a class="dropdown-item dropdown-navbar" href="{{url('my/wallet')}}">
-								<i class="iconmoon icon-Wallet mr-2"></i> {{__('general.wallet')}}:
-								<span class="balanceWallet">{{Helper::userWallet()}}</span>
+                                <i class="iconmoon icon-Wallet mr-2"></i> {{__('general.wallet')}}:
+                                <span class="balanceWallet">{{ Helper::amountFormatDecimal(\App\Helper::fromBaseCurrency(Helper::userWallet(true))) }}</span>
 							</a>
 						@else
 							<span class="dropdown-item dropdown-navbar balance">

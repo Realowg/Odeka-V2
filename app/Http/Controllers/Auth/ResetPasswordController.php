@@ -39,6 +39,14 @@ class ResetPasswordController extends Controller
         $this->middleware('guest');
     }
 
+    public function showResetForm($token)
+    {
+        if (config('settings.home_style') == 0) {
+            return view('auth.passwords.reset-odeka')->with(['token' => $token, 'email' => request('email')]);
+        }
+        return view('auth.passwords.reset')->with(['token' => $token, 'email' => request('email')]);
+    }
+
     /**
      * Get the password reset validation rules.
      *

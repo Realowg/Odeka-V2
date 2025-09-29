@@ -45,7 +45,7 @@
                   <div class="input-group mb-2">
                     
                     <div class="input-group-prepend">
-                      <span class="input-group-text">{{$settings->currency_symbol}}</span>
+                      <span class="input-group-text">{{ \App\Helper::displayCurrencySymbol() }}</span>
                     </div>
                         <input value="{{ auth()->user()->price_live_streaming_private }}" class="form-control form-control-lg isNumber" required name="price_live_streaming_private" autocomplete="off" placeholder="{{__('general.price_live_streaming_private')}}" type="text">
                     </div>

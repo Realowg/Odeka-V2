@@ -51,34 +51,8 @@ class HomeController extends Controller
     // Home Guest
     if (auth()->guest()) {
       if (config('settings.home_style') == 0) {
-        $users = User::where('featured', 'yes')
-          ->where('status', 'active')
-          ->whereVerifiedId('yes')
-          ->whereHideProfile('no')
-          ->whereHas('plans', function ($query) {
-            $query->where('status', '1');
-          })
-          ->where('id', '<>', config('settings.hide_admin_profile') == 'on' ? 1 : 0)
-          ->where('blocked_countries', 'NOT LIKE', '%' . Helper::userCountry() . '%')
-          ->with([
-            'media' => fn($q) =>
-            $q->select('type')
-          ])
-          ->orWhere('featured', 'yes')
-          ->where('status', 'active')
-          ->whereVerifiedId('yes')
-          ->whereHideProfile('no')
-          ->whereFreeSubscription('yes')
-          ->where('id', '<>', config('settings.hide_admin_profile') == 'on' ? 1 : 0)
-          ->where('blocked_countries', 'NOT LIKE', '%' . Helper::userCountry() . '%')
-          ->inRandomOrder()
-          ->with([
-            'media' => fn($q) =>
-            $q->select('type')
-          ])
-          ->paginate(6);
-
-        $home = 'home';
+        // Use the new Odeka homepage for guests
+        return view('index.home-odeka');
       }
 
       // Total creators
