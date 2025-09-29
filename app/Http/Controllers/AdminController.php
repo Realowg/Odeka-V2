@@ -118,18 +118,18 @@ class AdminController extends Controller
 			->get();
 
 		$withdrawalsPaid = DB::table('withdrawals')
-			->selectRaw('SUM(CASE WHEN MONTH(date_paid) = "' . Carbon::now()->subMonth()->month . '" THEN amount ELSE 0 END) AS lastMonth')
+			->selectRaw('SUM(CASE WHEN MONTH(date_paid) = ? THEN amount ELSE 0 END) AS lastMonth', [Carbon::now()->subMonth()->month])
 			->first();
 
 		$revenues = Transactions::whereApproved('1')
 			->selectRaw('SUM(earning_net_admin) AS totalRaisedFunds')
 			->selectRaw('SUM(earning_net_user) AS totalUserRaisedFunds')
-			->selectRaw('SUM(CASE WHEN created_at >= "' . Carbon::today() . '" THEN earning_net_admin ELSE 0 END) AS today')
-			->selectRaw('SUM(CASE WHEN created_at >= "' . Carbon::yesterday() . '" AND created_at < "' . Carbon::today() . '" THEN earning_net_admin ELSE 0 END) AS yesterday')
-			->selectRaw('SUM(CASE WHEN created_at BETWEEN "' . Carbon::parse()->startOfWeek() . '" AND "' . Carbon::parse()->endOfWeek() . '" THEN earning_net_admin ELSE 0 END) AS week')
-			->selectRaw('SUM(CASE WHEN created_at BETWEEN "' . Carbon::parse()->startOfWeek()->subWeek() . '" AND "' . Carbon::parse()->subWeek()->endOfWeek() . '" THEN earning_net_admin ELSE 0 END) AS lastWeek')
-			->selectRaw('SUM(CASE WHEN created_at BETWEEN "' . Carbon::parse()->startOfMonth() . '" AND "' . Carbon::parse()->endOfMonth() . '" THEN earning_net_admin ELSE 0 END) AS month')
-			->selectRaw('SUM(CASE WHEN created_at BETWEEN "' . Carbon::parse()->startOfMonth()->subMonth() . '" AND "' . Carbon::parse()->subMonth()->endOfMonth() . '" THEN earning_net_admin ELSE 0 END) AS lastMonth')
+			->selectRaw('SUM(CASE WHEN created_at >= ? THEN earning_net_admin ELSE 0 END) AS today', [Carbon::today()])
+			->selectRaw('SUM(CASE WHEN created_at >= ? AND created_at < ? THEN earning_net_admin ELSE 0 END) AS yesterday', [Carbon::yesterday(), Carbon::today()])
+			->selectRaw('SUM(CASE WHEN created_at BETWEEN ? AND ? THEN earning_net_admin ELSE 0 END) AS week', [Carbon::parse()->startOfWeek(), Carbon::parse()->endOfWeek()])
+			->selectRaw('SUM(CASE WHEN created_at BETWEEN ? AND ? THEN earning_net_admin ELSE 0 END) AS lastWeek', [Carbon::parse()->startOfWeek()->subWeek(), Carbon::parse()->subWeek()->endOfWeek()])
+			->selectRaw('SUM(CASE WHEN created_at BETWEEN ? AND ? THEN earning_net_admin ELSE 0 END) AS month', [Carbon::parse()->startOfMonth(), Carbon::parse()->endOfMonth()])
+			->selectRaw('SUM(CASE WHEN created_at BETWEEN ? AND ? THEN earning_net_admin ELSE 0 END) AS lastMonth', [Carbon::parse()->startOfMonth()->subMonth(), Carbon::parse()->subMonth()->endOfMonth()])
 			->first();
 
 		// Total Paid Withdrawals

@@ -462,6 +462,81 @@ class User extends Authenticatable implements HasLocalePreference
   }
 
   /**
+   * Relationship to enhanced user role
+   */
+  public function userRole()
+  {
+    return $this->hasOne(\App\Models\UserRole::class)->where('is_active', true);
+  }
+
+  /**
+   * Enhanced permission checking
+   */
+  public function hasEnhancedPermission($section): bool
+  {
+    try {
+      if (!\Illuminate\Support\Facades\Schema::hasTable('user_roles')) {
+        return $this->hasPermission($section);
+      }
+    } catch (\Throwable $e) {
+      return $this->hasPermission($section);
+    }
+
+    $enhancedRole = $this->userRole;
+    
+    if ($enhancedRole) {
+      return \App\Models\UserRole::roleHasPermission($enhancedRole->role_name, $section) ||
+             in_array($section, $enhancedRole->permissions ?? []);
+    }
+    
+    // Fallback to legacy system
+    return $this->hasPermission($section);
+  }
+
+  /**
+   * Legacy admin permissions (parsed from users.permissions)
+   */
+  public function getLegacyAdminPermissions(): array
+  {
+    $permissionsRaw = (string) ($this->permissions ?? '');
+
+    if ($permissionsRaw === 'full_access') {
+      return \App\Models\UserRole::getAllPermissions();
+    }
+
+    if ($permissionsRaw === 'limited_access') {
+      // Minimal set used by legacy limited accounts
+      return ['dashboard'];
+    }
+
+    if (trim($permissionsRaw) === '') {
+      return [];
+    }
+
+    return array_values(array_unique(array_filter(array_map('trim', explode(',', $permissionsRaw)))));
+  }
+
+  /**
+   * Effective admin permissions: role defaults + custom + legacy fallback
+   */
+  public function getEffectiveAdminPermissions(): array
+  {
+    try {
+      if (\Illuminate\Support\Facades\Schema::hasTable('user_roles') && $this->userRole) {
+        $role = $this->userRole->role_name;
+        $defaults = \App\Models\UserRole::getDefaultPermissionsForRole($role);
+        $custom = $this->userRole->permissions ?? [];
+        return array_values(array_unique(array_merge($defaults, $custom)));
+      }
+    } catch (\Throwable $e) {
+      // ignore and fallback
+    }
+
+    // Legacy fallback
+    return $this->getLegacyAdminPermissions();
+  }
+
+  /**
    * Get the user's blocked countries.
    */
   public function blockedCountries()

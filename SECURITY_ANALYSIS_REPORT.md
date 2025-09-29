@@ -394,4 +394,3 @@ This Laravel application has several critical security vulnerabilities that requ
 **Recommended Security Review Frequency:** Monthly
 
 ---
-*This report should be treated as confidential and shared only with authorized personnel.*

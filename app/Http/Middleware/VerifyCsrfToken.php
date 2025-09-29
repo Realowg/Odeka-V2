@@ -12,10 +12,28 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-      'stripe/*',
-      'paypal/*',
-      'webhook/*',
+      // Payment webhooks - specific endpoints only
+      'stripe/webhook',
+      'webhook/paypal',
+      'webhook/paystack', 
+      'webhook/ccbill',
+      'webhook/mollie',
+      'webhook/cardinity',
+      'webhook/cardinity/cancel',
+      'webhook/nowpayments',
+      'webhook/payku',
+      'webhook/coinbase',
+      'webhook/binance',
+      'coinpayments/ipn',
+      
+      // CCBill approval (legacy)
       'ccbill/approved',
-      'coinpayments/*'
+      
+      // Storage webhooks (video encoding)
+      'webhook/storage/*',
+      'webhook/coco/*',
+      'webhook/message/coco/*',
+      'webhook/welcome/message/coco/*',
+      'webhook/story/coco/*'
     ];
 }

@@ -7,7 +7,7 @@ use Cookie;
 use Validator;
 use App\Helper;
 use App\Models\User;
-use App\Rules\TempEmail;
+use App\Rules\TempEmailSecure;
 use App\Models\Countries;
 use App\Models\Referrals;
 use Illuminate\Support\Str;
@@ -79,8 +79,8 @@ class RegisterController extends Controller
     });
 
     Validator::extend('temp_email', function ($attribute, $value, $parameters) {
-      return (new TempEmail())->passes($attribute, $value);
-    }, (new TempEmail())->message());
+      return (new TempEmailSecure())->passes($attribute, $value);
+    }, (new TempEmailSecure())->message());
 
     return Validator::make($data, [
       'name' => 'required|string|max:100|regex:/^([^0-9]*)$/',
