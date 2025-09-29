@@ -144,7 +144,7 @@
           }
           if (data && data.errors && errBox && errList) {
             errList.innerHTML = Object.values(data.errors).map(m => `<li>${m}</li>`).join('');
-            errBox.classList.remove('display-none');
+            errBox.classList.remove('hidden');
             document.getElementById('username_email')?.focus();
           }
           if (window.grecaptcha) { try { grecaptcha.reset(); } catch(_){} }

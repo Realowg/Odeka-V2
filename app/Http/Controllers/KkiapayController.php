@@ -63,7 +63,8 @@ class KkiapayController extends Controller
         // Calculate gross amount (includes taxes), normalize to base currency numeric
         $gross = Helper::amountGross($plan->price);
         $baseCode = Helper::baseCurrencyCode();
-        $amount = (float) $gross;
+        // Ensure amount is in BASE currency for Kkiapay
+        $amount = (float) Helper::toBaseCurrency($gross, Helper::displayCurrencyCode());
         if (Helper::isZeroDecimalCurrency($baseCode)) {
             $amount = (int) round($amount);
         } else {

@@ -75,9 +75,17 @@ class AddFundsController extends Controller
       'image.required_if' => __('general.please_select_image'),
     ];
 
+    // Normalize browser-locale decimals and convert to base currency BEFORE validation
+    if ($this->request->has('amount')) {
+      $normalized = str_replace(',', '.', (string) $this->request->amount);
+      $this->request->merge([
+        'amount' => Helper::toBaseCurrency($normalized)
+      ]);
+    }
+
     //<---- Validation
     $validator = Validator::make($this->request->all(), [
-      'amount' => 'required|integer|min:' . $this->settings->min_deposits_amount . '|max:' . $this->settings->max_deposits_amount,
+      'amount' => 'required|numeric|min:' . $this->settings->min_deposits_amount . '|max:' . $this->settings->max_deposits_amount,
       'payment_gateway' => 'required|check_payment_gateway',
       'image' => 'required_if:payment_gateway,==,Bank|mimes:jpg,gif,png,jpe,jpeg|max:' . $this->settings->file_size_allowed_verify_account . '',
       'agree_terms' => 'required',
@@ -90,12 +98,7 @@ class AddFundsController extends Controller
       ]);
     }
 
-    // Normalize posted amount to base currency before any math
-    if ($this->request->has('amount')) {
-      $this->request->merge([
-        'amount' => Helper::toBaseCurrency($this->request->amount)
-      ]);
-    }
+    // Amount is already normalized to base currency above
 
     switch ($this->request->payment_gateway) {
       case 'PayPal':
@@ -178,9 +181,13 @@ class AddFundsController extends Controller
 
     $taxes = $this->settings->tax_on_wallet ? ($this->request->amount * auth()->user()->isTaxable()->sum('percentage') / 100) : 0;
 
-    $amountFormatted = number_format($this->request->amount + ($this->request->amount * $fee / 100) + $cents + $taxes, 2, '.', '');
-    // Use integer only for zero-decimal currencies; keep decimals otherwise to avoid precision loss
+    // Ensure amount is in BASE currency before computing gateway total
     $baseCode = Helper::baseCurrencyCode();
+    $displayCode = Helper::displayCurrencyCode();
+    $amountBase = Helper::toBaseCurrency((float) $this->request->amount, $displayCode);
+
+    $amountFormatted = number_format($amountBase + ($amountBase * $fee / 100) + $cents + $taxes, 2, '.', '');
+    // Use integer only for zero-decimal currencies; keep decimals otherwise to avoid precision loss
     $amount = Helper::isZeroDecimalCurrency($baseCode)
       ? (int) round($amountFormatted)
       : (float) $amountFormatted;
@@ -188,7 +195,7 @@ class AddFundsController extends Controller
     $callback = route('kkiapay.callback', [
       'type' => 'deposit',
       'user' => auth()->id(),
-      'amount' => $this->request->amount,
+      'amount' => $amountBase,
       'taxes' => $this->settings->tax_on_wallet ? auth()->user()->taxesPayable() : null,
     ]);
 

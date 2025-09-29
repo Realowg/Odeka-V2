@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-  <div class="jumbotron home m-0 bg-gradient">
+  <div class="jumbotron home m-0 bg-gradient" lang="en">
     <div class="container pt-lg-md">
       <div class="row justify-content-center">
         <div class="col-lg-6">
@@ -47,7 +47,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="feather icon-user"></i></span>
                     </div>
-                    <input class="form-control" required value="{{Auth::user()->name ??  old('full_name')}}" placeholder="{{trans('auth.full_name')}}" name="full_name" type="text">
+                    <input class="form-control" required value="{{Auth::user()->name ??  old('full_name')}}" placeholder="{{trans('auth.full_name')}}" name="full_name" type="text" oninvalid="this.setCustomValidity('{{ __('validation.required', ['attribute'=>__('auth.full_name')]) }}')" oninput="this.setCustomValidity('')">
                   </div>
                 </div>
                 </div>
@@ -58,7 +58,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="feather icon-mail"></i></span>
                     </div>
-                    <input name="email" required type="email" value="{{Auth::user()->email ??  old('email')}}" class="form-control" placeholder="{{ trans('auth.email') }}">
+                    <input name="email" required type="email" value="{{Auth::user()->email ??  old('email')}}" class="form-control" placeholder="{{ trans('auth.email') }}" oninvalid="this.setCustomValidity('{{ __('validation.email', ['attribute'=>__('auth.email')]) }}')" oninput="this.setCustomValidity('')">
                   </div>
                 </div>
                 </div>
@@ -70,12 +70,12 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="feather icon-feather"></i></span>
                     </div>
-                    <input name="subject" required type="text" value="{{old('subject')}}" class="form-control" placeholder="{{ trans('general.subject') }}">
+                    <input name="subject" required type="text" value="{{old('subject')}}" class="form-control" placeholder="{{ trans('general.subject') }}" oninvalid="this.setCustomValidity('{{ __('validation.required', ['attribute'=>__('general.subject')]) }}')" oninput="this.setCustomValidity('')">
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <textarea name="message" required rows="4" class="form-control">{{old('message') }}</textarea>
+                  <textarea name="message" required rows="4" class="form-control" oninvalid="this.setCustomValidity('{{ __('validation.required', ['attribute'=>__('general.message')]) }}')" oninput="this.setCustomValidity('')">{{old('message') }}</textarea>
                   </div><!-- End Form Group -->
 
                   @if ($settings->link_terms != '' && $settings->link_privacy != '')

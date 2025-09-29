@@ -71,7 +71,7 @@
 
         </div><!-- /alert -->
 
-          <form method="POST" action="{{ url('add/funds') }}" id="formAddFunds">
+          <form method="POST" action="{{ url('add/funds') }}" id="formAddFunds" novalidate>
 
             @csrf
 
@@ -84,7 +84,7 @@
                     $minDepositNumeric = \App\Helper::fromBaseCurrency($settings->min_deposits_amount);
                     $maxDepositNumeric = \App\Helper::fromBaseCurrency($settings->max_deposits_amount);
                   @endphp
-                  <input class="form-control form-control-lg" required id="onlyNumber" name="amount" min="{{ $minDepositNumeric }}" max="{{ $maxDepositNumeric }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="number" step="any" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" aria-describedby="amountHelp">
+                  <input class="form-control form-control-lg" id="onlyNumber" name="amount" min="{{ $minDepositNumeric }}" max="{{ $maxDepositNumeric }}" autocomplete="off" placeholder="{{__('admin.amount')}} ({{ __('general.minimum') }} {{ Helper::priceWithoutFormat($settings->min_deposits_amount) }} - {{ __('general.maximum') }} {{ Helper::priceWithoutFormat($settings->max_deposits_amount) }})" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" aria-describedby="amountHelp">
                   <small id="amountHelp" class="d-block w-100 my-1 text-muted">
                     {{ __('general.enter_valid_amount') }}
                   </small>
@@ -286,6 +286,16 @@
 
 @section('javascript')
 <script type="text/javascript">
+// Prevent native form validation bubbles; use server messages instead
+document.getElementById('formAddFunds')?.addEventListener('submit', function(e){
+  var raw = normalize(document.getElementById('onlyNumber')?.value || '');
+  var v = parseFloat(raw);
+  if (isNaN(v) || v < minDeposit || v > maxDeposit) {
+    e.preventDefault();
+    $('#errorAddFunds').removeClass('display-none');
+    $('#showErrorsFunds').html('<li>{{ __('general.enter_valid_amount') }}</li>');
+  }
+});
 @if (in_array(config('settings.currency_code'), config('currencies.zero-decimal')))
   $decimal = 0;
   @else
@@ -299,7 +309,7 @@
   // Normalize decimal input on keyup (replace comma with dot before parse)
   function normalize(val){
     if (typeof val !== 'string') return val;
-    return val.replace(',', '.');
+    return val.replace(/\s/g,'').replace(',', '.');
   }
 
   function toFixed(number, decimals) {
@@ -309,8 +319,8 @@
 
   $('input[name=payment_gateway]').on('click', function() {
 
-    var valueOriginal = $('#onlyNumber').val();
-    var value = parseFloat(normalize($('#onlyNumber').val()));
+    var valueOriginal = normalize($('#onlyNumber').val());
+    var value = parseFloat(valueOriginal);
     var element = $(this).val();
 
     //==== Start Taxes
@@ -375,8 +385,8 @@
 
 $('#onlyNumber').on('keyup', function() {
 
-    var valueOriginal = $(this).val();
-    var value = parseFloat(normalize($(this).val()));
+    var valueOriginal = normalize($(this).val());
+    var value = parseFloat(valueOriginal);
     var paymentGateway = $('input[name=payment_gateway]:checked').val();
 
     if (value > maxDeposit || valueOriginal.length == 0) {
@@ -430,11 +440,7 @@ $('#onlyNumber').on('keyup', function() {
 
       var total = (parseFloat(value) + parseFloat(amountFinal) + parseFloat(totalTaxes));
 
-      if (valueOriginal.length != 0
-                || valueOriginal != ''
-                || value >= minDeposit
-                || value <= maxDeposit
-        ) {
+      if (valueOriginal.length !== 0 && !isNaN(value) && value >= minDeposit && value <= maxDeposit) {
         $('#handlingFee').html(amountFinal);
         $('#total, #total2').html(total.toFixed($decimal));
       } else {

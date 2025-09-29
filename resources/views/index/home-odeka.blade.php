@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_','-', app()->getLocale()) }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,15 +20,15 @@
             @else
               <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0 shadow-[0_0_30px_-10px_rgba(255,255,255,0.7)]"></div>
             @endif
-            <span class="font-semibold tracking-tight">Odeka Media</span>
+            <span class="font-semibold tracking-tight">{{ __('odeka.brand') }}</span>
           </a>
           <div class="hidden md:flex items-center gap-2 p-1 rounded-full border border-neutral-800" id="header-tabs">
             <button data-tab="Odeka" class="px-4 py-1.5 text-sm rounded-full transition">Odeka</button>
             <button data-tab="Media" class="px-4 py-1.5 text-sm rounded-full transition">Media</button>
           </div>
           <div class="flex items-center gap-3">
-            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm hover:border-neutral-700">Sign in</a>
-            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium hover:bg-neutral-200">Open the app</a>
+            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm hover:border-neutral-700">{{ __('odeka.sign_in') }}</a>
+            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.open_app') }}</a>
           </div>
         </div>
       </div>
@@ -43,14 +43,14 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div class="grid items-center gap-10 lg:grid-cols-12">
             <div class="lg:col-span-7">
-              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">We create, distribute & monetize content for brands and creators.</h1>
-              <p class="mt-5 max-w-2xl text-neutral-300 leading-relaxed">Odeka Media is a content studio and platform. We craft story‑first campaigns, produce original shows, and turn attention into revenue.</p>
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">{{ __('odeka.hero_headline') }}</h1>
+              <p class="mt-5 max-w-2xl text-neutral-300 leading-relaxed">{{ __('odeka.hero_sub') }}</p>
               <div class="mt-8 flex flex-wrap gap-3">
-                <a href="{{ url('channel') }}" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-medium hover:bg-neutral-200">Watch on O'Channel</a>
-                <a href="{{ route('login') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">Creator sign in</a>
-                <a href="{{ url('brief') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">Start a campaign</a>
+                <a href="{{ url('channel') }}" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.watch_on_channel') }}</a>
+                <a href="{{ route('login') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">{{ __('odeka.creator_sign_in') }}</a>
+                <a href="{{ url('brief') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">{{ __('odeka.start_campaign') }}</a>
               </div>
-              <p class="mt-6 text-xs text-neutral-400">Trusted by advertisers, creators, and partners.</p>
+              <p class="mt-6 text-xs text-neutral-400">{{ __('odeka.trusted_by') }}</p>
             </div>
             <div class="lg:col-span-5">
               @php $heroType = config('settings.hero_type') ?? 'image'; @endphp
@@ -74,14 +74,14 @@
 
     <section id="access" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
       <div class="flex items-end justify-between gap-6">
-        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Access the platform</h2>
+        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">{{ __('odeka.access_platform') }}</h2>
       </div>
       <div class="mt-6 grid gap-6 md:grid-cols-3">
         @php
           $access = [
-            ['title'=>"Watch O'Channel", 'desc'=>"Open the platform to watch episodes and shorts.", 'cta'=>"Open platform", 'href'=>url('channel')],
-            ['title'=>"Creators", 'desc'=>"Sign in to manage episodes, assets, and analytics.", 'cta'=>"Creator sign in", 'href'=>route('login')],
-            ['title'=>"Advertisers", 'desc'=>"Start a story‑driven campaign with measurable outcomes.", 'cta'=>"Start a campaign", 'href'=>url('brief')],
+            ['title'=>__('odeka.card_watch'), 'desc'=>__('odeka.card_watch_desc'), 'cta'=>__('odeka.open_platform'), 'href'=>url('channel')],
+            ['title'=>__('odeka.card_creators'), 'desc'=>__('odeka.card_creators_desc'), 'cta'=>__('odeka.creator_sign_in'), 'href'=>route('login')],
+            ['title'=>__('odeka.card_advertisers'), 'desc'=>__('odeka.card_advertisers_desc'), 'cta'=>__('odeka.start_campaign'), 'href'=>url('brief')],
           ];
         @endphp
         @foreach ($access as $e)
@@ -109,26 +109,26 @@
       <section id="advertisers" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="grid gap-10 lg:grid-cols-12 items-start">
           <div class="lg:col-span-5">
-            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Odeka for Advertisers</h2>
-            <p class="mt-4 text-neutral-300">Story‑driven formats + measurable outcomes. Activate your brand across our shows and creator network, from quick‑turn promos to multi‑episode sponsorships.</p>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('odeka.advertisers_title') }}</h2>
+            <p class="mt-4 text-neutral-300">{{ __('odeka.advertisers_sub') }}</p>
             <ul class="mt-6 space-y-3 text-neutral-300">
-              <li>• Audience targeting: geo, interests, language (FR/EN/Eʋe)</li>
-              <li>• Storytelling: native segments, integrations, product placement</li>
-              <li>• Distribution: O'Channel, partners, paid boosts, owned placements</li>
-              <li>• Measurement: view‑through, brand lift, conversions</li>
+              <li>• {{ __('odeka.bullet_audience') }}</li>
+              <li>• {{ __('odeka.bullet_story') }}</li>
+              <li>• {{ __('odeka.bullet_distribution') }}</li>
+              <li>• {{ __('odeka.bullet_measurement') }}</li>
             </ul>
             <div class="mt-7 flex gap-3">
-              <a href="{{ url('brief') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">Submit a brief</a>
-              <a href="{{ url('media-kit') }}" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">Download media kit</a>
+              <a href="{{ url('brief') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.submit_brief') }}</a>
+              <a href="{{ url('media-kit') }}" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">{{ __('odeka.download_media_kit') }}</a>
             </div>
           </div>
           <div class="lg:col-span-7">
             <div class="grid sm:grid-cols-2 gap-6">
               @php $cards = [
-                ['title'=>'Brand storytelling', 'desc'=>'Short‑form narratives produced by Odeka Studio — from teaser to hero film.'],
-                ['title'=>'Creator partnerships', 'desc'=>'Tap trusted local voices to extend reach and authenticity.'],
-                ['title'=>'Event coverage', 'desc'=>'On‑site capture + same‑day edits for festivals and launches.'],
-                ['title'=>'Performance add‑ons', 'desc'=>'Retargeting, UTM tracking, A/B hooks, caption optimization.'],
+                ['title'=>__('odeka.brand_story'), 'desc'=>'Short‑form narratives produced by Odeka Studio — from teaser to hero film.'],
+                ['title'=>__('odeka.creator_partnerships'), 'desc'=>'Tap trusted local voices to extend reach and authenticity.'],
+                ['title'=>__('odeka.event_coverage'), 'desc'=>'On‑site capture + same‑day edits for festivals and launches.'],
+                ['title'=>__('odeka.performance_addons'), 'desc'=>'Retargeting, UTM tracking, A/B hooks, caption optimization.'],
               ]; @endphp
               @foreach ($cards as $c)
                 <div class="rounded-3xl border border-neutral-900 bg-neutral-950 p-5">
@@ -143,38 +143,38 @@
 
       <section id="earnings" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="text-center">
-          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Creators Earnings Simulator</h2>
-          <p class="mt-2 text-neutral-300">Estimate monthly revenue based on your audience and subscription price.</p>
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('odeka.sim_title') }}</h2>
+          <p class="mt-2 text-neutral-300">{{ __('odeka.sim_sub') }}</p>
         </div>
         <div class="mt-10 grid gap-10 lg:grid-cols-2">
           <div class="rounded-3xl border border-neutral-900 bg-neutral-950 p-6">
             <div class="flex items-center justify-between text-sm text-neutral-300">
-              <label for="followers" class="font-medium">Number of followers?</label>
+              <label for="followers" class="font-medium">{{ __('odeka.sim_followers_q') }}</label>
               <span id="followersDisplay" class="tabular-nums text-neutral-400">#300,000</span>
             </div>
             <input id="followers" type="range" min="0" max="1000000" step="1000" value="300000" class="mt-3 w-full accent-white" />
             <div class="mt-8 flex items-center justify-between text-sm text-neutral-300">
-              <label for="price" class="font-medium">Monthly subscription price?</label>
+              <label for="price" class="font-medium">{{ __('odeka.sim_price_q') }}</label>
               <span id="priceDisplay" class="tabular-nums text-neutral-400">CFA&nbsp;1 500</span>
             </div>
             <input id="price" type="range" min="500" max="20000" step="100" value="1500" class="mt-3 w-full accent-white" />
-            <div class="mt-6 text-xs text-neutral-400">Conversion assumed: <span id="convPct">5</span>% of followers subscribe. Platform fee: <span id="feePct">5</span>% deducted. Payment processor fees not included.</div>
+            <div class="mt-6 text-xs text-neutral-400">{{ __('odeka.sim_note', ['conv'=>5,'fee'=>5]) }}</div>
           </div>
           <div class="rounded-3xl border border-neutral-900 bg-neutral-950 p-6 flex flex-col items-center justify-center text-center">
-            <div class="text-neutral-300">Estimated subscribers</div>
+            <div class="text-neutral-300">{{ __('odeka.sim_estimated_subs') }}</div>
             <div id="subsDisplay" class="mt-1 text-2xl font-semibold tabular-nums">15,000</div>
-            <div class="mt-6 text-neutral-300">You could earn an estimated</div>
-            <div class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight tabular-nums" id="netDisplay">CFA&nbsp;21 375 000 <span class="text-neutral-400 text-xl align-middle">per month</span></div>
-            <div class="mt-6 text-xs text-neutral-500 max-w-md">* Estimate only. Based on 5% of followers who subscribe. Does not include payment processor fees. Net amount reflects a 5% platform fee.</div>
+            <div class="mt-6 text-neutral-300">{{ __('odeka.sim_you_could_earn') }}</div>
+            <div class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight tabular-nums" id="netDisplay">CFA&nbsp;21 375 000 <span class="text-neutral-400 text-xl align-middle">{{ __('odeka.per_month') }}</span></div>
+            <div class="mt-6 text-xs text-neutral-500 max-w-md">{{ __('odeka.sim_disclaimer', ['conv'=>5,'fee'=>5]) }}</div>
           </div>
         </div>
-        <div class="mt-8 text-center text-xs text-neutral-500">Want a custom plan for higher volumes or bundles? <a href="#contact" class="underline hover:text-white">Contact us</a>.</div>
+        <div class="mt-8 text-center text-xs text-neutral-500">{{ __('odeka.need_custom_plan') }} <a href="#contact" class="underline hover:text-white">{{ __('odeka.contact_us') }}</a>.</div>
       </section>
 
       <section id="campaigns" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="flex items-end justify-between gap-6">
-          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Marketing campaigns with brand storytelling</h2>
-          <a href="{{ url('case-study') }}" class="text-sm text-neutral-300 hover:text-white">See case study →</a>
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('odeka.campaigns_title') }}</h2>
+          <a href="{{ url('case-study') }}" class="text-sm text-neutral-300 hover:text-white">{{ __('odeka.see_case_study') }}</a>
         </div>
         <div class="mt-10 grid gap-6 lg:grid-cols-12">
           <div class="lg:col-span-7">
@@ -183,22 +183,22 @@
                 @php $steps=[['name'=>'Brief','detail'=>'Objectives, audience, budget, target markets.'],['name'=>'Story','detail'=>'Creative routes, scripts, casting, visual language.'],['name'=>'Production','detail'=>'Studio or on‑location. Photo + video + design.'],['name'=>'Distribution','detail'=>"O'Channel + creators + paid amplification."],['name'=>'Measurement','detail'=>'Analytics and brand lift study.']]; @endphp
                 @foreach ($steps as $i => $s)
                   <li class="rounded-2xl border border-neutral-900/60 p-5 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent)]">
-                    <div class="text-sm text-neutral-400">Step {{ $i+1 }}</div>
-                    <div class="mt-1 text-lg font-medium">{{ $s['name'] }}</div>
+                    <div class="text-sm text-neutral-400">{{ __('odeka.step', ['n'=>$i+1]) }}</div>
+                    <div class="mt-1 text-lg font-medium">{{ __([ 'odeka.step_brief','odeka.step_story','odeka.step_production','odeka.step_distribution','odeka.step_measurement'][$i]) }}</div>
                     <p class="mt-2 text-sm text-neutral-300">{{ $s['detail'] }}</p>
                   </li>
                 @endforeach
               </ol>
-              <div class="mt-6 text-sm text-neutral-400">We deliver media that feels native to the culture and the platform.</div>
+              <div class="mt-6 text-sm text-neutral-400">{{ __('odeka.campaigns_note') }}</div>
             </div>
           </div>
           <div class="lg:col-span-5">
             <div class="rounded-3xl border border-neutral-900 bg-neutral-950 overflow-hidden">
               <div class="aspect-[4/3] bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent)]"></div>
               <div class="p-6">
-                <div class="text-lg font-medium">Case study — Local Launch</div>
+                <div class="text-lg font-medium">{{ __('odeka.case_local_launch') }}</div>
                 <p class="mt-2 text-sm text-neutral-300">4‑video story arc, creator collaborations, and paid boosts. Outcome example: +38% visits in 4 weeks, +12% repeat.</p>
-                <div class="mt-4"><a href="{{ url('case-study') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">Download PDF</a></div>
+                <div class="mt-4"><a href="{{ url('case-study') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">{{ __('odeka.download_pdf') }}</a></div>
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@
       <section id="channel" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="flex items-end justify-between gap-6">
           <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">O'Channel — Emissions</h2>
-          <a href="{{ url('explore') }}" class="text-sm text-neutral-300 hover:text-white">See all shows →</a>
+          <a href="{{ url('explore') }}" class="text-sm text-neutral-300 hover:text-white">{{ __('odeka.see_all_shows') }}</a>
         </div>
         <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           @php
@@ -243,7 +243,7 @@
               <div class="p-5">
                 <div class="text-lg font-medium">{{ $c['name'] }}</div>
                 <div class="mt-1 text-sm text-neutral-400">{{ $c['tag'] }}</div>
-                <div class="mt-4"><a href="{{ url('explore') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">Watch episodes</a></div>
+                <div class="mt-4"><a href="{{ url('explore') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">{{ __('odeka.watch_episodes') }}</a></div>
               </div>
             </div>
           @endforeach
@@ -257,16 +257,16 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
           <div class="grid gap-10 lg:grid-cols-12 items-center">
             <div class="lg:col-span-6 order-2 lg:order-1">
-              <h3 class="text-3xl sm:text-4xl font-semibold tracking-tight">O'Show — Star Emission</h3>
-              <p class="mt-4 text-neutral-300">The centerpiece of our lineup. Long‑form interviews with artists and creators shaping culture. Available with sponsor integrations, live audience tapings, and short‑form cut‑downs.</p>
+              <h3 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('odeka.oshow_star') }}</h3>
+              <p class="mt-4 text-neutral-300">{{ __('odeka.oshow_desc') }}</p>
               <ul class="mt-6 space-y-3 text-neutral-300">
-                <li>• Sponsorship tiers: opening tag, mid‑roll segment, end‑card</li>
-                <li>• Deliverables: full episode + shorts + stills + captions</li>
-                <li>• Options: live studio audience, giveaway, meet‑and‑greet</li>
+                <li>• {{ __('odeka.oshow_sponsorship') }}</li>
+                <li>• {{ __('odeka.oshow_deliverables') }}</li>
+                <li>• {{ __('odeka.oshow_options') }}</li>
               </ul>
               <div class="mt-7 flex gap-3">
-                <a href="{{ url('sponsor/oshow') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">Get sponsorship kit</a>
-                <a href="{{ url('channel/o-show/latest') }}" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">Watch latest episode</a>
+                <a href="{{ url('sponsor/oshow') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.get_sponsor_kit') }}</a>
+                <a href="{{ url('channel/o-show/latest') }}" class="rounded-full border border-neutral-800 px-5 py-3 text-sm hover:border-neutral-700">{{ __('odeka.watch_latest_episode') }}</a>
               </div>
             </div>
             <div class="lg:col-span-6 order-1 lg:order-2">
@@ -301,11 +301,33 @@
               @else
                 <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0"></div>
               @endif
-              <span class="font-semibold tracking-tight">Odeka Media</span>
+              <span class="font-semibold tracking-tight">{{ __('odeka.brand') }}</span>
             </div>
-            <p class="mt-4 text-sm text-neutral-400 max-w-xs">We create, distribute, and monetize content that moves culture.</p>
+            <p class="mt-4 text-sm text-neutral-400 max-w-xs">{{ __('odeka.hero_headline') }}</p>
           </div>
-          @php $links=['Company'=>['About'=>'/about','Careers'=>'/careers','Contact'=>'/contact'],'Products'=>['Odeka'=>'/','O\'Channel'=>'/channel','O\'Show'=>'/channel/o-show/latest','Studio'=>'/studio'],'Advertisers'=>['Media kit'=>'/media-kit','Pricing'=>'/pricing','Case studies'=>'/case-study'],'Legal'=>['Privacy'=>'/privacy','Terms'=>'/terms']]; @endphp
+          @php $links=[
+            __('odeka.company')=>[
+              __('odeka.about')=>'/p/about',
+              __('odeka.contact')=>'/contact'
+            ],
+            __('odeka.products')=>[
+              'Odeka'=>'/',
+              "O'Channel"=>'/channel',
+              "O'Show"=>'/channel/o-show/latest',
+              'Studio'=>'/studio'
+            ],
+            __('odeka.advertisers')=>[
+              __('odeka.media_kit')=>'/media-kit',
+              __('odeka.pricing')=>'/pricing',
+              __('odeka.case_studies')=>'/case-study'
+            ],
+            __('odeka.legal')=>[
+              __('odeka.privacy')=>'/p/privacy',
+              __('odeka.tos')=>'/p/terms-of-service',
+              __('odeka.cookies')=>'/p/cookies',
+              __('odeka.how_it_works')=>'/p/how-it-works'
+            ]
+          ]; @endphp
           @foreach ($links as $k=>$arr)
             <div>
               <div class="text-sm font-medium text-neutral-300">{{ $k }}</div>
@@ -319,12 +341,12 @@
         </div>
         <div class="mt-8 grid gap-4 sm:flex sm:items-center sm:justify-between">
           <div class="flex flex-wrap items-center gap-4">
-            <label for="odeka-lang" class="text-xs text-neutral-400">Language</label>
+            <label for="odeka-lang" class="text-xs text-neutral-400">{{ __('odeka.language') }}</label>
             <select id="odeka-lang" class="rounded-md border border-neutral-800 bg-neutral-950 px-2 py-1 text-xs text-neutral-200 hover:border-neutral-700">
-              <option value="en-US">English</option>
-              <option value="fr-FR">Français</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
             </select>
-            <label for="odeka-currency" class="ml-2 text-xs text-neutral-400">Currency</label>
+            <label for="odeka-currency" class="ml-2 text-xs text-neutral-400">{{ __('odeka.currency') }}</label>
             <form id="currency-form" method="POST" action="{{ route('currency.switch') }}">
               @csrf
               <select id="odeka-currency" name="currency" class="rounded-md border border-neutral-800 bg-neutral-950 px-2 py-1 text-xs text-neutral-200 hover:border-neutral-700">
@@ -334,7 +356,7 @@
               </select>
             </form>
           </div>
-          <div class="text-xs text-neutral-500">Made with care.</div>
+          <div class="text-xs text-neutral-500">{{ __('odeka.made_with_care') }}</div>
         </div>
         <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <div>© {{ date('Y') }} Odeka Media. All rights reserved.</div>
@@ -346,7 +368,7 @@
     <script>
       const state = {
         tab: document.body.dataset.tab || 'Odeka',
-        locale: document.body.dataset.locale || 'en-US',
+        locale: document.body.dataset.locale || 'en',
         currency: document.body.dataset.currency || 'XOF',
         conversion: 0.05,
         platformFee: 0.05,
@@ -393,7 +415,10 @@
       const curSel = document.getElementById('odeka-currency');
       if (langSel) langSel.value = state.locale;
       if (curSel) curSel.value = state.currency;
-      langSel.addEventListener('change', () => { state.locale = langSel.value; recompute(); });
+      langSel.addEventListener('change', () => {
+        const code = langSel.value || 'en';
+        window.location.href = `${'{{ url('change/lang') }}'}/${code}`;
+      });
       curSel.addEventListener('change', () => { document.getElementById('currency-form').submit(); });
       // Simulator defaults from admin settings
       window.SIM = {
