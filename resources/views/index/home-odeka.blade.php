@@ -50,7 +50,7 @@
       
       /* Gradient text */
       .gradient-text {
-        background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 50%, #60a5fa 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -62,10 +62,19 @@
         50% { background-position: 100% 50%; }
       }
       .animated-gradient {
-        background: linear-gradient(-45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05), rgba(255,255,255,0.08), rgba(255,255,255,0.12));
+        background: linear-gradient(-45deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.08), rgba(96, 165, 250, 0.12));
         background-size: 400% 400%;
         animation: gradient-shift 15s ease infinite;
       }
+      
+      /* Colored accents */
+      .accent-purple { color: #a78bfa; }
+      .accent-blue { color: #60a5fa; }
+      .accent-pink { color: #f472b6; }
+      .border-accent { border-color: rgba(139, 92, 246, 0.3); }
+      .hover\:border-accent:hover { border-color: rgba(139, 92, 246, 0.6); }
+      .bg-accent { background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%); }
+      .bg-accent-hover:hover { background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%); }
       
       /* Hover lift effect */
       .hover-lift {
@@ -125,8 +134,8 @@
             <button data-tab="Media" class="px-4 py-1.5 text-sm rounded-full transition-all hover:bg-white/10">Media</button>
           </div>
           <div class="flex items-center gap-3">
-            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm transition-all hover:border-neutral-600 hover:bg-neutral-800/50">{{ __('odeka.sign_in') }}</a>
-            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium transition-all hover:bg-neutral-100 hover:shadow-lg hover:shadow-white/20">{{ __('odeka.open_app') }}</a>
+            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-purple-500/30 px-4 py-2 text-sm transition-all hover:border-purple-400 hover:bg-purple-500/10 hover:text-purple-300">{{ __('odeka.sign_in') }}</a>
+            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-accent text-white px-4 py-2 text-sm font-medium transition-all bg-accent-hover hover:shadow-lg hover:shadow-purple-500/30">{{ __('odeka.open_app') }}</a>
           </div>
         </div>
       </div>
@@ -135,8 +144,9 @@
     <section class="relative overflow-hidden">
       <div class="relative">
         <div class="pointer-events-none absolute inset-0 -z-10">
-          <div class="absolute left-1/2 top-[-10%] h-[700px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.12),transparent_70%)] blur-2xl"></div>
-          <div class="absolute right-[-10%] bottom-[-20%] h-[500px] w-[500px] rounded-full bg-[conic-gradient(from_180deg_at_50%_50%,rgba(255,255,255,0.08),transparent)] blur-2xl"></div>
+          <div class="absolute left-1/2 top-[-10%] h-[700px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(139,92,246,0.15),rgba(59,130,246,0.1),transparent_70%)] blur-3xl"></div>
+          <div class="absolute right-[-10%] bottom-[-20%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(96,165,250,0.12),rgba(168,85,247,0.08),transparent)] blur-2xl"></div>
+          <div class="absolute left-[10%] bottom-[30%] h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.1),transparent)] blur-3xl"></div>
         </div>
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
           <div class="grid items-center gap-12 lg:grid-cols-12">
@@ -148,16 +158,16 @@
                 {{ $t('hp_hero_sub', 'odeka.hero_sub') }}
               </p>
               <div class="mt-8 flex flex-wrap gap-4 fade-in-up delay-200">
-                <a href="{{ url('channel') }}" class="group inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-8 py-4 text-sm font-semibold transition-all hover:bg-neutral-100 hover:shadow-2xl hover:shadow-white/20 hover:scale-105">
+                <a href="{{ url('channel') }}" class="group inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-semibold text-white transition-all bg-accent-hover hover:shadow-2xl hover:shadow-purple-500/30 hover:scale-105">
                   <span>{{ __('odeka.watch_on_channel') }}</span>
                   <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                   </svg>
                 </a>
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-neutral-500 hover:bg-white/10">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full glass border border-accent px-8 py-4 text-sm font-medium transition-all hover:border-accent hover:bg-purple-500/10">
                   {{ __('odeka.creator_sign_in') }}
                 </a>
-                <a href="{{ url('brief') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-neutral-500 hover:bg-white/10">
+                <a href="{{ url('brief') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300">
                   {{ __('odeka.start_campaign') }}
                 </a>
               </div>
@@ -195,28 +205,34 @@
             ['title'=>$t('hp_card_advertisers_title', 'odeka.card_advertisers'), 'desc'=>$t('hp_card_advertisers_desc', 'odeka.card_advertisers_desc'), 'cta'=>__('odeka.start_campaign'), 'href'=>url('brief'), 'icon'=>'rocket'],
           ];
         @endphp
-        @foreach ($access as $e)
-          <div class="group rounded-3xl glass border-neutral-800/50 p-8 hover-lift transition-all hover:border-neutral-700">
+        @foreach ($access as $idx => $e)
+          <div class="group rounded-3xl glass border-neutral-800/50 p-8 hover-lift transition-all hover:border-{{ $idx === 0 ? 'purple' : ($idx === 1 ? 'blue' : 'pink') }}-500/50">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-xl font-semibold">{{ $e['title'] }}</h3>
+              <h3 class="text-xl font-semibold group-hover:text-{{ $idx === 0 ? 'purple' : ($idx === 1 ? 'blue' : 'pink') }}-400 transition-colors">{{ $e['title'] }}</h3>
               @if($e['icon'] === 'play')
-                <svg class="w-6 h-6 text-neutral-600 group-hover:text-neutral-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                <div class="rounded-xl bg-purple-500/10 p-3 group-hover:bg-purple-500/20 transition-all">
+                  <svg class="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
               @elseif($e['icon'] === 'users')
-                <svg class="w-6 h-6 text-neutral-600 group-hover:text-neutral-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
+                <div class="rounded-xl bg-blue-500/10 p-3 group-hover:bg-blue-500/20 transition-all">
+                  <svg class="w-6 h-6 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                  </svg>
+                </div>
               @else
-                <svg class="w-6 h-6 text-neutral-600 group-hover:text-neutral-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
+                <div class="rounded-xl bg-pink-500/10 p-3 group-hover:bg-pink-500/20 transition-all">
+                  <svg class="w-6 h-6 text-pink-400 group-hover:text-pink-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                </div>
               @endif
             </div>
-            <p class="mt-3 text-sm text-neutral-400 leading-relaxed">{{ $e['desc'] }}</p>
+            <p class="mt-3 text-sm text-neutral-400 leading-relaxed group-hover:text-neutral-300 transition-colors">{{ $e['desc'] }}</p>
             <div class="mt-6">
-              <a href="{{ $e['href'] }}" class="inline-flex text-sm font-medium rounded-full border border-neutral-700 px-5 py-2.5 transition-all hover:border-neutral-500 hover:bg-white/5">
+              <a href="{{ $e['href'] }}" class="inline-flex text-sm font-medium rounded-full border border-neutral-700 px-5 py-2.5 transition-all hover:border-{{ $idx === 0 ? 'purple' : ($idx === 1 ? 'blue' : 'pink') }}-400 hover:bg-{{ $idx === 0 ? 'purple' : ($idx === 1 ? 'blue' : 'pink') }}-500/10 hover:text-{{ $idx === 0 ? 'purple' : ($idx === 1 ? 'blue' : 'pink') }}-300">
                 {{ $e['cta'] }}
               </a>
             </div>
