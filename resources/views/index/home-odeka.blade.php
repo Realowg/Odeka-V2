@@ -36,29 +36,97 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       .tabular-nums { font-variant-numeric: tabular-nums; }
+      
+      /* Smooth scroll */
+      html { scroll-behavior: smooth; }
+      
+      /* Glass morphism effect */
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Gradient text */
+      .gradient-text {
+        background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      /* Animated gradient background */
+      @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      .animated-gradient {
+        background: linear-gradient(-45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05), rgba(255,255,255,0.08), rgba(255,255,255,0.12));
+        background-size: 400% 400%;
+        animation: gradient-shift 15s ease infinite;
+      }
+      
+      /* Hover lift effect */
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+      
+      /* Glow effect */
+      .glow {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      .glow:hover {
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+      }
+      
+      /* Fade in animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+      
+      /* Stagger animation delays */
+      .delay-100 { animation-delay: 0.1s; opacity: 0; }
+      .delay-200 { animation-delay: 0.2s; opacity: 0; }
+      .delay-300 { animation-delay: 0.3s; opacity: 0; }
+      .delay-400 { animation-delay: 0.4s; opacity: 0; }
     </style>
   </head>
   <!-- DEBUG: Locale={{ $currentLocale }}, Session={{ session('locale') }}, __test={{ __('odeka.brand') }} -->
   <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ str_replace('_','-', $currentLocale) }}" data-currency="{{ \App\Helper::displayCurrencyCode() }}">
-    <div class="sticky top-0 z-40 backdrop-blur border-b border-neutral-900/60">
+    <div class="sticky top-0 z-40 glass backdrop-blur-xl bg-neutral-950/80 border-b border-neutral-800/50">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
-          <a href="#top" class="flex items-center gap-3">
+          <a href="#top" class="flex items-center gap-3 group">
             @php $logo = config('settings.logo') ? asset('img/'.config('settings.logo')) : null; @endphp
             @if($logo)
-              <img src="{{ $logo }}" alt="Odeka logo" class="h-7 w-auto" />
+              <img src="{{ $logo }}" alt="Odeka logo" class="h-7 w-auto transition-transform group-hover:scale-110" />
             @else
-              <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0 shadow-[0_0_30px_-10px_rgba(255,255,255,0.7)]"></div>
+              <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-white/80 via-white/30 to-white/0 shadow-[0_0_30px_-10px_rgba(255,255,255,0.7)] transition-all group-hover:shadow-[0_0_40px_-5px_rgba(255,255,255,0.9)]"></div>
             @endif
-            <span class="font-semibold tracking-tight">{{ __('odeka.brand') }}</span>
+            <span class="font-semibold tracking-tight group-hover:text-white transition-colors">{{ __('odeka.brand') }}</span>
           </a>
-          <div class="hidden md:flex items-center gap-2 p-1 rounded-full border border-neutral-800" id="header-tabs">
-            <button data-tab="Odeka" class="px-4 py-1.5 text-sm rounded-full transition">Odeka</button>
-            <button data-tab="Media" class="px-4 py-1.5 text-sm rounded-full transition">Media</button>
+          <div class="hidden md:flex items-center gap-2 p-1 rounded-full glass border-neutral-800/50" id="header-tabs">
+            <button data-tab="Odeka" class="px-4 py-1.5 text-sm rounded-full transition-all hover:bg-white/10">Odeka</button>
+            <button data-tab="Media" class="px-4 py-1.5 text-sm rounded-full transition-all hover:bg-white/10">Media</button>
           </div>
           <div class="flex items-center gap-3">
-            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm hover:border-neutral-700">{{ __('odeka.sign_in') }}</a>
-            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.open_app') }}</a>
+            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm transition-all hover:border-neutral-600 hover:bg-neutral-800/50">{{ __('odeka.sign_in') }}</a>
+            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium transition-all hover:bg-neutral-100 hover:shadow-lg hover:shadow-white/20">{{ __('odeka.open_app') }}</a>
           </div>
         </div>
       </div>
@@ -70,30 +138,43 @@
           <div class="absolute left-1/2 top-[-10%] h-[700px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.12),transparent_70%)] blur-2xl"></div>
           <div class="absolute right-[-10%] bottom-[-20%] h-[500px] w-[500px] rounded-full bg-[conic-gradient(from_180deg_at_50%_50%,rgba(255,255,255,0.08),transparent)] blur-2xl"></div>
         </div>
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-          <div class="grid items-center gap-10 lg:grid-cols-12">
-            <div class="lg:col-span-7">
-              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">{{ $t('hp_hero_headline', 'odeka.hero_headline') }}</h1>
-              <p class="mt-5 max-w-2xl text-neutral-300 leading-relaxed">{{ $t('hp_hero_sub', 'odeka.hero_sub') }}</p>
-              <div class="mt-8 flex flex-wrap gap-3">
-                <a href="{{ url('channel') }}" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.watch_on_channel') }}</a>
-                <a href="{{ route('login') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">{{ __('odeka.creator_sign_in') }}</a>
-                <a href="{{ url('brief') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">{{ __('odeka.start_campaign') }}</a>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+          <div class="grid items-center gap-12 lg:grid-cols-12">
+            <div class="lg:col-span-7 space-y-8">
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight gradient-text fade-in-up">
+                {{ $t('hp_hero_headline', 'odeka.hero_headline') }}
+              </h1>
+              <p class="mt-6 max-w-2xl text-lg text-neutral-300 leading-relaxed fade-in-up delay-100">
+                {{ $t('hp_hero_sub', 'odeka.hero_sub') }}
+              </p>
+              <div class="mt-8 flex flex-wrap gap-4 fade-in-up delay-200">
+                <a href="{{ url('channel') }}" class="group inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-8 py-4 text-sm font-semibold transition-all hover:bg-neutral-100 hover:shadow-2xl hover:shadow-white/20 hover:scale-105">
+                  <span>{{ __('odeka.watch_on_channel') }}</span>
+                  <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-neutral-500 hover:bg-white/10">
+                  {{ __('odeka.creator_sign_in') }}
+                </a>
+                <a href="{{ url('brief') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-neutral-500 hover:bg-white/10">
+                  {{ __('odeka.start_campaign') }}
+                </a>
               </div>
-              <p class="mt-6 text-xs text-neutral-400">{{ $t('hp_trusted_by', 'odeka.trusted_by') }}</p>
+              <p class="mt-6 text-sm text-neutral-500 fade-in-up delay-300">{{ $t('hp_trusted_by', 'odeka.trusted_by') }}</p>
             </div>
-            <div class="lg:col-span-5">
+            <div class="lg:col-span-5 fade-in-up delay-300">
               @php $heroType = config('settings.hero_type') ?? 'image'; @endphp
               @if($heroType === 'youtube' && config('settings.hero_youtube_url'))
-                <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800">
+                <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800/50 hover-lift glow">
                   <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed(config('settings.hero_youtube_url')) }}" title="Hero video" loading="lazy" allowfullscreen poster="{{ App\Helper::youtubeThumb(config('settings.hero_youtube_url')) }}"></iframe>
                 </div>
               @else
                 @php $heroSrc = App\Helper::assetUrl(config('settings.hero_image_source'), config('settings.hero_image_url'), config('settings.hero_image_file')); @endphp
                 @if($heroSrc)
-                  <img src="{{ $heroSrc }}" alt="Hero" class="aspect-[4/3] w-full rounded-3xl border border-neutral-800 object-cover" />
+                  <img src="{{ $heroSrc }}" alt="Hero" class="aspect-[4/3] w-full rounded-3xl border border-neutral-800/50 object-cover hover-lift glow" />
                 @else
-                  <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 to-neutral-800"></div>
+                  <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800/50 animated-gradient hover-lift glow"></div>
                 @endif
               @endif
             </div>
@@ -102,24 +183,42 @@
       </div>
     </section>
 
-    <section id="access" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-      <div class="flex items-end justify-between gap-6">
-        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">{{ $t('hp_access_title', 'odeka.access_platform') }}</h2>
+    <section id="access" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+      <div class="flex items-end justify-between gap-6 mb-10">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">{{ $t('hp_access_title', 'odeka.access_platform') }}</h2>
       </div>
-      <div class="mt-6 grid gap-6 md:grid-cols-3">
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
         @php
           $access = [
-            ['title'=>$t('hp_card_watch_title', 'odeka.card_watch'), 'desc'=>$t('hp_card_watch_desc', 'odeka.card_watch_desc'), 'cta'=>__('odeka.open_platform'), 'href'=>url('channel')],
-            ['title'=>$t('hp_card_creators_title', 'odeka.card_creators'), 'desc'=>$t('hp_card_creators_desc', 'odeka.card_creators_desc'), 'cta'=>__('odeka.creator_sign_in'), 'href'=>route('login')],
-            ['title'=>$t('hp_card_advertisers_title', 'odeka.card_advertisers'), 'desc'=>$t('hp_card_advertisers_desc', 'odeka.card_advertisers_desc'), 'cta'=>__('odeka.start_campaign'), 'href'=>url('brief')],
+            ['title'=>$t('hp_card_watch_title', 'odeka.card_watch'), 'desc'=>$t('hp_card_watch_desc', 'odeka.card_watch_desc'), 'cta'=>__('odeka.open_platform'), 'href'=>url('channel'), 'icon'=>'play'],
+            ['title'=>$t('hp_card_creators_title', 'odeka.card_creators'), 'desc'=>$t('hp_card_creators_desc', 'odeka.card_creators_desc'), 'cta'=>__('odeka.creator_sign_in'), 'href'=>route('login'), 'icon'=>'users'],
+            ['title'=>$t('hp_card_advertisers_title', 'odeka.card_advertisers'), 'desc'=>$t('hp_card_advertisers_desc', 'odeka.card_advertisers_desc'), 'cta'=>__('odeka.start_campaign'), 'href'=>url('brief'), 'icon'=>'rocket'],
           ];
         @endphp
         @foreach ($access as $e)
-          <div class="rounded-3xl border border-neutral-900 bg-neutral-950 p-6">
-            <div class="text-lg font-medium">{{ $e['title'] }}</div>
-            <p class="mt-2 text-sm text-neutral-300">{{ $e['desc'] }}</p>
-            <div class="mt-4">
-              <a href="{{ $e['href'] }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">{{ $e['cta'] }}</a>
+          <div class="group rounded-3xl glass border-neutral-800/50 p-8 hover-lift transition-all hover:border-neutral-700">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-semibold">{{ $e['title'] }}</h3>
+              @if($e['icon'] === 'play')
+                <svg class="w-6 h-6 text-neutral-600 group-hover:text-neutral-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              @elseif($e['icon'] === 'users')
+                <svg class="w-6 h-6 text-neutral-600 group-hover:text-neutral-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+              @else
+                <svg class="w-6 h-6 text-neutral-600 group-hover:text-neutral-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              @endif
+            </div>
+            <p class="mt-3 text-sm text-neutral-400 leading-relaxed">{{ $e['desc'] }}</p>
+            <div class="mt-6">
+              <a href="{{ $e['href'] }}" class="inline-flex text-sm font-medium rounded-full border border-neutral-700 px-5 py-2.5 transition-all hover:border-neutral-500 hover:bg-white/5">
+                {{ $e['cta'] }}
+              </a>
             </div>
           </div>
         @endforeach
