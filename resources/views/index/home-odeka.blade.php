@@ -151,7 +151,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
           <div class="grid items-center gap-12 lg:grid-cols-12">
             <div class="lg:col-span-7 space-y-8">
-              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight gradient-text fade-in-up">
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white fade-in-up">
                 {{ $t('hp_hero_headline', 'odeka.hero_headline') }}
               </h1>
               <p class="mt-6 max-w-2xl text-lg text-neutral-300 leading-relaxed fade-in-up delay-100">
@@ -176,8 +176,16 @@
             <div class="lg:col-span-5 fade-in-up delay-300">
               @php $heroType = config('settings.hero_type') ?? 'image'; @endphp
               @if($heroType === 'youtube' && config('settings.hero_youtube_url'))
-                <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800/50 hover-lift glow">
-                  <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed(config('settings.hero_youtube_url')) }}" title="Hero video" loading="lazy" allowfullscreen poster="{{ App\Helper::youtubeThumb(config('settings.hero_youtube_url')) }}"></iframe>
+                <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800/50 hover-lift glow relative group cursor-pointer" onclick="this.querySelector('iframe').src = this.querySelector('iframe').dataset.src; this.querySelector('.thumbnail-overlay').style.display='none';">
+                  <img src="{{ App\Helper::youtubeThumb(config('settings.hero_youtube_url'), 'maxresdefault') }}" alt="Hero video" class="thumbnail-overlay absolute inset-0 w-full h-full object-cover z-10" />
+                  <div class="thumbnail-overlay absolute inset-0 bg-black/40 z-20 flex items-center justify-center group-hover:bg-black/20 transition-colors">
+                    <div class="w-20 h-20 rounded-full bg-purple-600 flex items-center justify-center group-hover:bg-purple-500 group-hover:scale-110 transition-all shadow-2xl">
+                      <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <iframe class="absolute inset-0 w-full h-full" data-src="{{ App\Helper::youtubeEmbed(config('settings.hero_youtube_url')) }}?autoplay=1" title="Hero video" allowfullscreen></iframe>
                 </div>
               @else
                 @php $heroSrc = App\Helper::assetUrl(config('settings.hero_image_source'), config('settings.hero_image_url'), config('settings.hero_image_file')); @endphp
@@ -384,16 +392,26 @@
             ];
           @endphp
           @foreach ($cards as $c)
-            <div class="group relative overflow-hidden rounded-3xl border border-neutral-900 bg-neutral-950">
-              @if($c['img'])
-                <img src="{{ $c['img'] }}" alt="{{ $c['name'] }}" class="aspect-video w-full object-cover" />
-              @else
-                <div class="aspect-video w-full bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent)]"></div>
-              @endif
-              <div class="p-5">
-                <div class="text-lg font-medium">{{ $c['name'] }}</div>
-                <div class="mt-1 text-sm text-neutral-400">{{ $c['tag'] }}</div>
-                <div class="mt-4"><a href="{{ url('explore') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">{{ __('odeka.watch_episodes') }}</a></div>
+            <div class="group relative overflow-hidden rounded-3xl border border-neutral-800/50 bg-neutral-950 hover-lift transition-all hover:border-purple-500/30">
+              <div class="relative overflow-hidden">
+                @if($c['img'])
+                  <img src="{{ $c['img'] }}" alt="{{ $c['name'] }}" class="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                @else
+                  <div class="aspect-video w-full bg-[linear-gradient(135deg,rgba(139,92,246,0.1),rgba(59,130,246,0.05))] transition-opacity group-hover:opacity-80"></div>
+                @endif
+                <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+              </div>
+              <div class="p-6">
+                <div class="text-lg font-semibold group-hover:text-purple-300 transition-colors">{{ $c['name'] }}</div>
+                <div class="mt-2 text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors">{{ $c['tag'] }}</div>
+                <div class="mt-5">
+                  <a href="{{ url('explore') }}" class="inline-flex items-center gap-2 text-sm rounded-full border border-neutral-700 px-5 py-2.5 transition-all hover:border-purple-400 hover:bg-purple-500/10 hover:text-purple-300">
+                    <span>{{ __('odeka.watch_episodes') }}</span>
+                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           @endforeach
@@ -426,9 +444,16 @@
                 $oshowImg = App\Helper::assetUrl(config('settings.oshow_image_source'), config('settings.oshow_image_url'), config('settings.oshow_image_file'));
               @endphp
               @if($oshowType === 'youtube' && $oshowYt)
-                <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-900 relative">
-                  <img src="{{ App\Helper::youtubeThumb($oshowYt, 'sddefault') }}" alt="O'Show" class="w-full h-full object-cover" />
-                  <iframe class="absolute inset-0 w-full h-full" src="{{ App\Helper::youtubeEmbed($oshowYt) }}" title="O'Show" loading="lazy" allowfullscreen></iframe>
+                <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-800/50 hover-lift glow relative group cursor-pointer" onclick="this.querySelector('iframe').src = this.querySelector('iframe').dataset.src; this.classList.forEach(c => {if(c.includes('thumbnail-overlay')) this.querySelector('.'+c).style.display='none';});">
+                  <img src="{{ App\Helper::youtubeThumb($oshowYt, 'maxresdefault') }}" alt="O'Show" class="thumbnail-overlay absolute inset-0 w-full h-full object-cover z-10" />
+                  <div class="thumbnail-overlay absolute inset-0 bg-black/40 z-20 flex items-center justify-center group-hover:bg-black/20 transition-colors">
+                    <div class="w-20 h-20 rounded-full bg-purple-600 flex items-center justify-center group-hover:bg-purple-500 group-hover:scale-110 transition-all shadow-2xl">
+                      <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <iframe class="absolute inset-0 w-full h-full" data-src="{{ App\Helper::youtubeEmbed($oshowYt) }}?autoplay=1" title="O'Show" allowfullscreen></iframe>
                 </div>
               @elseif($oshowImg)
                 <img src="{{ $oshowImg }}" alt="O'Show" class="aspect-[16/10] w-full rounded-3xl border border-neutral-900 object-cover" />
