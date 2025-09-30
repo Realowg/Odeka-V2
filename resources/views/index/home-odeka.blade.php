@@ -134,8 +134,8 @@
             <button data-tab="Media" class="px-4 py-1.5 text-sm rounded-full transition-all hover:bg-white/10">Media</button>
           </div>
           <div class="flex items-center gap-3">
-            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-purple-500/30 px-4 py-2 text-sm transition-all hover:border-purple-400 hover:bg-purple-500/10 hover:text-purple-300">{{ __('odeka.sign_in') }}</a>
-            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-accent text-white px-4 py-2 text-sm font-medium transition-all bg-accent-hover hover:shadow-lg hover:shadow-purple-500/30">{{ __('odeka.open_app') }}</a>
+            <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-full border border-neutral-800 px-4 py-2 text-sm transition-all hover:border-neutral-600 hover:bg-neutral-800/50">{{ __('odeka.sign_in') }}</a>
+            <a href="{{ route('home') }}" class="inline-flex rounded-full bg-white text-neutral-900 px-4 py-2 text-sm font-medium transition-all hover:bg-neutral-100 hover:shadow-lg hover:shadow-white/20">{{ __('odeka.open_app') }}</a>
           </div>
         </div>
       </div>
@@ -158,16 +158,16 @@
                 {{ $t('hp_hero_sub', 'odeka.hero_sub') }}
               </p>
               <div class="mt-8 flex flex-wrap gap-4 fade-in-up delay-200">
-                <a href="{{ url('channel') }}" class="group inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-semibold text-white transition-all bg-accent-hover hover:shadow-2xl hover:shadow-purple-500/30 hover:scale-105">
+                <a href="{{ url('channel') }}" class="group inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-8 py-4 text-sm font-semibold transition-all hover:bg-neutral-100 hover:shadow-2xl hover:shadow-white/20 hover:scale-105">
                   <span>{{ __('odeka.watch_on_channel') }}</span>
                   <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                   </svg>
                 </a>
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full glass border border-accent px-8 py-4 text-sm font-medium transition-all hover:border-accent hover:bg-purple-500/10">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-neutral-500 hover:bg-white/10">
                   {{ __('odeka.creator_sign_in') }}
                 </a>
-                <a href="{{ url('brief') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300">
+                <a href="{{ url('brief') }}" class="inline-flex items-center gap-2 rounded-full glass border border-neutral-700 px-8 py-4 text-sm font-medium transition-all hover:border-neutral-500 hover:bg-white/10">
                   {{ __('odeka.start_campaign') }}
                 </a>
               </div>
