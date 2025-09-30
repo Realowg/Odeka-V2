@@ -17,16 +17,15 @@ class Language
      */
     public function handle($request, Closure $next)
     {
+      $locale = null;
+      
       // Priority 1: Logged-in user's language preference
       if (auth()->check() && auth()->user()->language != '') {
         $locale = auth()->user()->language;
-        app()->setLocale($locale);
-        Session::put('locale', $locale);
       }
       // Priority 2: Session locale (from language switcher)
       elseif (Session::has('locale')) {
         $locale = session('locale');
-        app()->setLocale($locale);
       }
       // Priority 3: Browser language detection
       else {
@@ -48,14 +47,22 @@ class Language
             }
           }
           
-          app()->setLocale($detectedLocale);
-          Session::put('locale', $detectedLocale);
+          $locale = $detectedLocale;
+          Session::put('locale', $locale);
           
         } catch (\Exception $e) {
           // Fallback to config locale if detection fails
-          $fallbackLocale = config('app.fallback_locale', 'en');
-          app()->setLocale($fallbackLocale);
-          Session::put('locale', $fallbackLocale);
+          $locale = config('app.fallback_locale', 'en');
+          Session::put('locale', $locale);
+        }
+      }
+
+      // CRITICAL: Set locale once at the end, ensuring consistency
+      if ($locale) {
+        app()->setLocale($locale);
+        // Also ensure session is set
+        if (!Session::has('locale')) {
+          Session::put('locale', $locale);
         }
       }
 
