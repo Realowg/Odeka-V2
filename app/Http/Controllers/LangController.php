@@ -154,21 +154,31 @@ class LangController extends Controller
 
 	}//<--- End Method
 
-   /**
-   * Change Language User.
-   *
-   * @param  string  $id
-   * @return redirection
-   */
-  public function changeLang($id)
-  {
+  /**
+  * Change Language User.
+  *
+  * @param  string  $id
+  * @return redirection
+  */
+ public function changeLang($id)
+ {
 	$lang = Languages::where('abbreviation', $id)->firstOrFail();
 
 	session()->put('locale', $lang->abbreviation);
+	
+	// Set locale immediately for this request
+	app()->setLocale($lang->abbreviation);
+	
+	// Clear translation caches to ensure fresh translations load
+	$groups = \App\Models\Translation::distinct('group')->pluck('group')->toArray();
+	foreach ($groups as $group) {
+		\Cache::forget("trans.{$lang->abbreviation}.{$group}");
+		\Cache::forget("translations.{$lang->abbreviation}.{$group}");
+	}
 
 	return back();
 
-  }//<--- End Method
+ }//<--- End Method
 
 
 }

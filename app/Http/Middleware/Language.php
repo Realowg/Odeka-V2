@@ -17,36 +17,48 @@ class Language
      */
     public function handle($request, Closure $next)
     {
-      // User Session Check
+      // Priority 1: Logged-in user's language preference
       if (auth()->check() && auth()->user()->language != '') {
-        app()->setLocale(auth()->user()->language);
-        Session::put('locale', auth()->user()->language);
-      } else {
-        if (Session::has('locale')) {
-              app()->setLocale(session('locale'));
-          } else {
-
-              try {
-
-                Session::put('locale', config('app.locale'));
-
-                $availableLangs = Languages::all()->pluck('abbreviation');
-                $userLangs = explode(',', $request->server('HTTP_ACCEPT_LANGUAGE'));
-
-                foreach ($availableLangs as $lang) {
-                    if (strpos($userLangs[0], ''.$lang.'' ) !== FALSE ) {
-                        app()->setLocale($lang);
-                        Session::put('locale', $lang);
-                        break;
-                    }
-                }
-
-            } catch (\Exception $e) {
-              //
+        $locale = auth()->user()->language;
+        app()->setLocale($locale);
+        Session::put('locale', $locale);
+      }
+      // Priority 2: Session locale (from language switcher)
+      elseif (Session::has('locale')) {
+        $locale = session('locale');
+        app()->setLocale($locale);
+      }
+      // Priority 3: Browser language detection
+      else {
+        try {
+          $fallbackLocale = config('app.fallback_locale', 'en');
+          $detectedLocale = $fallbackLocale;
+          
+          $availableLangs = Languages::all()->pluck('abbreviation')->toArray();
+          $acceptLanguage = $request->server('HTTP_ACCEPT_LANGUAGE');
+          
+          if ($acceptLanguage && !empty($availableLangs)) {
+            $userLangs = explode(',', $acceptLanguage);
+            
+            foreach ($availableLangs as $lang) {
+              if (strpos($userLangs[0], $lang) !== false) {
+                $detectedLocale = $lang;
+                break;
+              }
             }
           }
-        } // User Session Check
+          
+          app()->setLocale($detectedLocale);
+          Session::put('locale', $detectedLocale);
+          
+        } catch (\Exception $e) {
+          // Fallback to config locale if detection fails
+          $fallbackLocale = config('app.fallback_locale', 'en');
+          app()->setLocale($fallbackLocale);
+          Session::put('locale', $fallbackLocale);
+        }
+      }
 
-        return $next($request);
+      return $next($request);
     }
 }

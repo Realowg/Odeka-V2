@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Odeka Media</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -15,8 +18,15 @@
       $dbVal = config('settings.' . $dbKey);
       return $dbVal ?: __($transKey);
     };
+    
+    // Ensure locale is properly set from session
+    $currentLocale = app()->getLocale();
+    if (session('locale') && session('locale') !== $currentLocale) {
+      app()->setLocale(session('locale'));
+      $currentLocale = session('locale');
+    }
   @endphp
-  <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ str_replace('_','-', app()->getLocale()) }}" data-currency="{{ \App\Helper::displayCurrencyCode() }}">
+  <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ str_replace('_','-', $currentLocale) }}" data-currency="{{ \App\Helper::displayCurrencyCode() }}">
     <div class="sticky top-0 z-40 backdrop-blur border-b border-neutral-900/60">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
