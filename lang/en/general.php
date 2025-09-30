@@ -818,6 +818,7 @@ return array(
 	'page_lang' => 'Select the language that you will write this page',
 	'default_language' => 'Default language',
 	'default_language_info' => 'This language will be taken by default when the user language does not exist.',
+	'language_preference_desc' => 'Choose your preferred language for the platform interface',
 	'slug_lang_info' => 'If this page is a translation of an existing page, put the Slug/Url of that page.',
 	'video_encoding' => 'Video encoding',
 	'video_encoding_alert' => 'You must have FFMPEG installed',

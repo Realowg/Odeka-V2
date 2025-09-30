@@ -1050,7 +1050,16 @@ class AdminController extends Controller
 
 	public function theme()
 	{
-		return view('admin.theme');
+		// Force English locale for admin panel to show default values
+		$currentLocale = app()->getLocale();
+		app()->setLocale('en');
+		
+		$view = view('admin.theme');
+		
+		// Restore original locale
+		app()->setLocale($currentLocale);
+		
+		return $view;
 	}
 
 	public function themeStore(Request $request)
@@ -1335,7 +1344,19 @@ class AdminController extends Controller
 			'oshow_media_type','oshow_image_source','oshow_image_url','oshow_youtube_url','oshow_latest_watch_url',
 			'oshow_sponsorship_pdf_source','oshow_sponsorship_pdf_url',
 			'media_kit_source','media_kit_url','case_study_source','case_study_url',
-			'sim_default_conversion','sim_platform_fee','sim_price_ranges_json'
+			'sim_default_conversion','sim_platform_fee','sim_price_ranges_json',
+			// Text content fields
+			'hp_hero_headline','hp_hero_sub','hp_trusted_by',
+			'hp_access_title','hp_card_watch_title','hp_card_watch_desc','hp_card_creators_title','hp_card_creators_desc','hp_card_advertisers_title','hp_card_advertisers_desc',
+			'hp_advertisers_title','hp_advertisers_sub','hp_bullet_audience','hp_bullet_story','hp_bullet_distribution','hp_bullet_measurement',
+			'hp_card_brand_story_title','hp_card_brand_story_desc','hp_card_creator_partnerships_title','hp_card_creator_partnerships_desc',
+			'hp_card_event_coverage_title','hp_card_event_coverage_desc','hp_card_performance_title','hp_card_performance_desc',
+			'hp_sim_title','hp_sim_sub','hp_sim_followers_q','hp_sim_price_q','hp_sim_estimated_subs','hp_sim_you_could_earn','hp_sim_note','hp_sim_disclaimer','hp_need_custom_plan',
+			'hp_campaigns_title','hp_campaigns_note','hp_case_local_launch','hp_case_local_launch_desc',
+			'hp_step_brief_detail','hp_step_story_detail','hp_step_production_detail','hp_step_distribution_detail','hp_step_measurement_detail',
+			'hp_oshow_title','hp_oshow_desc','hp_oshow_sponsorship','hp_oshow_deliverables','hp_oshow_options',
+			'hp_media_shows_label','hp_media_shows_value','hp_media_reach_label','hp_media_reach_value','hp_media_watch_label','hp_media_watch_value','hp_media_partners_label','hp_media_partners_value',
+			'hp_channel_title','hp_show1_name','hp_show1_tag','hp_show2_name','hp_show2_tag','hp_show3_name','hp_show3_tag','hp_show4_name','hp_show4_tag',
 		];
 		foreach ($assign as $key) {
 			if ($request->filled($key) || $request->has($key)) {

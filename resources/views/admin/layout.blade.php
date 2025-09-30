@@ -429,6 +429,14 @@
               </li><!-- /end list -->
               @endif
 
+              @if (auth()->user()->hasEnhancedPermission('languages'))
+              <li class="nav-item">
+                  <a href="{{ url('panel/admin/translations') }}" class="nav-link text-truncate @if (request()->is('panel/admin/translations*')) active @endif">
+                      <i class="bi-globe2 me-2"></i> Translations
+                  </a>
+              </li><!-- /end list -->
+              @endif
+
               @if (auth()->user()->hasEnhancedPermission('categories'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/categories') }}" class="nav-link text-truncate @if (request()->is('panel/admin/categories')) active @endif">

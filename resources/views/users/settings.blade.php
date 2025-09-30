@@ -60,6 +60,23 @@
                       </div>
                 </div>
 
+                <div class="form-group">
+                  <label>{{ trans('general.language') }}</label>
+                  <div class="input-group mb-4">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fa fa-language"></i></span>
+                    </div>
+                    <select name="language" class="form-control custom-select">
+                      @foreach(\App\Models\Languages::all() as $lang)
+                        <option value="{{ $lang->abbreviation }}" @if(Auth::user()->language == $lang->abbreviation) selected @endif>
+                          {{ $lang->name }}
+                        </option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <small class="form-text text-muted">{{ trans('general.language_preference_desc') }}</small>
+                </div>
+
                 <div class="custom-control custom-checkbox mb-3">
                   <input name="email_new_subscriber" value="yes" id="customCheckLogin" @if (Auth::user()->email_new_subscriber == 'yes') checked @endif class="custom-control-input" type="checkbox">
                   <label class="custom-control-label" for="customCheckLogin">

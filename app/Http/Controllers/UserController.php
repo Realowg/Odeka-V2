@@ -493,6 +493,7 @@ class UserController extends Controller
     $validator = Validator::make($input, [
       'profession'  => 'required|min:6|max:100|string',
       'countries_id' => 'required',
+      'language' => 'nullable|string|max:10',
     ]);
 
     if ($validator->fails()) {
@@ -505,6 +506,15 @@ class UserController extends Controller
     $user->profession   = trim(strip_tags($input['profession']));
     $user->countries_id = trim($input['countries_id']);
     $user->email_new_subscriber = $input['email_new_subscriber'] ?? 'no';
+    
+    // Update language preference
+    if (!empty($input['language'])) {
+      $user->language = $input['language'];
+      // Also update session locale
+      \Session::put('locale', $input['language']);
+      \App::setLocale($input['language']);
+    }
+    
     $user->save();
 
     \Session::flash('status', __('auth.success_update'));

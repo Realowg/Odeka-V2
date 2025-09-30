@@ -730,6 +730,28 @@ Route::group(['middleware' => 'private.content'], function() {
 		// DELETE LANG
 		Route::post('/languages/{id}', [LangController::class, 'destroy']);
 
+		//***** Translations Management
+		Route::get('/translations', [App\Http\Controllers\Admin\TranslationController::class, 'index'])->name('translations');
+		Route::post('/translations', [App\Http\Controllers\Admin\TranslationController::class, 'store']);
+		Route::put('/translations/{id}', [App\Http\Controllers\Admin\TranslationController::class, 'update']);
+		Route::delete('/translations/{id}', [App\Http\Controllers\Admin\TranslationController::class, 'destroy']);
+		Route::post('/translations/bulk-delete', [App\Http\Controllers\Admin\TranslationController::class, 'bulkDelete']);
+		
+		// Import/Export
+		Route::get('/translations/import', [App\Http\Controllers\Admin\TranslationController::class, 'showImport'])->name('translations.import');
+		Route::post('/translations/import', [App\Http\Controllers\Admin\TranslationController::class, 'import']);
+		Route::post('/translations/export', [App\Http\Controllers\Admin\TranslationController::class, 'export'])->name('translations.export');
+		Route::post('/translations/export-for-translation', [App\Http\Controllers\Admin\TranslationController::class, 'exportForTranslation'])->name('translations.export.fortranslation');
+		Route::get('/translations/sample/csv', [App\Http\Controllers\Admin\TranslationController::class, 'sampleCsv'])->name('translations.sample.csv');
+		Route::get('/translations/sample/json', [App\Http\Controllers\Admin\TranslationController::class, 'sampleJson'])->name('translations.sample.json');
+		
+		// Sync & Scan
+		Route::post('/translations/sync', [App\Http\Controllers\Admin\TranslationController::class, 'sync'])->name('translations.sync');
+		Route::get('/translations/scan-keys', [App\Http\Controllers\Admin\TranslationController::class, 'scanKeys'])->name('translations.scan');
+		Route::post('/translations/import-missing', [App\Http\Controllers\Admin\TranslationController::class, 'importMissingKeys'])->name('translations.import.missing');
+		Route::get('/translations/find-unused', [App\Http\Controllers\Admin\TranslationController::class, 'findUnused'])->name('translations.unused');
+		Route::post('/translations/clear-cache', [App\Http\Controllers\Admin\TranslationController::class, 'clearCache'])->name('translations.clear.cache');
+
 		// Maintenance mode
 		Route::view('/maintenance/mode', 'admin.maintenance_mode')->name('maintenance_mode');
 		Route::post('/maintenance/mode', [AdminController::class, 'maintenanceMode']);

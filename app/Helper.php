@@ -456,6 +456,17 @@ class Helper
 		return '';
 	}
 
+	// Return a YouTube thumbnail URL for a given video URL
+	public static function youtubeThumb($url, $quality = 'hqdefault')
+	{
+		$id = self::getYoutubeId((string) $url);
+		if ($id) {
+			$quality = in_array($quality, ['default','mqdefault','hqdefault','sddefault','maxresdefault']) ? $quality : 'hqdefault';
+			return 'https://img.youtube.com/vi/' . $id . '/' . $quality . '.jpg';
+		}
+		return '';
+	}
+
 	// Resolve asset URL from either external URL or uploaded file on the configured disk
 	public static function assetUrl($source = 'upload', $url = null, $file = null)
 	{

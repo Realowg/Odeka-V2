@@ -9,6 +9,13 @@
       .tabular-nums { font-variant-numeric: tabular-nums; }
     </style>
   </head>
+  @php
+    // Helper to get text with DB override or fallback to translation
+    $t = function($dbKey, $transKey) {
+      $dbVal = config('settings.' . $dbKey);
+      return $dbVal ?: __($transKey);
+    };
+  @endphp
   <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ str_replace('_','-', app()->getLocale()) }}" data-currency="{{ \App\Helper::displayCurrencyCode() }}">
     <div class="sticky top-0 z-40 backdrop-blur border-b border-neutral-900/60">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -43,20 +50,20 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div class="grid items-center gap-10 lg:grid-cols-12">
             <div class="lg:col-span-7">
-              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">{{ __('odeka.hero_headline') }}</h1>
-              <p class="mt-5 max-w-2xl text-neutral-300 leading-relaxed">{{ __('odeka.hero_sub') }}</p>
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">{{ $t('hp_hero_headline', 'odeka.hero_headline') }}</h1>
+              <p class="mt-5 max-w-2xl text-neutral-300 leading-relaxed">{{ $t('hp_hero_sub', 'odeka.hero_sub') }}</p>
               <div class="mt-8 flex flex-wrap gap-3">
                 <a href="{{ url('channel') }}" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.watch_on_channel') }}</a>
                 <a href="{{ route('login') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">{{ __('odeka.creator_sign_in') }}</a>
                 <a href="{{ url('brief') }}" class="inline-flex items-center rounded-full border border-neutral-800 px-6 py-3 text-sm hover:border-neutral-700">{{ __('odeka.start_campaign') }}</a>
               </div>
-              <p class="mt-6 text-xs text-neutral-400">{{ __('odeka.trusted_by') }}</p>
+              <p class="mt-6 text-xs text-neutral-400">{{ $t('hp_trusted_by', 'odeka.trusted_by') }}</p>
             </div>
             <div class="lg:col-span-5">
               @php $heroType = config('settings.hero_type') ?? 'image'; @endphp
               @if($heroType === 'youtube' && config('settings.hero_youtube_url'))
                 <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-800">
-                  <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed(config('settings.hero_youtube_url')) }}" title="Hero video" loading="lazy" allowfullscreen></iframe>
+                  <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed(config('settings.hero_youtube_url')) }}" title="Hero video" loading="lazy" allowfullscreen poster="{{ App\Helper::youtubeThumb(config('settings.hero_youtube_url')) }}"></iframe>
                 </div>
               @else
                 @php $heroSrc = App\Helper::assetUrl(config('settings.hero_image_source'), config('settings.hero_image_url'), config('settings.hero_image_file')); @endphp
@@ -74,14 +81,14 @@
 
     <section id="access" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
       <div class="flex items-end justify-between gap-6">
-        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">{{ __('odeka.access_platform') }}</h2>
+        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">{{ $t('hp_access_title', 'odeka.access_platform') }}</h2>
       </div>
       <div class="mt-6 grid gap-6 md:grid-cols-3">
         @php
           $access = [
-            ['title'=>__('odeka.card_watch'), 'desc'=>__('odeka.card_watch_desc'), 'cta'=>__('odeka.open_platform'), 'href'=>url('channel')],
-            ['title'=>__('odeka.card_creators'), 'desc'=>__('odeka.card_creators_desc'), 'cta'=>__('odeka.creator_sign_in'), 'href'=>route('login')],
-            ['title'=>__('odeka.card_advertisers'), 'desc'=>__('odeka.card_advertisers_desc'), 'cta'=>__('odeka.start_campaign'), 'href'=>url('brief')],
+            ['title'=>$t('hp_card_watch_title', 'odeka.card_watch'), 'desc'=>$t('hp_card_watch_desc', 'odeka.card_watch_desc'), 'cta'=>__('odeka.open_platform'), 'href'=>url('channel')],
+            ['title'=>$t('hp_card_creators_title', 'odeka.card_creators'), 'desc'=>$t('hp_card_creators_desc', 'odeka.card_creators_desc'), 'cta'=>__('odeka.creator_sign_in'), 'href'=>route('login')],
+            ['title'=>$t('hp_card_advertisers_title', 'odeka.card_advertisers'), 'desc'=>$t('hp_card_advertisers_desc', 'odeka.card_advertisers_desc'), 'cta'=>__('odeka.start_campaign'), 'href'=>url('brief')],
           ];
         @endphp
         @foreach ($access as $e)
@@ -109,13 +116,13 @@
       <section id="advertisers" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="grid gap-10 lg:grid-cols-12 items-start">
           <div class="lg:col-span-5">
-            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('odeka.advertisers_title') }}</h2>
-            <p class="mt-4 text-neutral-300">{{ __('odeka.advertisers_sub') }}</p>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ $t('hp_advertisers_title', 'odeka.advertisers_title') }}</h2>
+            <p class="mt-4 text-neutral-300">{{ $t('hp_advertisers_sub', 'odeka.advertisers_sub') }}</p>
             <ul class="mt-6 space-y-3 text-neutral-300">
-              <li>• {{ __('odeka.bullet_audience') }}</li>
-              <li>• {{ __('odeka.bullet_story') }}</li>
-              <li>• {{ __('odeka.bullet_distribution') }}</li>
-              <li>• {{ __('odeka.bullet_measurement') }}</li>
+              <li>• {{ $t('hp_bullet_audience', 'odeka.bullet_audience') }}</li>
+              <li>• {{ $t('hp_bullet_story', 'odeka.bullet_story') }}</li>
+              <li>• {{ $t('hp_bullet_distribution', 'odeka.bullet_distribution') }}</li>
+              <li>• {{ $t('hp_bullet_measurement', 'odeka.bullet_measurement') }}</li>
             </ul>
             <div class="mt-7 flex gap-3">
               <a href="{{ url('brief') }}" class="rounded-full bg-white text-neutral-900 px-5 py-3 text-sm font-medium hover:bg-neutral-200">{{ __('odeka.submit_brief') }}</a>
@@ -125,10 +132,10 @@
           <div class="lg:col-span-7">
             <div class="grid sm:grid-cols-2 gap-6">
               @php $cards = [
-                ['title'=>__('odeka.brand_story'), 'desc'=>'Short‑form narratives produced by Odeka Studio — from teaser to hero film.'],
-                ['title'=>__('odeka.creator_partnerships'), 'desc'=>'Tap trusted local voices to extend reach and authenticity.'],
-                ['title'=>__('odeka.event_coverage'), 'desc'=>'On‑site capture + same‑day edits for festivals and launches.'],
-                ['title'=>__('odeka.performance_addons'), 'desc'=>'Retargeting, UTM tracking, A/B hooks, caption optimization.'],
+                ['title'=>$t('hp_card_brand_story_title', 'odeka.brand_story'), 'desc'=>$t('hp_card_brand_story_desc', 'odeka.brand_story') ?: 'Short‑form narratives produced by Odeka Studio — from teaser to hero film.'],
+                ['title'=>$t('hp_card_creator_partnerships_title', 'odeka.creator_partnerships'), 'desc'=>$t('hp_card_creator_partnerships_desc', 'odeka.creator_partnerships') ?: 'Tap trusted local voices to extend reach and authenticity.'],
+                ['title'=>$t('hp_card_event_coverage_title', 'odeka.event_coverage'), 'desc'=>$t('hp_card_event_coverage_desc', 'odeka.event_coverage') ?: 'On‑site capture + same‑day edits for festivals and launches.'],
+                ['title'=>$t('hp_card_performance_title', 'odeka.performance_addons'), 'desc'=>$t('hp_card_performance_desc', 'odeka.performance_addons') ?: 'Retargeting, UTM tracking, A/B hooks, caption optimization.'],
               ]; @endphp
               @foreach ($cards as $c)
                 <div class="rounded-3xl border border-neutral-900 bg-neutral-950 p-5">
@@ -174,7 +181,12 @@
       <section id="campaigns" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div class="flex items-end justify-between gap-6">
           <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ __('odeka.campaigns_title') }}</h2>
-          <a href="{{ url('case-study') }}" class="text-sm text-neutral-300 hover:text-white">{{ __('odeka.see_case_study') }}</a>
+          @php
+            $caseHref = config('settings.case_study_source') === 'url' && config('settings.case_study_url')
+              ? config('settings.case_study_url')
+              : (config('settings.case_study_file') ? App\Helper::getFile(config('settings.case_study_file')) : url('blog'));
+          @endphp
+          <a href="{{ $caseHref }}" class="text-sm text-neutral-300 hover:text-white">{{ __('odeka.see_case_study') }}</a>
         </div>
         <div class="mt-10 grid gap-6 lg:grid-cols-12">
           <div class="lg:col-span-7">
@@ -198,7 +210,7 @@
               <div class="p-6">
                 <div class="text-lg font-medium">{{ __('odeka.case_local_launch') }}</div>
                 <p class="mt-2 text-sm text-neutral-300">4‑video story arc, creator collaborations, and paid boosts. Outcome example: +38% visits in 4 weeks, +12% repeat.</p>
-                <div class="mt-4"><a href="{{ url('case-study') }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">{{ __('odeka.download_pdf') }}</a></div>
+            <div class="mt-4"><a href="{{ $caseHref }}" class="text-sm rounded-full border border-neutral-800 px-4 py-2 hover:border-neutral-700">{{ __('odeka.download_pdf') }}</a></div>
               </div>
             </div>
           </div>
@@ -276,8 +288,9 @@
                 $oshowImg = App\Helper::assetUrl(config('settings.oshow_image_source'), config('settings.oshow_image_url'), config('settings.oshow_image_file'));
               @endphp
               @if($oshowType === 'youtube' && $oshowYt)
-                <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-900">
-                  <iframe class="w-full h-full" src="{{ App\Helper::youtubeEmbed($oshowYt) }}" title="O'Show" loading="lazy" allowfullscreen></iframe>
+                <div class="aspect-[16/10] w-full overflow-hidden rounded-3xl border border-neutral-900 relative">
+                  <img src="{{ App\Helper::youtubeThumb($oshowYt, 'sddefault') }}" alt="O'Show" class="w-full h-full object-cover" />
+                  <iframe class="absolute inset-0 w-full h-full" src="{{ App\Helper::youtubeEmbed($oshowYt) }}" title="O'Show" loading="lazy" allowfullscreen></iframe>
                 </div>
               @elseif($oshowImg)
                 <img src="{{ $oshowImg }}" alt="O'Show" class="aspect-[16/10] w-full rounded-3xl border border-neutral-900 object-cover" />
@@ -411,27 +424,65 @@
       }
       followersEl.addEventListener('input', recompute);
       priceEl.addEventListener('input', recompute);
+      // Simulator defaults from admin settings
+      @php
+        $simRanges = config('settings.sim_price_ranges_json');
+        if (is_string($simRanges)) {
+          $simRanges = json_decode($simRanges, true) ?: [];
+        }
+        if (!is_array($simRanges)) {
+          $simRanges = [];
+        }
+      @endphp
+      
+      window.SIM = {
+        conversion: {{ (float) (config('settings.sim_default_conversion') ?? 0.05) }},
+        fee: {{ (float) (config('settings.sim_platform_fee') ?? 0.05) }},
+        ranges: {!! json_encode($simRanges) !!}
+      };
+      
+      // Apply admin defaults
+      if (SIM.conversion > 0) state.conversion = SIM.conversion;
+      if (SIM.fee > 0) state.platformFee = SIM.fee;
+      
+      // Apply currency-specific price ranges
+      function applyPriceRanges() {
+        if (SIM.ranges && SIM.ranges[state.currency]) {
+          const r = SIM.ranges[state.currency];
+          if (r.min != null) {
+            priceEl.min = r.min;
+            priceEl.value = Math.max(priceEl.value, r.min);
+          }
+          if (r.max != null) {
+            priceEl.max = r.max;
+            priceEl.value = Math.min(priceEl.value, r.max);
+          }
+          if (r.step != null) {
+            priceEl.step = r.step;
+          }
+        }
+      }
+      
       const langSel = document.getElementById('odeka-lang');
       const curSel = document.getElementById('odeka-currency');
       if (langSel) langSel.value = state.locale;
       if (curSel) curSel.value = state.currency;
+      
       langSel.addEventListener('change', () => {
         const code = langSel.value || 'en';
         window.location.href = `${'{{ url('change/lang') }}'}/${code}`;
       });
-      curSel.addEventListener('change', () => { document.getElementById('currency-form').submit(); });
-      // Simulator defaults from admin settings
-      window.SIM = {
-        conversion: {{ (float) (config('settings.sim_default_conversion') ?? 0.05) }},
-        fee: {{ (float) (config('settings.sim_platform_fee') ?? 0.05) }},
-        ranges: {!! json_encode(config('settings.sim_price_ranges_json') ?? []) !!}
-      };
-      if (SIM.ranges[state.currency]) {
-        const r = SIM.ranges[state.currency];
-        if (r.min != null) priceEl.min = r.min;
-        if (r.max != null) priceEl.max = r.max;
-        if (r.step != null) priceEl.step = r.step;
-      }
+      
+      // Handle currency change - update state and apply ranges before submitting
+      curSel.addEventListener('change', () => {
+        state.currency = curSel.value;
+        applyPriceRanges();
+        recompute();
+        // Submit form to persist currency change
+        document.getElementById('currency-form').submit();
+      });
+      
+      applyPriceRanges();
       applyTabUI();
       recompute();
     </script>

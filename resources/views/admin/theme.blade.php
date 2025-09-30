@@ -27,8 +27,15 @@
 			<div class="card shadow-custom border-0">
 				<div class="card-body p-lg-5">
 
-					 <form method="post" action="{{{ url('panel/admin/theme') }}}" enctype="multipart/form-data">
+           <form method="post" action="{{{ url('panel/admin/theme') }}}" enctype="multipart/form-data">
              @csrf
+             <div class="mb-4">
+               <ul class="nav nav-pills" id="themeTabs">
+                 <li class="nav-item"><a class="nav-link active" data-target="#pane-general" href="#">General</a></li>
+                 <li class="nav-item"><a class="nav-link" data-target="#pane-homepage" href="#">Homepage</a></li>
+               </ul>
+             </div>
+             <div id="pane-general">
 
 						 <fieldset class="row mb-5">
 			         <legend class="col-form-label col-sm-2 pt-0 text-lg-end">{{ __('general.home_style') }}</legend>
@@ -55,8 +62,10 @@
 			         </div>
 			       </fieldset><!-- end row -->
 
-              <hr class="my-4">
-              <h6 class="mb-3 fw-medium">Homepage (Odeka)</h6>
+             </div><!-- /pane-general -->
+             <div id="pane-homepage" class="d-none">
+             <hr class="my-4">
+             <h6 class="mb-3 fw-medium">Homepage (Odeka)</h6>
 
               <div class="row mb-3">
                 <label class="col-sm-2 col-form-label text-lg-end">Hero Type</label>
@@ -65,7 +74,8 @@
                     <option value="image" @selected($settings->hero_type=='image')>Image</option>
                     <option value="youtube" @selected($settings->hero_type=='youtube')>YouTube</option>
                   </select>
-                </div>
+            		</div>
+            </div><!-- /pane-homepage -->
               </div>
 
               <div class="row mb-3">
@@ -217,6 +227,166 @@
                 </div>
               </div>
 
+              <hr class="my-4">
+              <h6 class="mb-3 fw-medium">Homepage Text Content</h6>
+              <p class="text-muted small">Leave fields empty to use default translations from lang/en/odeka.php</p>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Hero Section</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_hero_headline" value="{{ $settings->hp_hero_headline ?: trans('odeka.hero_headline', [], 'en') }}" class="form-control mb-2">
+                  <textarea name="hp_hero_sub" rows="2" class="form-control mb-2">{{ $settings->hp_hero_sub ?: trans('odeka.hero_sub', [], 'en') }}</textarea>
+                  <input type="text" name="hp_trusted_by" value="{{ $settings->hp_trusted_by ?: trans('odeka.trusted_by', [], 'en') }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Access Platform Cards</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_access_title" value="{{ $settings->hp_access_title ?: trans('odeka.access_platform', [], 'en') }}" class="form-control mb-2">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_watch_title" value="{{ $settings->hp_card_watch_title ?: trans('odeka.card_watch', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_watch_desc" rows="1" class="form-control">{{ $settings->hp_card_watch_desc ?: trans('odeka.card_watch_desc', [], 'en') }}</textarea></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_creators_title" value="{{ $settings->hp_card_creators_title ?: trans('odeka.card_creators', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_creators_desc" rows="1" class="form-control">{{ $settings->hp_card_creators_desc ?: trans('odeka.card_creators_desc', [], 'en') }}</textarea></div>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_advertisers_title" value="{{ $settings->hp_card_advertisers_title ?: trans('odeka.card_advertisers', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_advertisers_desc" rows="1" class="form-control">{{ $settings->hp_card_advertisers_desc ?: trans('odeka.card_advertisers_desc', [], 'en') }}</textarea></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Advertisers (Odeka Tab)</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_advertisers_title" value="{{ $settings->hp_advertisers_title ?: trans('odeka.advertisers_title', [], 'en') }}" class="form-control mb-2">
+                  <textarea name="hp_advertisers_sub" rows="2" class="form-control mb-2">{{ $settings->hp_advertisers_sub ?: trans('odeka.advertisers_sub', [], 'en') }}</textarea>
+                  <input type="text" name="hp_bullet_audience" value="{{ $settings->hp_bullet_audience ?: trans('odeka.bullet_audience', [], 'en') }}" class="form-control mb-1">
+                  <input type="text" name="hp_bullet_story" value="{{ $settings->hp_bullet_story ?: trans('odeka.bullet_story', [], 'en') }}" class="form-control mb-1">
+                  <input type="text" name="hp_bullet_distribution" value="{{ $settings->hp_bullet_distribution ?: trans('odeka.bullet_distribution', [], 'en') }}" class="form-control mb-1">
+                  <input type="text" name="hp_bullet_measurement" value="{{ $settings->hp_bullet_measurement ?: trans('odeka.bullet_measurement', [], 'en') }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Service Cards (4)</label>
+                <div class="col-sm-10">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_brand_story_title" value="{{ $settings->hp_card_brand_story_title ?: trans('odeka.brand_story', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_brand_story_desc" rows="1" class="form-control">{{ $settings->hp_card_brand_story_desc ?: 'Short‑form narratives produced by Odeka Studio — from teaser to hero film.' }}</textarea></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_creator_partnerships_title" value="{{ $settings->hp_card_creator_partnerships_title ?: trans('odeka.creator_partnerships', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_creator_partnerships_desc" rows="1" class="form-control">{{ $settings->hp_card_creator_partnerships_desc ?: 'Tap trusted local voices to extend reach and authenticity.' }}</textarea></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_event_coverage_title" value="{{ $settings->hp_card_event_coverage_title ?: trans('odeka.event_coverage', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_event_coverage_desc" rows="1" class="form-control">{{ $settings->hp_card_event_coverage_desc ?: 'On‑site capture + same‑day edits for festivals and launches.' }}</textarea></div>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-md-6"><input type="text" name="hp_card_performance_title" value="{{ $settings->hp_card_performance_title ?: trans('odeka.performance_addons', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><textarea name="hp_card_performance_desc" rows="1" class="form-control">{{ $settings->hp_card_performance_desc ?: 'Retargeting, UTM tracking, A/B hooks, caption optimization.' }}</textarea></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Simulator Section</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_sim_title" value="{{ $settings->hp_sim_title ?: trans('odeka.sim_title', [], 'en') }}" class="form-control mb-2">
+                  <input type="text" name="hp_sim_sub" value="{{ $settings->hp_sim_sub ?: trans('odeka.sim_sub', [], 'en') }}" class="form-control mb-2">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_sim_followers_q" value="{{ $settings->hp_sim_followers_q ?: trans('odeka.sim_followers_q', [], 'en') }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_sim_price_q" value="{{ $settings->hp_sim_price_q ?: trans('odeka.sim_price_q', [], 'en') }}" class="form-control"></div>
+                  </div>
+                  <input type="text" name="hp_sim_estimated_subs" value="{{ $settings->hp_sim_estimated_subs ?: trans('odeka.sim_estimated_subs', [], 'en') }}" class="form-control mb-2">
+                  <input type="text" name="hp_sim_you_could_earn" value="{{ $settings->hp_sim_you_could_earn ?: trans('odeka.sim_you_could_earn', [], 'en') }}" class="form-control mb-2">
+                  <textarea name="hp_sim_note" rows="2" class="form-control mb-2">{{ $settings->hp_sim_note ?: 'Conversion assumed: 5% of followers subscribe. Platform fee: 5% deducted. Payment processor fees not included.' }}</textarea>
+                  <textarea name="hp_sim_disclaimer" rows="2" class="form-control mb-2">{{ $settings->hp_sim_disclaimer ?: '* Estimate only. Based on 5% of followers who subscribe. Does not include payment processor fees. Net amount reflects a 5% platform fee.' }}</textarea>
+                  <input type="text" name="hp_need_custom_plan" value="{{ $settings->hp_need_custom_plan ?: __('odeka.need_custom_plan') }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Campaigns Section</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_campaigns_title" value="{{ $settings->hp_campaigns_title ?: trans('odeka.campaigns_title', [], 'en') }}" class="form-control mb-2">
+                  <input type="text" name="hp_campaigns_note" value="{{ $settings->hp_campaigns_note ?: trans('odeka.campaigns_note', [], 'en') }}" class="form-control mb-2">
+                  <input type="text" name="hp_case_local_launch" value="{{ $settings->hp_case_local_launch ?: trans('odeka.case_local_launch', [], 'en') }}" class="form-control mb-2">
+                  <textarea name="hp_case_local_launch_desc" rows="2" class="form-control">{{ $settings->hp_case_local_launch_desc ?: '4‑video story arc, creator collaborations, and paid boosts. Outcome example: +38% visits in 4 weeks, +12% repeat.' }}</textarea>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Campaign Steps (5)</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_step_brief_detail" value="{{ $settings->hp_step_brief_detail ?: 'Objectives, audience, budget, target markets.' }}" class="form-control mb-1">
+                  <input type="text" name="hp_step_story_detail" value="{{ $settings->hp_step_story_detail ?: 'Creative routes, scripts, casting, visual language.' }}" class="form-control mb-1">
+                  <input type="text" name="hp_step_production_detail" value="{{ $settings->hp_step_production_detail ?: 'Studio or on‑location. Photo + video + design.' }}" class="form-control mb-1">
+                  <input type="text" name="hp_step_distribution_detail" value="{{ $settings->hp_step_distribution_detail ?: "O'Channel + creators + paid amplification." }}" class="form-control mb-1">
+                  <input type="text" name="hp_step_measurement_detail" value="{{ $settings->hp_step_measurement_detail ?: 'Analytics and brand lift study.' }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">O'Show Section</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_oshow_title" value="{{ $settings->hp_oshow_title ?: trans('odeka.oshow_star', [], 'en') }}" class="form-control mb-2">
+                  <textarea name="hp_oshow_desc" rows="2" class="form-control mb-2">{{ $settings->hp_oshow_desc ?: trans('odeka.oshow_desc', [], 'en') }}</textarea>
+                  <input type="text" name="hp_oshow_sponsorship" value="{{ $settings->hp_oshow_sponsorship ?: trans('odeka.oshow_sponsorship', [], 'en') }}" class="form-control mb-1">
+                  <input type="text" name="hp_oshow_deliverables" value="{{ $settings->hp_oshow_deliverables ?: trans('odeka.oshow_deliverables', [], 'en') }}" class="form-control mb-1">
+                  <input type="text" name="hp_oshow_options" value="{{ $settings->hp_oshow_options ?: trans('odeka.oshow_options', [], 'en') }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">Media Tab Stats</label>
+                <div class="col-sm-10">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_media_shows_label" value="{{ $settings->hp_media_shows_label ?: 'Shows' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_media_shows_value" value="{{ $settings->hp_media_shows_value ?: '6+' }}" class="form-control"></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_media_reach_label" value="{{ $settings->hp_media_reach_label ?: 'Monthly reach' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_media_reach_value" value="{{ $settings->hp_media_reach_value ?: '500K+' }}" class="form-control"></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_media_watch_label" value="{{ $settings->hp_media_watch_label ?: 'Avg. watch time' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_media_watch_value" value="{{ $settings->hp_media_watch_value ?: '3m 12s' }}" class="form-control"></div>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-md-6"><input type="text" name="hp_media_partners_label" value="{{ $settings->hp_media_partners_label ?: 'Partners' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_media_partners_value" value="{{ $settings->hp_media_partners_value ?: '40+' }}" class="form-control"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-lg-end">O'Channel Shows</label>
+                <div class="col-sm-10">
+                  <input type="text" name="hp_channel_title" value="{{ $settings->hp_channel_title ?: "O'Channel — Emissions" }}" class="form-control mb-2">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_show1_name" value="{{ $settings->hp_show1_name ?: "O'Show (flagship)" }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_show1_tag" value="{{ $settings->hp_show1_tag ?: 'Interviews • Music • Culture' }}" class="form-control"></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_show2_name" value="{{ $settings->hp_show2_name ?: 'Street Stories' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_show2_tag" value="{{ $settings->hp_show2_tag ?: 'People • Places • Food' }}" class="form-control"></div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" name="hp_show3_name" value="{{ $settings->hp_show3_name ?: 'Creator Spotlight' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_show3_tag" value="{{ $settings->hp_show3_tag ?: 'Models • Creators • Makers' }}" class="form-control"></div>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-md-6"><input type="text" name="hp_show4_name" value="{{ $settings->hp_show4_name ?: 'Business Now' }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" name="hp_show4_tag" value="{{ $settings->hp_show4_tag ?: 'Entrepreneurs • Playbooks' }}" class="form-control"></div>
+                  </div>
+                </div>
+              </div>
+
 		        <div class="row mb-3">
 		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('general.logo') }}</label>
 		          <div class="col-lg-5 col-sm-10">
@@ -302,7 +472,7 @@
 		        </div>
 
             <div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('admin.image_index_1') }}</label>
+		          <label class="col-sm-2 col-form-label text-lg-end">O'Show (flagship) image</label>
 		          <div class="col-lg-5 col-sm-10">
                 <div class="d-block mb-2">
                   <img src="{{ asset('img/'.$settings->img_1) }}" style="width:120px">
@@ -316,7 +486,7 @@
 		        </div>
 
 						<div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('admin.image_index_2') }}</label>
+		          <label class="col-sm-2 col-form-label text-lg-end">Street Stories image</label>
 		          <div class="col-lg-5 col-sm-10">
                 <div class="d-block mb-2">
                   <img src="{{ asset('img/'.$settings->img_2) }}" style="width:120px">
@@ -330,7 +500,7 @@
 		        </div>
 
 						<div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('admin.image_index_3') }}</label>
+		          <label class="col-sm-2 col-form-label text-lg-end">Creator Spotlight image</label>
 		          <div class="col-lg-5 col-sm-10">
                 <div class="d-block mb-2">
                   <img src="{{ asset('img/'.$settings->img_3) }}" style="width:120px">
@@ -344,7 +514,7 @@
 		        </div>
 
 						<div class="row mb-3">
-		          <label class="col-sm-2 col-form-label text-lg-end">{{ __('admin.image_index_4') }}</label>
+		          <label class="col-sm-2 col-form-label text-lg-end">Business Now image</label>
 		          <div class="col-lg-5 col-sm-10">
                 <div class="d-block mb-2">
                   <img src="{{ asset('img/'.$settings->img_4) }}" style="width:120px">
@@ -445,7 +615,18 @@
 		          </div>
 		        </div>
 
-		       </form>
+           </form>
+           <script>
+             (function(){
+               const tabs = document.querySelectorAll('#themeTabs .nav-link');
+               function activate(id){
+                 document.querySelector('#pane-general').classList.toggle('d-none', id !== '#pane-general');
+                 document.querySelector('#pane-homepage').classList.toggle('d-none', id !== '#pane-homepage');
+                 tabs.forEach(t=>t.classList.toggle('active', t.getAttribute('data-target') === id));
+               }
+               tabs.forEach(t=>t.addEventListener('click', function(e){ e.preventDefault(); activate(this.getAttribute('data-target')); }));
+             })();
+           </script>
 
 				 </div><!-- card-body -->
  			</div><!-- card  -->

@@ -169,6 +169,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
+        App\Providers\TranslationServiceProvider::class,
 
         Intervention\Image\ImageServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
@@ -176,6 +177,8 @@ return [
         Stevebauman\Purify\PurifyServiceProvider::class,
         Phattarachai\LaravelMobileDetect\AgentServiceProvider::class,
         ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
+    ])->replace([
+        Illuminate\Translation\TranslationServiceProvider::class => App\Providers\TranslationServiceProvider::class,
     ])->toArray(),
 
     /*
