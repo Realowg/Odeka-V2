@@ -1,14 +1,27 @@
 @php
-  // CRITICAL: Set locale BEFORE any HTML output
-  if (session('locale')) {
-    app()->setLocale(session('locale'));
+  // CRITICAL FIX: Force locale from session IMMEDIATELY
+  $sessionLocale = session('locale');
+  if ($sessionLocale) {
+    app()->setLocale($sessionLocale);
   }
   $currentLocale = app()->getLocale();
+  
+  // DIAGNOSTIC: Log what's happening
+  \Log::info('Homepage locale debug', [
+    'session_locale' => $sessionLocale,
+    'app_locale' => $currentLocale,
+    'test_translation' => __('odeka.hero_headline'),
+  ]);
   
   // Helper to get text with DB override or fallback to translation
   $t = function($dbKey, $transKey) {
     $dbVal = config('settings.' . $dbKey);
-    return $dbVal ?: __($transKey);
+    if ($dbVal) {
+      return $dbVal;
+    }
+    // CRITICAL: Call __() which will use app()->getLocale()
+    // Do NOT cache the translation, let Laravel handle it
+    return __($transKey);
   };
 @endphp
 <!doctype html>
