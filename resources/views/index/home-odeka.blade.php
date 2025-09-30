@@ -1,5 +1,18 @@
+@php
+  // CRITICAL: Set locale BEFORE any HTML output
+  if (session('locale')) {
+    app()->setLocale(session('locale'));
+  }
+  $currentLocale = app()->getLocale();
+  
+  // Helper to get text with DB override or fallback to translation
+  $t = function($dbKey, $transKey) {
+    $dbVal = config('settings.' . $dbKey);
+    return $dbVal ?: __($transKey);
+  };
+@endphp
 <!doctype html>
-<html lang="{{ str_replace('_','-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_','-', $currentLocale) }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,20 +25,7 @@
       .tabular-nums { font-variant-numeric: tabular-nums; }
     </style>
   </head>
-  @php
-    // Helper to get text with DB override or fallback to translation
-    $t = function($dbKey, $transKey) {
-      $dbVal = config('settings.' . $dbKey);
-      return $dbVal ?: __($transKey);
-    };
-    
-    // Ensure locale is properly set from session
-    $currentLocale = app()->getLocale();
-    if (session('locale') && session('locale') !== $currentLocale) {
-      app()->setLocale(session('locale'));
-      $currentLocale = session('locale');
-    }
-  @endphp
+  <!-- DEBUG: Locale={{ $currentLocale }}, Session={{ session('locale') }}, __test={{ __('odeka.brand') }} -->
   <body class="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800 selection:text-white" data-tab="{{ request('tab', 'Odeka') }}" data-locale="{{ str_replace('_','-', $currentLocale) }}" data-currency="{{ \App\Helper::displayCurrencyCode() }}">
     <div class="sticky top-0 z-40 backdrop-blur border-b border-neutral-900/60">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
