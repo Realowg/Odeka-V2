@@ -2,173 +2,302 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Odeva;
+use App\Services\OdevaService;
+use App\Services\OdevaFunctionService;
+use App\Services\OdevaContextService;
+use App\Models\OdevaSubscription;
+use App\Models\OdevaConversation;
 use Illuminate\Http\Request;
-use App\Http\Requests\Api\OdevaRequest;
-use App\Http\Resources\OdevaResource;
+use App\Http\Requests\Api\OdevaChatRequest;
+use App\Http\Resources\OdevaChatResource;
+use Carbon\Carbon;
 
 class OdevaController extends BaseController
 {
-    /**
-     * Get all Odevas
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index(Request $request)
-    {
-        $items = Odeva::latest()->paginate(20);
-        
-        return $this->paginatedResponse($items);
+    protected $odevaService;
+    protected $functionService;
+    protected $contextService;
+
+    public function __construct(
+        OdevaService $odevaService,
+        OdevaFunctionService $functionService,
+        OdevaContextService $contextService
+    ) {
+        $this->odevaService = $odevaService;
+        $this->functionService = $functionService;
+        $this->contextService = $contextService;
     }
-    
+
     /**
-     * Get single Odeva
+     * Chat with Odeva AI
      * 
-     * @param int $id
+     * @param OdevaChatRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function chat(OdevaChatRequest $request)
     {
-        $item = Odeva::find($id);
+        $creatorId = auth()->id();
         
-        if (!$item) {
-            return $this->notFoundResponse('Odeva not found');
+        // Check if creator has active Odeva subscription
+        $subscription = OdevaSubscription::where('creator_id', $creatorId)->first();
+        
+        if (!$subscription || !$subscription->isActive()) {
+            return $this->forbiddenResponse('Odeva subscription required');
         }
-        
-        return $this->successResponse(
-            new OdevaResource($item)
-        );
-    }
-    
-    /**
-     * Create new Odeva
-     * 
-     * @param OdevaRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(OdevaRequest $request)
-    {
-        $item = Odeva::create($request->validated());
-        
-        return $this->successResponse(
-            new OdevaResource($item),
-            'Odeva created successfully',
-            201
-        );
-    }
-    
-    /**
-     * Update Odeva
-     * 
-     * @param OdevaRequest $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(OdevaRequest $request, $id)
-    {
-        $item = Odeva::find($id);
-        
-        if (!$item) {
-            return $this->notFoundResponse('Odeva not found');
+
+        try {
+            $response = $this->odevaService->chat(
+                $request->message,
+                $creatorId,
+                $request->subscriber_id,
+                $request->conversation_id
+            );
+
+            return $this->successResponse($response);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), null, 500, 'ODEVA_ERROR');
         }
-        
-        $item->update($request->validated());
-        
-        return $this->successResponse(
-            new OdevaResource($item),
-            'Odeva updated successfully'
-        );
     }
-    
+
     /**
-     * Delete Odeva
+     * Get available functions
      * 
-     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function functions()
     {
-        $item = Odeva::find($id);
-        
-        if (!$item) {
-            return $this->notFoundResponse('Odeva not found');
+        $creatorId = auth()->id();
+        $functions = $this->functionService->getFunctions($creatorId);
+
+        return $this->successResponse([
+            'functions' => $functions,
+            'count' => count($functions),
+        ]);
+    }
+
+    /**
+     * Execute a function directly (for testing)
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function executeFunction(Request $request)
+    {
+        $request->validate([
+            'function_name' => 'required|string',
+            'parameters' => 'required|array',
+        ]);
+
+        $creatorId = auth()->id();
+
+        try {
+            $result = $this->functionService->execute(
+                $request->function_name,
+                $request->parameters,
+                $creatorId
+            );
+
+            return $this->successResponse($result);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), null, 400, 'FUNCTION_ERROR');
         }
-        
-        $item->delete();
-        
-        return $this->successResponse(null, 'Odeva deleted successfully');
     }
 
     /**
-     * chat endpoint
+     * Get creator context
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getContext()
+    {
+        $creator = auth()->user();
+        $context = $this->contextService->getCreatorContext($creator);
+
+        return $this->successResponse($context);
+    }
+
+    /**
+     * Get automation status
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAutomation()
+    {
+        $subscription = OdevaSubscription::where('creator_id', auth()->id())->first();
+
+        if (!$subscription) {
+            return $this->notFoundResponse('Odeva subscription not found');
+        }
+
+        return $this->successResponse([
+            'automation_enabled' => $subscription->automation_enabled,
+            'settings' => $subscription->settings,
+        ]);
+    }
+
+    /**
+     * Update automation settings
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function chat(Request $request)
+    public function updateAutomation(Request $request)
     {
-        // TODO: Implement chat logic
-        return $this->successResponse(null, 'chat endpoint');
+        $request->validate([
+            'automation_enabled' => 'required|boolean',
+            'settings' => 'sometimes|array',
+        ]);
+
+        $subscription = OdevaSubscription::where('creator_id', auth()->id())->first();
+
+        if (!$subscription) {
+            return $this->notFoundResponse('Odeva subscription not found');
+        }
+
+        $subscription->update([
+            'automation_enabled' => $request->automation_enabled,
+            'settings' => $request->settings ?? $subscription->settings,
+        ]);
+
+        return $this->successResponse([
+            'automation_enabled' => $subscription->automation_enabled,
+            'settings' => $subscription->settings,
+        ], 'Automation settings updated');
     }
 
     /**
-     * functions endpoint
+     * Get Odeva subscription status
      * 
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function functions(Request $request)
+    public function subscription()
     {
-        // TODO: Implement functions logic
-        return $this->successResponse(null, 'functions endpoint');
+        $subscription = OdevaSubscription::where('creator_id', auth()->id())->first();
+
+        if (!$subscription) {
+            return $this->successResponse([
+                'has_subscription' => false,
+                'message' => 'No Odeva subscription found',
+            ]);
+        }
+
+        return $this->successResponse([
+            'has_subscription' => true,
+            'status' => $subscription->status,
+            'is_active' => $subscription->isActive(),
+            'is_on_trial' => $subscription->isOnTrial(),
+            'trial_ends_at' => $subscription->trial_ends_at?->toDateString(),
+            'next_billing_date' => $subscription->next_billing_date?->toDateString(),
+            'price' => (float) $subscription->price,
+            'currency' => $subscription->currency,
+            'automation_enabled' => $subscription->automation_enabled,
+        ]);
     }
 
     /**
-     * execute endpoint
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function execute(Request $request)
-    {
-        // TODO: Implement execute logic
-        return $this->successResponse(null, 'execute endpoint');
-    }
-
-    /**
-     * context endpoint
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function context(Request $request)
-    {
-        // TODO: Implement context logic
-        return $this->successResponse(null, 'context endpoint');
-    }
-
-    /**
-     * automation endpoint
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function automation(Request $request)
-    {
-        // TODO: Implement automation logic
-        return $this->successResponse(null, 'automation endpoint');
-    }
-
-    /**
-     * subscribe endpoint
+     * Subscribe to Odeva
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function subscribe(Request $request)
     {
-        // TODO: Implement subscribe logic
-        return $this->successResponse(null, 'subscribe endpoint');
+        $creatorId = auth()->id();
+        
+        // Check if already subscribed
+        $existing = OdevaSubscription::where('creator_id', $creatorId)->first();
+        
+        if ($existing && $existing->isActive()) {
+            return $this->errorResponse('Already have an active Odeva subscription', null, 400, 'ALREADY_SUBSCRIBED');
+        }
+
+        // Create subscription with trial period
+        $subscription = OdevaSubscription::create([
+            'creator_id' => $creatorId,
+            'status' => 'trial',
+            'trial_ends_at' => Carbon::now()->addDays(14), // 14-day trial
+            'price' => config('odeva.subscription_price', 29.99),
+            'currency' => config('settings.currency_code', 'USD'),
+            'automation_enabled' => false,
+        ]);
+
+        return $this->successResponse([
+            'subscription_id' => $subscription->id,
+            'status' => $subscription->status,
+            'trial_ends_at' => $subscription->trial_ends_at->toDateString(),
+            'message' => 'Odeva trial subscription activated',
+        ], 'Subscription created successfully', 201);
+    }
+
+    /**
+     * Cancel Odeva subscription
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancelSubscription()
+    {
+        $subscription = OdevaSubscription::where('creator_id', auth()->id())->first();
+
+        if (!$subscription) {
+            return $this->notFoundResponse('Odeva subscription not found');
+        }
+
+        $subscription->update([
+            'status' => 'cancelled',
+            'automation_enabled' => false,
+        ]);
+
+        return $this->successResponse(null, 'Odeva subscription cancelled');
+    }
+
+    /**
+     * Get Odeva analytics/usage stats
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function analytics(Request $request)
+    {
+        $creatorId = auth()->id();
+        $period = $request->get('period', 'month');
+
+        // Get conversation count
+        $conversationsQuery = OdevaConversation::where('creator_id', $creatorId);
+        $conversationsQuery = $this->applyPeriodFilter($conversationsQuery, $period);
+        $conversationsCount = $conversationsQuery->count();
+
+        // Get total messages
+        $totalMessages = OdevaConversation::where('creator_id', $creatorId)
+            ->withCount('messages')
+            ->get()
+            ->sum('messages_count');
+
+        return $this->successResponse([
+            'period' => $period,
+            'conversations' => $conversationsCount,
+            'total_messages' => $totalMessages,
+            'active_conversations' => OdevaConversation::where('creator_id', $creatorId)
+                ->where('status', 'active')
+                ->count(),
+        ]);
+    }
+
+    /**
+     * Apply period filter
+     */
+    protected function applyPeriodFilter($query, $period)
+    {
+        switch ($period) {
+            case 'today':
+                return $query->whereDate('created_at', Carbon::today());
+            case 'week':
+                return $query->where('created_at', '>=', Carbon::now()->subWeek());
+            case 'month':
+                return $query->where('created_at', '>=', Carbon::now()->subMonth());
+            case 'year':
+                return $query->where('created_at', '>=', Carbon::now()->subYear());
+            default:
+                return $query;
+        }
     }
 }

@@ -62,4 +62,10 @@ return [
         'sandbox' => env('KKIAPAY_SANDBOX', false),
     ],
 
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022'),
+        'max_tokens' => env('ANTHROPIC_MAX_TOKENS', 4096),
+    ],
+
 ];

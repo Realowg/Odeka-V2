@@ -5,22 +5,24 @@ use App\Http\Controllers\Api\V1\MessageController;
 
 /*
 |--------------------------------------------------------------------------
-| Message API Routes
+| Messages API Routes
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Resource routes
-    Route::get('message', [MessageController::class, 'index']);
-    Route::post('message', [MessageController::class, 'store']);
-    Route::get('message/{id}', [MessageController::class, 'show']);
-    Route::put('message/{id}', [MessageController::class, 'update']);
-    Route::delete('message/{id}', [MessageController::class, 'destroy']);
-
-    // Custom: send
-    Route::post('message/send', [MessageController::class, 'send']);
-    // Custom: markRead
-    Route::post('message/markRead', [MessageController::class, 'markRead']);
-    // Custom: unreadCount
-    Route::post('message/unreadCount', [MessageController::class, 'unreadCount']);
+    // Conversations
+    Route::get('messages/conversations', [MessageController::class, 'index']);
+    Route::get('messages/conversations/{userId}', [MessageController::class, 'show']);
+    
+    // Send message
+    Route::post('messages/send', [MessageController::class, 'send']);
+    
+    // Message actions
+    Route::delete('messages/{id}', [MessageController::class, 'destroy']);
+    Route::post('messages/{id}/read', [MessageController::class, 'markRead']);
+    Route::post('messages/users/{userId}/read-all', [MessageController::class, 'markAllRead']);
+    
+    // Unread counts
+    Route::get('messages/unread-count', [MessageController::class, 'unreadCount']);
+    Route::get('messages/unread-by-user', [MessageController::class, 'unreadCountByUser']);
 });

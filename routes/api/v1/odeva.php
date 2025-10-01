@@ -5,28 +5,26 @@ use App\Http\Controllers\Api\V1\OdevaController;
 
 /*
 |--------------------------------------------------------------------------
-| Odeva API Routes
+| Odeva AI API Routes
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Resource routes
-    Route::get('odeva', [OdevaController::class, 'index']);
-    Route::post('odeva', [OdevaController::class, 'store']);
-    Route::get('odeva/{id}', [OdevaController::class, 'show']);
-    Route::put('odeva/{id}', [OdevaController::class, 'update']);
-    Route::delete('odeva/{id}', [OdevaController::class, 'destroy']);
-
-    // Custom: chat
+    // Chat & Functions
     Route::post('odeva/chat', [OdevaController::class, 'chat']);
-    // Custom: functions
-    Route::post('odeva/functions', [OdevaController::class, 'functions']);
-    // Custom: execute
-    Route::post('odeva/execute', [OdevaController::class, 'execute']);
-    // Custom: context
-    Route::post('odeva/context', [OdevaController::class, 'context']);
-    // Custom: automation
-    Route::post('odeva/automation', [OdevaController::class, 'automation']);
-    // Custom: subscribe
+    Route::get('odeva/functions', [OdevaController::class, 'functions']);
+    Route::post('odeva/functions/execute', [OdevaController::class, 'executeFunction']);
+    
+    // Context & Automation
+    Route::get('odeva/context', [OdevaController::class, 'getContext']);
+    Route::get('odeva/automation', [OdevaController::class, 'getAutomation']);
+    Route::put('odeva/automation', [OdevaController::class, 'updateAutomation']);
+    
+    // Subscription Management
+    Route::get('odeva/subscription', [OdevaController::class, 'subscription']);
     Route::post('odeva/subscribe', [OdevaController::class, 'subscribe']);
+    Route::delete('odeva/subscription', [OdevaController::class, 'cancelSubscription']);
+    
+    // Analytics
+    Route::get('odeva/analytics', [OdevaController::class, 'analytics']);
 });
