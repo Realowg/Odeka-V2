@@ -122,12 +122,21 @@
 <div class="odeva-container">
     <!-- Header -->
     <div class="odeva-header">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start">
             <div>
                 <h3 class="mb-1">Odeva AI Configuration</h3>
                 <p class="text-muted mb-0">Configure your AI assistant behavior and settings</p>
             </div>
-            <div>
+            <div class="d-flex gap-2 align-items-center">
+                <a href="{{ route('admin.odeva.cost-analytics') }}" class="odeva-btn odeva-btn-secondary">
+                    <i class="bi bi-bar-chart me-1"></i> View Analytics
+                </a>
+                <a href="{{ route('admin.odeva.creators') }}" class="odeva-btn odeva-btn-secondary">
+                    <i class="bi bi-people me-1"></i> Manage Creators
+                </a>
+                <a href="{{ route('admin.odeva.export-cost-report') }}" class="odeva-btn odeva-btn-secondary">
+                    <i class="bi bi-download me-1"></i> Export Report
+                </a>
                 @if($settings->odeva_enabled)
                     <span class="badge bg-success">Active</span>
                 @else
@@ -303,9 +312,15 @@
                 <div class="col-md-4 mb-3">
                     <label class="odeva-label">Currency</label>
                     <select name="odeva_subscription_currency" class="odeva-input">
-                        <option value="USD" {{ $settings->odeva_subscription_currency === 'USD' ? 'selected' : '' }}>USD</option>
-                        <option value="EUR" {{ $settings->odeva_subscription_currency === 'EUR' ? 'selected' : '' }}>EUR</option>
-                        <option value="GBP" {{ $settings->odeva_subscription_currency === 'GBP' ? 'selected' : '' }}>GBP</option>
+                        @foreach (config('currencies.supported') as $code => $label)
+                            @php 
+                                $currencyCode = is_numeric($code) ? $label : $code;
+                                $currencyLabel = is_numeric($code) ? $label : $label . ' (' . $code . ')';
+                            @endphp
+                            <option value="{{ $currencyCode }}" {{ $settings->odeva_subscription_currency === $currencyCode ? 'selected' : '' }}>
+                                {{ $currencyLabel }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-md-4 mb-3">
@@ -334,18 +349,6 @@
                     <input class="form-check-input" type="checkbox" name="odeva_auto_disable_on_budget" value="1" {{ $settings->odeva_auto_disable_on_budget ? 'checked' : '' }} id="autoBudget">
                     <label class="form-check-label" for="autoBudget">Auto-disable when budget exceeded</label>
                 </div>
-            </div>
-
-            <div class="d-flex gap-2">
-                <a href="{{ route('admin.odeva.cost-analytics') }}" class="odeva-btn odeva-btn-secondary">
-                    <i class="bi bi-bar-chart me-1"></i> View Analytics
-                </a>
-                <a href="{{ route('admin.odeva.creators') }}" class="odeva-btn odeva-btn-secondary">
-                    <i class="bi bi-people me-1"></i> Manage Creators
-                </a>
-                <a href="{{ route('admin.odeva.export-cost-report') }}" class="odeva-btn odeva-btn-secondary">
-                    <i class="bi bi-download me-1"></i> Export Report
-                </a>
             </div>
         </div>
 

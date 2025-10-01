@@ -53,7 +53,7 @@ class OdevaAdminController extends Controller
             'odeva_creator_message_limit' => 'integer|min:0',
             'odeva_trial_days' => 'integer|min:0|max:365',
             'odeva_subscription_price' => 'numeric|min:0',
-            'odeva_subscription_currency' => 'string|size:3',
+            'odeva_subscription_currency' => 'string|size:3|in:' . implode(',', array_keys(config('currencies.supported'))),
             'odeva_rate_limit' => 'integer|min:1|max:1000',
             'odeva_emergency_message' => 'nullable|string',
         ]);
