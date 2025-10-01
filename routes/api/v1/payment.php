@@ -5,24 +5,28 @@ use App\Http\Controllers\Api\V1\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
-| Payment API Routes
+| Payments API Routes
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Resource routes
-    Route::get('payment', [PaymentController::class, 'index']);
-    Route::post('payment', [PaymentController::class, 'store']);
-    Route::get('payment/{id}', [PaymentController::class, 'show']);
-    Route::put('payment/{id}', [PaymentController::class, 'update']);
-    Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
-
-    // Custom: tip
-    Route::post('payment/tip', [PaymentController::class, 'tip']);
-    // Custom: ppv
-    Route::post('payment/ppv', [PaymentController::class, 'ppv']);
-    // Custom: withdraw
-    Route::post('payment/withdraw', [PaymentController::class, 'withdraw']);
-    // Custom: transactions
-    Route::post('payment/transactions', [PaymentController::class, 'transactions']);
+    // Wallet
+    Route::get('payments/wallet', [PaymentController::class, 'wallet']);
+    Route::post('payments/add-funds', [PaymentController::class, 'addFunds']);
+    
+    // Transactions
+    Route::get('payments/transactions', [PaymentController::class, 'transactions']);
+    Route::get('payments/earnings', [PaymentController::class, 'earnings']);
+    
+    // Actions
+    Route::post('payments/tip', [PaymentController::class, 'tip']);
+    Route::post('payments/ppv', [PaymentController::class, 'ppv']);
+    
+    // Withdrawals
+    Route::post('payments/withdraw', [PaymentController::class, 'withdraw']);
+    Route::get('payments/withdrawals', [PaymentController::class, 'withdrawals']);
+    Route::get('payments/deposits', [PaymentController::class, 'deposits']);
+    
+    // Methods
+    Route::get('payments/methods', [PaymentController::class, 'methods']);
 });

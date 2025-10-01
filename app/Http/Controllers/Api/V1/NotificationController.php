@@ -2,137 +2,104 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Notification;
+use App\Models\Notifications;
 use Illuminate\Http\Request;
-use App\Http\Requests\Api\NotificationRequest;
-use App\Http\Resources\NotificationResource;
 
 class NotificationController extends BaseController
 {
-    /**
-     * Get all Notifications
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index(Request $request)
+    public function index()
     {
-        $items = Notification::latest()->paginate(20);
-        
-        return $this->paginatedResponse($items);
+        $notifications = Notifications::where('destination', auth()->id())
+            ->with('author:id,username,name,avatar')
+            ->latest()
+            ->paginate(50);
+
+        return $this->paginatedResponse($notifications);
     }
-    
-    /**
-     * Get single Notification
-     * 
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
+
+    public function unread()
     {
-        $item = Notification::find($id);
+        $notifications = Notifications::where('destination', auth()->id())
+            ->where('status', 0)
+            ->with('author:id,username,name,avatar')
+            ->latest()
+            ->paginate(50);
+
+        return $this->paginatedResponse($notifications);
+    }
+
+    public function markRead($id)
+    {
+        $notification = Notifications::find($id);
         
-        if (!$item) {
+        if (!$notification || $notification->destination != auth()->id()) {
             return $this->notFoundResponse('Notification not found');
         }
-        
-        return $this->successResponse(
-            new NotificationResource($item)
-        );
+
+        $notification->update(['status' => 1]);
+
+        return $this->successResponse(null, 'Notification marked as read');
     }
-    
-    /**
-     * Create new Notification
-     * 
-     * @param NotificationRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(NotificationRequest $request)
+
+    public function readAll()
     {
-        $item = Notification::create($request->validated());
-        
-        return $this->successResponse(
-            new NotificationResource($item),
-            'Notification created successfully',
-            201
-        );
+        Notifications::where('destination', auth()->id())
+            ->where('status', 0)
+            ->update(['status' => 1]);
+
+        return $this->successResponse(null, 'All notifications marked as read');
     }
-    
-    /**
-     * Update Notification
-     * 
-     * @param NotificationRequest $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(NotificationRequest $request, $id)
-    {
-        $item = Notification::find($id);
-        
-        if (!$item) {
-            return $this->notFoundResponse('Notification not found');
-        }
-        
-        $item->update($request->validated());
-        
-        return $this->successResponse(
-            new NotificationResource($item),
-            'Notification updated successfully'
-        );
-    }
-    
-    /**
-     * Delete Notification
-     * 
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function destroy($id)
     {
-        $item = Notification::find($id);
+        $notification = Notifications::find($id);
         
-        if (!$item) {
+        if (!$notification || $notification->destination != auth()->id()) {
             return $this->notFoundResponse('Notification not found');
         }
-        
-        $item->delete();
-        
-        return $this->successResponse(null, 'Notification deleted successfully');
+
+        $notification->delete();
+
+        return $this->successResponse(null, 'Notification deleted');
     }
 
-    /**
-     * markRead endpoint
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function markRead(Request $request)
-    {
-        // TODO: Implement markRead logic
-        return $this->successResponse(null, 'markRead endpoint');
-    }
-
-    /**
-     * readAll endpoint
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function readAll(Request $request)
-    {
-        // TODO: Implement readAll logic
-        return $this->successResponse(null, 'readAll endpoint');
-    }
-
-    /**
-     * preferences endpoint
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function preferences(Request $request)
     {
-        // TODO: Implement preferences logic
-        return $this->successResponse(null, 'preferences endpoint');
+        $user = auth()->user();
+        
+        $user->update($request->only([
+            'notify_new_subscriber',
+            'notify_new_tip',
+            'notify_new_ppv',
+            'notify_liked_post',
+            'notify_commented_post',
+            'notify_new_post',
+            'notify_live_streaming',
+            'notify_mentions',
+        ]));
+
+        return $this->successResponse($user->only([
+            'notify_new_subscriber',
+            'notify_new_tip',
+            'notify_new_ppv',
+            'notify_liked_post',
+            'notify_commented_post',
+            'notify_new_post',
+            'notify_live_streaming',
+            'notify_mentions',
+        ]), 'Preferences updated');
+    }
+
+    public function registerDevice(Request $request)
+    {
+        $request->validate([
+            'device_token' => 'required|string',
+        ]);
+
+        auth()->user()->update([
+            'device_token' => $request->device_token,
+        ]);
+
+        return $this->successResponse(null, 'Device registered for push notifications');
     }
 }
