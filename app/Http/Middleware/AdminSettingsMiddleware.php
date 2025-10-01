@@ -19,10 +19,13 @@ class AdminSettingsMiddleware
     {
         try {
             $model = AdminSettings::first();
-            $data = $model->attributesToArray();
+            
+            if ($model) {
+                $data = $model->attributesToArray();
 
-            foreach ($data as $key => $value) {
-                config(['settings.' . $key => $value]);
+                foreach ($data as $key => $value) {
+                    config(['settings.' . $key => $value]);
+                }
             }
 
         } catch (\Exception $e) {}
