@@ -9,20 +9,17 @@ use App\Http\Controllers\Api\V1\AdminController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Resource routes
-    Route::get('admin', [AdminController::class, 'index']);
-    Route::post('admin', [AdminController::class, 'store']);
-    Route::get('admin/{id}', [AdminController::class, 'show']);
-    Route::put('admin/{id}', [AdminController::class, 'update']);
-    Route::delete('admin/{id}', [AdminController::class, 'destroy']);
-
-    // Custom: dashboard
-    Route::post('admin/dashboard', [AdminController::class, 'dashboard']);
-    // Custom: users
-    Route::post('admin/users', [AdminController::class, 'users']);
-    // Custom: reports
-    Route::post('admin/reports', [AdminController::class, 'reports']);
-    // Custom: analytics
-    Route::post('admin/analytics', [AdminController::class, 'analytics']);
+Route::middleware(['auth:sanctum', 'throttle:api-admin'])->group(function () {
+    Route::get('admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('admin/users', [AdminController::class, 'users']);
+    Route::put('admin/users/{id}', [AdminController::class, 'updateUser']);
+    Route::delete('admin/users/{id}', [AdminController::class, 'deleteUser']);
+    Route::get('admin/reports', [AdminController::class, 'reports']);
+    Route::put('admin/reports/{id}', [AdminController::class, 'handleReport']);
+    Route::get('admin/transactions', [AdminController::class, 'transactions']);
+    Route::get('admin/settings', [AdminController::class, 'settings']);
+    Route::put('admin/settings', [AdminController::class, 'updateSettings']);
+    Route::get('admin/analytics', [AdminController::class, 'analytics']);
+    Route::get('admin/withdrawals', [AdminController::class, 'withdrawals']);
+    Route::put('admin/withdrawals/{id}', [AdminController::class, 'updateWithdrawal']);
 });

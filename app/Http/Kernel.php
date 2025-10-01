@@ -51,6 +51,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ForceJsonResponse::class,
             \App\Http\Middleware\ApiVersion::class.':v1',
+            \App\Http\Middleware\LogApiRequest::class, // API logging enabled
         ],
 
         'webhook' => [

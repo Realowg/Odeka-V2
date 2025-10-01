@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\V1\OdevaController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api-odeva'])->group(function () {
     // Chat & Functions
     Route::post('odeva/chat', [OdevaController::class, 'chat']);
     Route::get('odeva/functions', [OdevaController::class, 'functions']);
