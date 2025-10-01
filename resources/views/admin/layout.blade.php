@@ -211,6 +211,13 @@
               </li><!-- /end list -->
               @endif
 
+              {{-- Odeva AI Admin --}}
+              <li class="nav-item">
+                  <a href="{{ route('admin.odeva.index') }}" class="nav-link text-truncate @if (request()->is('panel/admin/odeva*')) active @endif">
+                      <i class="bi-robot me-2"></i> Odeva AI
+                  </a>
+              </li><!-- /end list -->
+
               @if (auth()->user()->hasEnhancedPermission('comments_replies'))
               <li class="nav-item">
                   <a href="#comments_replies" data-bs-toggle="collapse" class="nav-link text-truncate dropdown-toggle @if (request()->is(['panel/admin/comments', 'panel/admin/replies'])) active @endif" @if (request()->is(['panel/admin/comments', 'panel/admin/replies'])) aria-expanded="true" @endif>

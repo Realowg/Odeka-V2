@@ -914,13 +914,13 @@ Route::group(['middleware' => 'private.content'], function() {
 		Route::get('/download/logs', [AdminController::class, 'downloadLogs']);
 
 		// Odeva Admin Routes
-		Route::get('/odeva', [OdevaAdminController::class, 'index'])->name('odeva.index');
-		Route::put('/odeva/settings', [OdevaAdminController::class, 'updateSettings'])->name('odeva.update-settings');
-		Route::post('/odeva/test-api', [OdevaAdminController::class, 'testApiConnection'])->name('odeva.test-api');
-		Route::get('/odeva/analytics', [OdevaAdminController::class, 'costAnalytics'])->name('odeva.cost-analytics');
-		Route::get('/odeva/creators', [OdevaAdminController::class, 'creatorManagement'])->name('odeva.creators');
-		Route::put('/odeva/creators/{creatorId}/permission', [OdevaAdminController::class, 'updateCreatorPermission'])->name('odeva.update-creator-permission');
-		Route::get('/odeva/export-cost-report', [OdevaAdminController::class, 'exportCostReport'])->name('odeva.export-cost-report');
+		Route::get('/odeva', [OdevaAdminController::class, 'index'])->name('admin.odeva.index');
+		Route::put('/odeva/settings', [OdevaAdminController::class, 'updateSettings'])->name('admin.odeva.update-settings');
+		Route::post('/odeva/test-api', [OdevaAdminController::class, 'testApiConnection'])->name('admin.odeva.test-api');
+		Route::get('/odeva/analytics', [OdevaAdminController::class, 'costAnalytics'])->name('admin.odeva.cost-analytics');
+		Route::get('/odeva/creators', [OdevaAdminController::class, 'creatorManagement'])->name('admin.odeva.creators');
+		Route::put('/odeva/creators/{creatorId}/permission', [OdevaAdminController::class, 'updateCreatorPermission'])->name('admin.odeva.update-creator-permission');
+		Route::get('/odeva/export-cost-report', [OdevaAdminController::class, 'exportCostReport'])->name('admin.odeva.export-cost-report');
 	});
 
  });
