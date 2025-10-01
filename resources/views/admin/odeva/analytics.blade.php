@@ -1,98 +1,134 @@
-@extends('layouts.app')
+@extends('admin.layout')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Odeva Cost Analytics</h1>
-        <p class="mt-2 text-gray-600">Track AI usage and spending across creators</p>
-    </div>
+<style>
+.odeva-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.odeva-header {
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+}
+.odeva-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.odeva-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.odeva-tab.active {
+    background: #6366f1;
+    color: white;
+}
+.odeva-tab:not(.active) {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+.odeva-tab:not(.active):hover {
+    background: #e5e7eb;
+}
+.odeva-table {
+    width: 100%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.odeva-table th {
+    background: #f9fafb;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+}
+.odeva-table td {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+}
+</style>
 
-    <!-- Period Selector -->
-    <div class="mb-6 bg-white shadow rounded-lg p-4">
-        <div class="flex space-x-4">
-            <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'day']) }}" 
-               class="px-4 py-2 rounded {{ $period === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
-                Today
-            </a>
-            <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'week']) }}" 
-               class="px-4 py-2 rounded {{ $period === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
-                This Week
-            </a>
-            <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'month']) }}" 
-               class="px-4 py-2 rounded {{ $period === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
-                This Month
-            </a>
-            <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'year']) }}" 
-               class="px-4 py-2 rounded {{ $period === 'year' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
-                This Year
+<div class="odeva-container">
+    <div class="odeva-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="mb-1">Odeva Cost Analytics</h3>
+                <p class="text-muted mb-0">Track AI usage and spending across creators</p>
+            </div>
+            <a href="{{ route('admin.odeva.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Settings
             </a>
         </div>
     </div>
 
-    <!-- Analytics Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Creator</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Requests</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tokens</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cost</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Breakdown</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($analytics as $record)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $record->date->format('M d, Y') }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $record->creator->name ?? 'All Creators' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ number_format($record->total_requests) }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ number_format($record->total_tokens) }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        ${{ number_format($record->total_cost, 6) }}
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-500">
-                        @if($record->breakdown)
-                            <div class="text-xs">
-                                @foreach($record->breakdown as $type => $amount)
-                                    <div>{{ ucfirst($type) }}: ${{ number_format($amount, 6) }}</div>
-                                @endforeach
-                            </div>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                        No analytics data available for this period
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-            <tfoot class="bg-gray-50">
-                <tr>
-                    <td colspan="2" class="px-6 py-3 text-sm font-bold text-gray-900">Total</td>
-                    <td class="px-6 py-3 text-sm font-bold text-gray-900">{{ number_format($analytics->sum('total_requests')) }}</td>
-                    <td class="px-6 py-3 text-sm font-bold text-gray-900">{{ number_format($analytics->sum('total_tokens')) }}</td>
-                    <td class="px-6 py-3 text-sm font-bold text-gray-900">${{ number_format($analytics->sum('total_cost'), 2) }}</td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
+    <!-- Period Tabs -->
+    <div class="odeva-tabs">
+        <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'day']) }}" class="odeva-tab {{ $period === 'day' ? 'active' : '' }}">Today</a>
+        <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'week']) }}" class="odeva-tab {{ $period === 'week' ? 'active' : '' }}">This Week</a>
+        <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'month']) }}" class="odeva-tab {{ $period === 'month' ? 'active' : '' }}">This Month</a>
+        <a href="{{ route('admin.odeva.cost-analytics', ['period' => 'year']) }}" class="odeva-tab {{ $period === 'year' ? 'active' : '' }}">This Year</a>
     </div>
 
-    <div class="mt-6">
-        <a href="{{ route('admin.odeva.index') }}" class="text-blue-600 hover:underline">← Back to Odeva Settings</a>
-    </div>
+    <!-- Analytics Table -->
+    <table class="odeva-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Creator</th>
+                <th>Requests</th>
+                <th>Tokens</th>
+                <th>Cost</th>
+                <th>Breakdown</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($analytics as $record)
+            <tr>
+                <td>{{ $record->date->format('M d, Y') }}</td>
+                <td>{{ $record->creator->name ?? 'All Creators' }}</td>
+                <td>{{ number_format($record->total_requests) }}</td>
+                <td>{{ number_format($record->total_tokens) }}</td>
+                <td class="fw-bold">${{ number_format($record->total_cost, 6) }}</td>
+                <td>
+                    @if($record->breakdown)
+                        <div class="text-muted small">
+                            @foreach($record->breakdown as $type => $amount)
+                                <div>{{ ucfirst($type) }}: ${{ number_format($amount, 6) }}</div>
+                            @endforeach
+                        </div>
+                    @endif
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    No analytics data available for this period
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+        @if($analytics->count() > 0)
+        <tfoot style="background: #f9fafb; border-top: 2px solid #e5e7eb;">
+            <tr>
+                <td colspan="2" class="fw-bold">Total</td>
+                <td class="fw-bold">{{ number_format($analytics->sum('total_requests')) }}</td>
+                <td class="fw-bold">{{ number_format($analytics->sum('total_tokens')) }}</td>
+                <td class="fw-bold">${{ number_format($analytics->sum('total_cost'), 2) }}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+        @endif
+    </table>
 </div>
 @endsection
-

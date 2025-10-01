@@ -1,126 +1,204 @@
-@extends('layouts.app')
+@extends('admin.layout')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Odeva Creator Management</h1>
-        <p class="mt-2 text-gray-600">Manage creator permissions and subscriptions</p>
+<style>
+.odeva-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.odeva-header {
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+}
+.odeva-table {
+    width: 100%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.odeva-table th {
+    background: #f9fafb;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+}
+.odeva-table td {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+}
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+.status-trial {
+    background: #dbeafe;
+    color: #1e40af;
+}
+.status-paused {
+    background: #fef3c7;
+    color: #92400e;
+}
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.action-btn {
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.action-btn-approve {
+    background: #dcfce7;
+    color: #166534;
+}
+.action-btn-restrict {
+    background: #fef3c7;
+    color: #92400e;
+}
+.action-btn-whitelist {
+    background: #dbeafe;
+    color: #1e40af;
+}
+.action-btn-blacklist {
+    background: #fee2e2;
+    color: #991b1b;
+}
+</style>
+
+<div class="odeva-container">
+    <div class="odeva-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="mb-1">Odeva Creator Management</h3>
+                <p class="text-muted mb-0">Manage creator permissions and subscriptions</p>
+            </div>
+            <a href="{{ route('admin.odeva.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Settings
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
-        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-            {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-check2 me-1"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
     <!-- Creators Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Creator</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trial Ends</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Automation</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($subscriptions as $subscription)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <img class="h-10 w-10 rounded-full" src="{{ $subscription->creator->avatar ?? asset('img/default-avatar.png') }}" alt="">
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">{{ $subscription->creator->name }}</div>
-                                <div class="text-sm text-gray-500">@{{ $subscription->creator->username }}</div>
-                            </div>
+    <table class="odeva-table">
+        <thead>
+            <tr>
+                <th>Creator</th>
+                <th>Status</th>
+                <th>Trial Ends</th>
+                <th>Price</th>
+                <th>Automation</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($subscriptions as $subscription)
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="{{ $subscription->creator->avatar ?? asset('img/default-avatar.png') }}" 
+                             alt="{{ $subscription->creator->name }}"
+                             class="rounded-circle me-2" 
+                             style="width: 32px; height: 32px; object-fit: cover;">
+                        <div>
+                            <div class="fw-medium">{{ $subscription->creator->name }}</div>
+                            <div class="text-muted small">@{{ $subscription->creator->username }}</div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            @if($subscription->status === 'active') bg-green-100 text-green-800
-                            @elseif($subscription->status === 'trial') bg-blue-100 text-blue-800
-                            @elseif($subscription->status === 'paused') bg-yellow-100 text-yellow-800
-                            @else bg-red-100 text-red-800
-                            @endif">
-                            {{ ucfirst($subscription->status) }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $subscription->trial_ends_at ? $subscription->trial_ends_at->format('M d, Y') : 'N/A' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $subscription->currency }} {{ number_format($subscription->price, 2) }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        @if($subscription->automation_enabled)
-                            <span class="text-green-600">✓ Enabled</span>
-                        @else
-                            <span class="text-gray-400">✗ Disabled</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge status-{{ $subscription->status }}">
+                        {{ ucfirst($subscription->status) }}
+                    </span>
+                </td>
+                <td>{{ $subscription->trial_ends_at ? $subscription->trial_ends_at->format('M d, Y') : 'N/A' }}</td>
+                <td>{{ $subscription->currency }} {{ number_format($subscription->price, 2) }}</td>
+                <td>
+                    @if($subscription->automation_enabled)
+                        <span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Enabled</span>
+                    @else
+                        <span class="text-muted"><i class="bi bi-x-circle me-1"></i>Disabled</span>
+                    @endif
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        @if($subscription->status !== 'active')
+                        <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="action-btn action-btn-approve">Approve</button>
+                        </form>
                         @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex space-x-2">
-                            @if($subscription->status !== 'active')
-                            <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="text-green-600 hover:text-green-900">Approve</button>
-                            </form>
-                            @endif
 
-                            @if($subscription->status === 'active')
-                            <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="action" value="restrict">
-                                <button type="submit" class="text-yellow-600 hover:text-yellow-900">Restrict</button>
-                            </form>
-                            @endif
+                        @if($subscription->status === 'active')
+                        <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="action" value="restrict">
+                            <button type="submit" class="action-btn action-btn-restrict">Restrict</button>
+                        </form>
+                        @endif
 
-                            @if(!in_array($subscription->creator_id, $settings->odeva_whitelisted_creators ?? []))
-                            <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="action" value="whitelist">
-                                <button type="submit" class="text-blue-600 hover:text-blue-900">Whitelist</button>
-                            </form>
-                            @else
-                                <span class="text-blue-600">✓ Whitelisted</span>
-                            @endif
+                        @if(!in_array($subscription->creator_id, $settings->odeva_whitelisted_creators ?? []))
+                        <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="action" value="whitelist">
+                            <button type="submit" class="action-btn action-btn-whitelist">Whitelist</button>
+                        </form>
+                        @else
+                            <span class="text-primary small">✓ Whitelisted</span>
+                        @endif
 
-                            <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="inline" 
-                                  onsubmit="return confirm('Are you sure you want to blacklist this creator?')">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="action" value="blacklist">
-                                <button type="submit" class="text-red-600 hover:text-red-900">Blacklist</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                        No Odeva subscriptions found
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                        <form action="{{ route('admin.odeva.update-creator-permission', $subscription->creator_id) }}" method="POST" class="d-inline" 
+                              onsubmit="return confirm('Are you sure you want to blacklist this creator?')">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="action" value="blacklist">
+                            <button type="submit" class="action-btn action-btn-blacklist">Blacklist</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    No Odeva subscriptions found
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
 
     <!-- Pagination -->
-    <div class="mt-6">
+    @if($subscriptions->hasPages())
+    <div class="mt-4">
         {{ $subscriptions->links() }}
     </div>
-
-    <div class="mt-6">
-        <a href="{{ route('admin.odeva.index') }}" class="text-blue-600 hover:underline">← Back to Odeva Settings</a>
-    </div>
+    @endif
 </div>
 @endsection
-

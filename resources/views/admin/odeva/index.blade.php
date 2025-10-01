@@ -1,368 +1,390 @@
 @extends('admin.layout')
 
 @section('content')
-<h5 class="mb-4 fw-light">
-    <a class="text-reset" href="{{ url('panel/admin') }}">{{ __('admin.dashboard') }}</a>
-    <i class="bi-chevron-right me-1 fs-6"></i>
-    <span class="text-muted">Odeva AI Admin</span>
-</h5>
+<style>
+.odeva-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.odeva-header {
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+.odeva-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.odeva-card-header {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.odeva-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.odeva-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+.odeva-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+.odeva-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+.odeva-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e5e7eb;
+    outline: none;
+}
+.odeva-slider::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #6366f1;
+    cursor: pointer;
+}
+.odeva-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #6366f1;
+    cursor: pointer;
+    border: none;
+}
+.odeva-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.odeva-stat-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+}
+.odeva-stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+.odeva-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+}
+.odeva-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.odeva-btn-primary {
+    background: #6366f1;
+    color: white;
+    border: none;
+}
+.odeva-btn-primary:hover {
+    background: #4f46e5;
+}
+.odeva-btn-secondary {
+    background: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+.odeva-btn-secondary:hover {
+    background: #f9fafb;
+}
+</style>
 
-<div class="content">
-    <div class="row">
-        <div class="col-lg-12">
+<div class="odeva-container">
+    <!-- Header -->
+    <div class="odeva-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="mb-1">Odeva AI Configuration</h3>
+                <p class="text-muted mb-0">Configure your AI assistant behavior and settings</p>
+            </div>
+            <div>
+                @if($settings->odeva_enabled)
+                    <span class="badge bg-success">Active</span>
+                @else
+                    <span class="badge bg-secondary">Disabled</span>
+                @endif
+            </div>
+        </div>
+    </div>
 
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check2 me-1"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <i class="bi bi-check2 me-1"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Stats -->
+    <div class="odeva-stats mt-4">
+        <div class="odeva-stat-card">
+            <div class="odeva-stat-label">Monthly Spending</div>
+            <div class="odeva-stat-value">${{ number_format($currentSpending, 2) }}</div>
+            <small class="text-muted">of ${{ number_format($settings->odeva_monthly_budget, 2) }} budget</small>
+        </div>
+        <div class="odeva-stat-card">
+            <div class="odeva-stat-label">Active Subscriptions</div>
+            <div class="odeva-stat-value">{{ $activeSubscriptions }}</div>
+        </div>
+        <div class="odeva-stat-card">
+            <div class="odeva-stat-label">Trial Users</div>
+            <div class="odeva-stat-value">{{ $trialSubscriptions }}</div>
+        </div>
+        <div class="odeva-stat-card">
+            <div class="odeva-stat-label">Today's Usage</div>
+            <div class="odeva-stat-value">${{ number_format($todayUsage, 2) }}</div>
+        </div>
+    </div>
+
+    <form action="{{ route('admin.odeva.update-settings') }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <!-- Model Configuration -->
+        <div class="odeva-card">
+            <div class="odeva-card-header">Model</div>
+            
+            <div class="mb-3">
+                <label class="odeva-label">Provider</label>
+                <select name="odeva_provider" class="odeva-input">
+                    <option value="anthropic" {{ $settings->odeva_provider === 'anthropic' ? 'selected' : '' }}>Anthropic</option>
+                    <option value="openai" {{ $settings->odeva_provider === 'openai' ? 'selected' : '' }}>OpenAI</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="odeva-label">Model</label>
+                <input type="text" name="odeva_model" value="{{ $settings->odeva_model }}" class="odeva-input" placeholder="claude-3-5-sonnet-20241022">
+            </div>
+
+            <div class="mb-3">
+                <label class="odeva-label">API Key</label>
+                <input type="password" name="odeva_api_key" class="odeva-input" placeholder="sk-ant-...">
+                <small class="text-muted d-block mt-1">Leave blank to keep current key</small>
+            </div>
+
+            <button type="button" onclick="testApiConnection()" class="odeva-btn odeva-btn-secondary">
+                <i class="bi bi-plug me-1"></i> Test Connection
+            </button>
+        </div>
+
+        <!-- Model Configuration Parameters -->
+        <div class="odeva-card">
+            <div class="odeva-card-header">Model Configuration</div>
+            
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="odeva-label mb-0">Temperature</label>
+                    <span class="text-muted" id="tempValue">{{ $settings->odeva_temperature }}</span>
                 </div>
-            @endif
-
-            <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card shadow-custom border-0">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="bi {{ $settings->odeva_enabled ? 'bi-lightning-charge-fill text-success' : 'bi-lightning-slash-fill text-danger' }} fs-1"></i>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1 text-muted">Status</h6>
-                                    <h4 class="mb-0 {{ $settings->odeva_enabled ? 'text-success' : 'text-danger' }}">
-                                        {{ $settings->odeva_enabled ? 'Active' : 'Disabled' }}
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card shadow-custom border-0">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-cash-stack text-primary fs-1"></i>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1 text-muted">This Month</h6>
-                                    <h4 class="mb-0">${{ number_format($currentSpending, 2) }}</h4>
-                                    <small class="text-muted">of ${{ number_format($settings->odeva_monthly_budget, 2) }}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card shadow-custom border-0">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-people-fill text-info fs-1"></i>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1 text-muted">Active Subscriptions</h6>
-                                    <h4 class="mb-0">{{ $activeSubscriptions }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card shadow-custom border-0">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-graph-up text-warning fs-1"></i>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1 text-muted">Today's Usage</h6>
-                                    <h4 class="mb-0">${{ number_format($todayUsage, 2) }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <input type="range" name="odeva_temperature" value="{{ $settings->odeva_temperature }}" min="0" max="2" step="0.1" class="odeva-slider" oninput="document.getElementById('tempValue').textContent = this.value">
+                <div class="d-flex justify-content-between mt-1">
+                    <small class="text-muted">Precise</small>
+                    <small class="text-muted">Creative</small>
                 </div>
             </div>
 
-            <!-- Settings Form -->
-            <form action="{{ route('admin.odeva.update-settings') }}" method="POST">
-                @csrf
-                @method('PUT')
-
-                <!-- Core Admin Controls -->
-                <div class="card shadow-custom border-0 mb-4">
-                    <div class="card-header bg-transparent border-bottom">
-                        <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Core Admin Controls</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <fieldset class="row mb-3">
-                            <legend class="col-form-label col-sm-2 pt-0 text-lg-end">Status</legend>
-                            <div class="col-sm-10">
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" name="odeva_enabled" value="1" {{ $settings->odeva_enabled ? 'checked' : '' }} role="switch">
-                                    <label class="form-check-label">Enable Odeva Globally</label>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">AI Provider</label>
-                            <div class="col-sm-10">
-                                <select name="odeva_provider" class="form-select">
-                                    <option value="anthropic" {{ $settings->odeva_provider === 'anthropic' ? 'selected' : '' }}>Anthropic (Claude)</option>
-                                    <option value="openai" {{ $settings->odeva_provider === 'openai' ? 'selected' : '' }}>OpenAI</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">API Key</label>
-                            <div class="col-sm-10">
-                                <input type="password" name="odeva_api_key" class="form-control" placeholder="Enter API key (encrypted)">
-                                <small class="form-text text-muted">Current key is encrypted. Leave blank to keep existing.</small>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Model</label>
-                            <div class="col-sm-10">
-                                <input type="text" name="odeva_model" value="{{ $settings->odeva_model }}" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Max Tokens</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_max_tokens" value="{{ $settings->odeva_max_tokens }}" min="100" max="100000" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Temperature</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_temperature" value="{{ $settings->odeva_temperature }}" min="0" max="2" step="0.1" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <button type="button" onclick="testApiConnection()" class="btn btn-primary">
-                                    <i class="bi bi-plug me-1"></i> Test API Connection
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="odeva-label mb-0">Maximum tokens</label>
+                    <span class="text-muted" id="tokensValue">{{ $settings->odeva_max_tokens }}</span>
                 </div>
+                <input type="range" name="odeva_max_tokens" value="{{ $settings->odeva_max_tokens }}" min="100" max="100000" step="100" class="odeva-slider" oninput="document.getElementById('tokensValue').textContent = this.value">
+            </div>
 
-                <!-- Budget & Cost Management -->
-                <div class="card shadow-custom border-0 mb-4">
-                    <div class="card-header bg-transparent border-bottom">
-                        <h5 class="mb-0"><i class="bi bi-cash me-2"></i>Budget & Cost Management</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Monthly Budget ($)</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_monthly_budget" value="{{ $settings->odeva_monthly_budget }}" min="0" step="0.01" class="form-control">
-                            </div>
-                        </div>
-
-                        <fieldset class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" name="odeva_auto_disable_on_budget" value="1" {{ $settings->odeva_auto_disable_on_budget ? 'checked' : '' }}>
-                                    <label class="form-check-label">Auto-disable when budget exceeded</label>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <a href="{{ route('admin.odeva.cost-analytics') }}" class="btn btn-outline-primary me-2">
-                                    <i class="bi bi-bar-chart me-1"></i> View Cost Analytics
-                                </a>
-                                <a href="{{ route('admin.odeva.export-cost-report') }}" class="btn btn-outline-secondary">
-                                    <i class="bi bi-download me-1"></i> Export Cost Report
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="odeva-label mb-0">Rate limit (requests/min)</label>
+                    <span class="text-muted" id="rateLimitValue">{{ $settings->odeva_rate_limit }}</span>
                 </div>
-
-                <!-- Creator Management -->
-                <div class="card shadow-custom border-0 mb-4">
-                    <div class="card-header bg-transparent border-bottom">
-                        <h5 class="mb-0"><i class="bi bi-person-check me-2"></i>Creator Management</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <fieldset class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" name="odeva_require_approval" value="1" {{ $settings->odeva_require_approval ? 'checked' : '' }}>
-                                    <label class="form-check-label">Require admin approval for new subscriptions</label>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Message Limit (monthly)</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_creator_message_limit" value="{{ $settings->odeva_creator_message_limit }}" min="0" class="form-control">
-                                <small class="form-text text-muted">Per creator, per month</small>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <a href="{{ route('admin.odeva.creators') }}" class="btn btn-outline-primary">
-                                    <i class="bi bi-people me-1"></i> Manage Creators & Permissions
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Feature Toggles -->
-                <div class="card shadow-custom border-0 mb-4">
-                    <div class="card-header bg-transparent border-bottom">
-                        <h5 class="mb-0"><i class="bi bi-toggles me-2"></i>Feature Toggles</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <div class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <div class="form-check form-switch form-switch-md mb-2">
-                                    <input class="form-check-input" type="checkbox" name="odeva_automation_enabled" value="1" {{ $settings->odeva_automation_enabled ? 'checked' : '' }}>
-                                    <label class="form-check-label">Enable Automation</label>
-                                </div>
-                                <div class="form-check form-switch form-switch-md mb-2">
-                                    <input class="form-check-input" type="checkbox" name="odeva_analytics_enabled" value="1" {{ $settings->odeva_analytics_enabled ? 'checked' : '' }}>
-                                    <label class="form-check-label">Enable Analytics</label>
-                                </div>
-                                <div class="form-check form-switch form-switch-md mb-2">
-                                    <input class="form-check-input" type="checkbox" name="odeva_learning_enabled" value="1" {{ $settings->odeva_learning_enabled ? 'checked' : '' }}>
-                                    <label class="form-check-label">Enable Learning from Examples</label>
-                                </div>
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" name="odeva_subscriptions_enabled" value="1" {{ $settings->odeva_subscriptions_enabled ? 'checked' : '' }}>
-                                    <label class="form-check-label">Enable Subscriptions</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Free Trial (days)</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_trial_days" value="{{ $settings->odeva_trial_days }}" min="0" max="365" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Subscription Plans -->
-                <div class="card shadow-custom border-0 mb-4">
-                    <div class="card-header bg-transparent border-bottom">
-                        <h5 class="mb-0"><i class="bi bi-credit-card me-2"></i>Subscription Plans</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Subscription Price</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_subscription_price" value="{{ $settings->odeva_subscription_price }}" min="0" step="0.01" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Currency</label>
-                            <div class="col-sm-10">
-                                <select name="odeva_subscription_currency" class="form-select">
-                                    <option value="USD" {{ $settings->odeva_subscription_currency === 'USD' ? 'selected' : '' }}>USD</option>
-                                    <option value="EUR" {{ $settings->odeva_subscription_currency === 'EUR' ? 'selected' : '' }}>EUR</option>
-                                    <option value="GBP" {{ $settings->odeva_subscription_currency === 'GBP' ? 'selected' : '' }}>GBP</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Safety & Moderation -->
-                <div class="card shadow-custom border-0 mb-4">
-                    <div class="card-header bg-transparent border-bottom">
-                        <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>Safety & Moderation</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <div class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <div class="form-check form-switch form-switch-md mb-2">
-                                    <input class="form-check-input" type="checkbox" name="odeva_content_moderation" value="1" {{ $settings->odeva_content_moderation ? 'checked' : '' }}>
-                                    <label class="form-check-label">Enable Content Moderation</label>
-                                </div>
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" name="odeva_activity_logging" value="1" {{ $settings->odeva_activity_logging ? 'checked' : '' }}>
-                                    <label class="form-check-label">Enable Activity Logging</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Rate Limit (req/min)</label>
-                            <div class="col-sm-10">
-                                <input type="number" name="odeva_rate_limit" value="{{ $settings->odeva_rate_limit }}" min="1" max="1000" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Emergency Controls -->
-                <div class="card shadow-custom border-0 border-danger mb-4">
-                    <div class="card-header bg-danger bg-opacity-10 border-bottom border-danger">
-                        <h5 class="mb-0 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Emergency Controls</h5>
-                    </div>
-                    <div class="card-body p-lg-4">
-                        
-                        <fieldset class="row mb-3">
-                            <div class="col-sm-10 offset-sm-2">
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" name="odeva_emergency_stop" value="1" {{ $settings->odeva_emergency_stop ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-bold text-danger">🚨 Emergency Stop (Disable All Odeva Functions)</label>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label text-lg-end">Emergency Message</label>
-                            <div class="col-sm-10">
-                                <textarea name="odeva_emergency_message" rows="3" class="form-control" placeholder="Message to display when emergency stop is active">{{ $settings->odeva_emergency_message }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="row">
-                    <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-primary btn-lg px-5">
-                            <i class="bi bi-check-lg me-1"></i> Save All Settings
-                        </button>
-                    </div>
-                </div>
-            </form>
-
+                <input type="range" name="odeva_rate_limit" value="{{ $settings->odeva_rate_limit }}" min="1" max="100" class="odeva-slider" oninput="document.getElementById('rateLimitValue').textContent = this.value">
+            </div>
         </div>
-    </div>
+
+        <!-- Features -->
+        <div class="odeva-card">
+            <div class="odeva-card-header">Features</div>
+            
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_enabled" value="1" {{ $settings->odeva_enabled ? 'checked' : '' }} id="odevaEnabled">
+                    <label class="form-check-label" for="odevaEnabled">Enable Odeva</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_automation_enabled" value="1" {{ $settings->odeva_automation_enabled ? 'checked' : '' }} id="automation">
+                    <label class="form-check-label" for="automation">Automation</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_analytics_enabled" value="1" {{ $settings->odeva_analytics_enabled ? 'checked' : '' }} id="analytics">
+                    <label class="form-check-label" for="analytics">Analytics</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_learning_enabled" value="1" {{ $settings->odeva_learning_enabled ? 'checked' : '' }} id="learning">
+                    <label class="form-check-label" for="learning">Learning from examples</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_content_moderation" value="1" {{ $settings->odeva_content_moderation ? 'checked' : '' }} id="moderation">
+                    <label class="form-check-label" for="moderation">Content moderation</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_activity_logging" value="1" {{ $settings->odeva_activity_logging ? 'checked' : '' }} id="logging">
+                    <label class="form-check-label" for="logging">Activity logging</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscriptions -->
+        <div class="odeva-card">
+            <div class="odeva-card-header">Subscriptions</div>
+            
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_subscriptions_enabled" value="1" {{ $settings->odeva_subscriptions_enabled ? 'checked' : '' }} id="subscriptions">
+                    <label class="form-check-label" for="subscriptions">Enable subscriptions</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_require_approval" value="1" {{ $settings->odeva_require_approval ? 'checked' : '' }} id="approval">
+                    <label class="form-check-label" for="approval">Require admin approval</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="odeva-label">Subscription Price</label>
+                    <input type="number" name="odeva_subscription_price" value="{{ $settings->odeva_subscription_price }}" class="odeva-input" step="0.01">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="odeva-label">Currency</label>
+                    <select name="odeva_subscription_currency" class="odeva-input">
+                        <option value="USD" {{ $settings->odeva_subscription_currency === 'USD' ? 'selected' : '' }}>USD</option>
+                        <option value="EUR" {{ $settings->odeva_subscription_currency === 'EUR' ? 'selected' : '' }}>EUR</option>
+                        <option value="GBP" {{ $settings->odeva_subscription_currency === 'GBP' ? 'selected' : '' }}>GBP</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="odeva-label">Free Trial (days)</label>
+                    <input type="number" name="odeva_trial_days" value="{{ $settings->odeva_trial_days }}" class="odeva-input" min="0" max="365">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="odeva-label">Message Limit (per creator/month)</label>
+                <input type="number" name="odeva_creator_message_limit" value="{{ $settings->odeva_creator_message_limit }}" class="odeva-input">
+            </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="odeva-card">
+            <div class="odeva-card-header">Budget & Cost</div>
+            
+            <div class="mb-3">
+                <label class="odeva-label">Monthly Budget ($)</label>
+                <input type="number" name="odeva_monthly_budget" value="{{ $settings->odeva_monthly_budget }}" class="odeva-input" step="0.01">
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_auto_disable_on_budget" value="1" {{ $settings->odeva_auto_disable_on_budget ? 'checked' : '' }} id="autoBudget">
+                    <label class="form-check-label" for="autoBudget">Auto-disable when budget exceeded</label>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.odeva.cost-analytics') }}" class="odeva-btn odeva-btn-secondary">
+                    <i class="bi bi-bar-chart me-1"></i> View Analytics
+                </a>
+                <a href="{{ route('admin.odeva.creators') }}" class="odeva-btn odeva-btn-secondary">
+                    <i class="bi bi-people me-1"></i> Manage Creators
+                </a>
+                <a href="{{ route('admin.odeva.export-cost-report') }}" class="odeva-btn odeva-btn-secondary">
+                    <i class="bi bi-download me-1"></i> Export Report
+                </a>
+            </div>
+        </div>
+
+        <!-- Emergency -->
+        <div class="odeva-card border-danger">
+            <div class="odeva-card-header text-danger">Emergency Controls</div>
+            
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="odeva_emergency_stop" value="1" {{ $settings->odeva_emergency_stop ? 'checked' : '' }} id="emergency">
+                    <label class="form-check-label text-danger fw-bold" for="emergency">
+                        🚨 Emergency Stop (Disable All)
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="odeva-label">Emergency Message</label>
+                <textarea name="odeva_emergency_message" rows="3" class="odeva-input" placeholder="This message will be displayed when emergency mode is active">{{ $settings->odeva_emergency_message }}</textarea>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="d-flex justify-content-end gap-2 mb-4">
+            <a href="{{ url('panel/admin') }}" class="odeva-btn odeva-btn-secondary">Cancel</a>
+            <button type="submit" class="odeva-btn odeva-btn-primary">
+                <i class="bi bi-check-lg me-1"></i> Save Configuration
+            </button>
+        </div>
+    </form>
 </div>
 
 <script>
 function testApiConnection() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Testing...';
+    
     fetch('{{ route('admin.odeva.test-api') }}', {
         method: 'POST',
         headers: {
@@ -379,7 +401,11 @@ function testApiConnection() {
         }
     })
     .catch(error => {
-        alert('❌ Error testing connection: ' + error);
+        alert('❌ Connection test failed: ' + error);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     });
 }
 </script>

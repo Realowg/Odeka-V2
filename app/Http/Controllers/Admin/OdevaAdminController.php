@@ -44,35 +44,45 @@ class OdevaAdminController extends Controller
     public function updateSettings(Request $request)
     {
         $validated = $request->validate([
-            'odeva_enabled' => 'boolean',
             'odeva_provider' => 'in:anthropic,openai',
             'odeva_api_key' => 'nullable|string',
             'odeva_model' => 'nullable|string|max:100',
             'odeva_max_tokens' => 'integer|min:100|max:100000',
             'odeva_temperature' => 'numeric|min:0|max:2',
             'odeva_monthly_budget' => 'numeric|min:0',
-            'odeva_auto_disable_on_budget' => 'boolean',
-            'odeva_require_approval' => 'boolean',
             'odeva_creator_message_limit' => 'integer|min:0',
-            'odeva_automation_enabled' => 'boolean',
-            'odeva_analytics_enabled' => 'boolean',
-            'odeva_learning_enabled' => 'boolean',
-            'odeva_subscriptions_enabled' => 'boolean',
             'odeva_trial_days' => 'integer|min:0|max:365',
             'odeva_subscription_price' => 'numeric|min:0',
             'odeva_subscription_currency' => 'string|size:3',
-            'odeva_content_moderation' => 'boolean',
-            'odeva_activity_logging' => 'boolean',
             'odeva_rate_limit' => 'integer|min:1|max:1000',
-            'odeva_emergency_stop' => 'boolean',
             'odeva_emergency_message' => 'nullable|string',
         ]);
 
         $settings = AdminSettings::first();
         
+        // Handle checkboxes (they're not sent if unchecked)
+        $booleanFields = [
+            'odeva_enabled',
+            'odeva_auto_disable_on_budget',
+            'odeva_require_approval',
+            'odeva_automation_enabled',
+            'odeva_analytics_enabled',
+            'odeva_learning_enabled',
+            'odeva_subscriptions_enabled',
+            'odeva_content_moderation',
+            'odeva_activity_logging',
+            'odeva_emergency_stop',
+        ];
+        
+        foreach ($booleanFields as $field) {
+            $validated[$field] = $request->has($field) ? 1 : 0;
+        }
+        
         // Encrypt API key if provided
         if (isset($validated['odeva_api_key']) && !empty($validated['odeva_api_key'])) {
             $validated['odeva_api_key'] = encrypt($validated['odeva_api_key']);
+        } else {
+            unset($validated['odeva_api_key']); // Don't overwrite existing key
         }
 
         foreach ($validated as $key => $value) {
