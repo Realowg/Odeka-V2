@@ -2,101 +2,104 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Comment;
+use App\Models\Comments;
+use App\Models\Updates;
 use Illuminate\Http\Request;
-use App\Http\Requests\Api\CommentRequest;
 use App\Http\Resources\CommentResource;
 
 class CommentController extends BaseController
 {
     /**
-     * Get all Comments
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Get post comments
      */
-    public function index(Request $request)
+    public function index($postId)
     {
-        $items = Comment::latest()->paginate(20);
+        $post = Updates::find($postId);
         
-        return $this->paginatedResponse($items);
-    }
-    
-    /**
-     * Get single Comment
-     * 
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
-    {
-        $item = Comment::find($id);
-        
-        if (!$item) {
-            return $this->notFoundResponse('Comment not found');
+        if (!$post) {
+            return $this->notFoundResponse('Post not found');
         }
-        
-        return $this->successResponse(
-            new CommentResource($item)
-        );
+
+        $comments = Comments::where('updates_id', $postId)
+            ->with('user:id,username,name,avatar')
+            ->latest()
+            ->paginate(50);
+
+        return $this->paginatedResponse($comments);
     }
-    
+
     /**
-     * Create new Comment
-     * 
-     * @param CommentRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * Create comment
      */
-    public function store(CommentRequest $request)
+    public function store(Request $request, $postId)
     {
-        $item = Comment::create($request->validated());
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $post = Updates::find($postId);
         
+        if (!$post) {
+            return $this->notFoundResponse('Post not found');
+        }
+
+        $comment = Comments::create([
+            'updates_id' => $postId,
+            'user_id' => auth()->id(),
+            'reply' => $request->comment,
+        ]);
+
         return $this->successResponse(
-            new CommentResource($item),
-            'Comment created successfully',
+            new CommentResource($comment->load('user:id,username,name,avatar')),
+            'Comment added successfully',
             201
         );
     }
-    
+
     /**
-     * Update Comment
-     * 
-     * @param CommentRequest $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
+     * Update comment
      */
-    public function update(CommentRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $item = Comment::find($id);
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $comment = Comments::find($id);
         
-        if (!$item) {
+        if (!$comment) {
             return $this->notFoundResponse('Comment not found');
         }
-        
-        $item->update($request->validated());
-        
+
+        if ($comment->user_id != auth()->id()) {
+            return $this->forbiddenResponse('You can only update your own comments');
+        }
+
+        $comment->update(['reply' => $request->comment]);
+
         return $this->successResponse(
-            new CommentResource($item),
+            new CommentResource($comment),
             'Comment updated successfully'
         );
     }
-    
+
     /**
-     * Delete Comment
-     * 
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
+     * Delete comment
      */
     public function destroy($id)
     {
-        $item = Comment::find($id);
+        $comment = Comments::find($id);
         
-        if (!$item) {
+        if (!$comment) {
             return $this->notFoundResponse('Comment not found');
         }
-        
-        $item->delete();
-        
+
+        if ($comment->user_id != auth()->id()) {
+            return $this->forbiddenResponse('You can only delete your own comments');
+        }
+
+        $comment->delete();
+
         return $this->successResponse(null, 'Comment deleted successfully');
     }
 }
