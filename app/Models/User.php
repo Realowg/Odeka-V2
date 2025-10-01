@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Notifications;
 use Laravel\Cashier\Billable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Translation\HasLocalePreference;
@@ -11,7 +12,7 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable implements HasLocalePreference
 {
-  use Notifiable, Billable;
+  use Notifiable, Billable, HasApiTokens;
 
   const CREATED_AT = 'date';
   const UPDATED_AT = null;

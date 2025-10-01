@@ -46,7 +46,19 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => 60 * 24 * 30, // 30 days
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Token Prefix
+    |--------------------------------------------------------------------------
+    |
+    | Sanctum can prefix new tokens in order to identify them. This is useful
+    | for security purposes where you may want to track or invalidate tokens.
+    |
+    */
+
+    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', 'odeka_'),
 
     /*
     |--------------------------------------------------------------------------

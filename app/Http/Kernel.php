@@ -46,9 +46,11 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ForceJsonResponse::class,
+            \App\Http\Middleware\ApiVersion::class.':v1',
         ],
 
         'webhook' => [
@@ -80,5 +82,8 @@ class Kernel extends HttpKernel
         'language' => \App\Http\Middleware\Language::class,
         'private.content' => \App\Http\Middleware\PrivateContent::class,
         'live' => \App\Http\Middleware\OnlineUsersLive::class,
+        'api.log' => \App\Http\Middleware\LogApiRequest::class,
+        'api.version' => \App\Http\Middleware\ApiVersion::class,
+        'json.response' => \App\Http\Middleware\ForceJsonResponse::class,
     ];
 }
