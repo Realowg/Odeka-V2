@@ -59,6 +59,7 @@ use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\PublicAssetsController;
 use App\Http\Controllers\BriefController;
 use App\Http\Controllers\Admin\UserImportController;
+use App\Http\Controllers\Admin\OdevaAdminController;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -911,6 +912,15 @@ Route::group(['middleware' => 'private.content'], function() {
 		Route::view('/ffmpeg', 'admin.ffmpeg');
 
 		Route::get('/download/logs', [AdminController::class, 'downloadLogs']);
+
+		// Odeva Admin Routes
+		Route::get('/odeva', [OdevaAdminController::class, 'index'])->name('odeva.index');
+		Route::put('/odeva/settings', [OdevaAdminController::class, 'updateSettings'])->name('odeva.update-settings');
+		Route::post('/odeva/test-api', [OdevaAdminController::class, 'testApiConnection'])->name('odeva.test-api');
+		Route::get('/odeva/analytics', [OdevaAdminController::class, 'costAnalytics'])->name('odeva.cost-analytics');
+		Route::get('/odeva/creators', [OdevaAdminController::class, 'creatorManagement'])->name('odeva.creators');
+		Route::put('/odeva/creators/{creatorId}/permission', [OdevaAdminController::class, 'updateCreatorPermission'])->name('odeva.update-creator-permission');
+		Route::get('/odeva/export-cost-report', [OdevaAdminController::class, 'exportCostReport'])->name('odeva.export-cost-report');
 	});
 
  });

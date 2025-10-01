@@ -14,10 +14,10 @@ return new class extends Migration
     {
         Schema::create('user_roles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id');
-            $table->string('role_name')->index(); // super_admin, admin, moderator, finance, support
+            $table->unsignedBigInteger('user_id');
+            $table->string('role_name'); // super_admin, admin, moderator, finance, support
             $table->json('permissions')->nullable(); // Additional custom permissions
-            $table->unsignedInteger('created_by'); // Admin who assigned the role
+            $table->unsignedBigInteger('created_by'); // Admin who assigned the role
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
@@ -36,7 +36,7 @@ return new class extends Migration
             if ($driver === 'pgsql') {
                 DB::statement('CREATE UNIQUE INDEX user_roles_one_active_per_user ON user_roles (user_id) WHERE is_active = true');
             } elseif ($driver === 'mysql') {
-                DB::statement('ALTER TABLE user_roles ADD COLUMN active_user_id INT UNSIGNED GENERATED ALWAYS AS (CASE WHEN is_active = 1 THEN user_id ELSE NULL END) STORED');
+                DB::statement('ALTER TABLE user_roles ADD COLUMN active_user_id BIGINT UNSIGNED GENERATED ALWAYS AS (CASE WHEN is_active = 1 THEN user_id ELSE NULL END) STORED');
                 DB::statement('CREATE UNIQUE INDEX user_roles_one_active_per_user ON user_roles (active_user_id)');
             }
         } catch (\Throwable $e) {
